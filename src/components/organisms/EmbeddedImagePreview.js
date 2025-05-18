@@ -14,7 +14,9 @@ const EmbeddedImagePreview = ({ embeddedImage, onDownload }) => {
     <div className="embedded-image-preview">
       <h3>生成された画像</h3>
       <p className="preview-hint">設定を変更した場合は「画像を生成」ボタンを押して再生成できます</p>
-      <img src={embeddedImage} alt="Exif情報付き画像" />
+      <div>
+        <img src={embeddedImage} alt="Exif情報付き画像" />
+      </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
         <Button type="primary" onClick={onDownload}>
           画像をダウンロード

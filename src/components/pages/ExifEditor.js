@@ -186,7 +186,7 @@ const ExifEditor = () => {
               onUseColumnsChange={setUseColumns}
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
-            />
+            />{' '}
             <EmbeddedImagePreview embeddedImage={embeddedImage} onDownload={downloadImage} />
           </>
         )}

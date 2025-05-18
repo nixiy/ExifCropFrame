@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '../atoms/Button';
+import CloseButton from '../atoms/CloseButton';
 
 /**
  * 画像情報表示コンポーネント
@@ -38,10 +39,12 @@ const ImageInfo = ({ image }) => {
  */
 const ImagePreviewPanel = ({ image, onClear, onEmbedClick, showEmbedOptions, hasExifData }) => {
   if (!image) return null;
-
   return (
     <div className="image-preview">
-      <img src={image.src} alt={image.name} />
+      <div style={{ position: 'relative' }}>
+        <img src={image.src} alt={image.name} />
+        <CloseButton onClick={onClear} position="top-right" />
+      </div>
       <div className="button-container">
         <Button type="danger" onClick={onClear}>
           クリア
