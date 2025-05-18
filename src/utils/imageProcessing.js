@@ -119,29 +119,24 @@ export const embedTextInImage = ({
               break;
           }
           return `${displayName}: ${exifData[key]}`;
-        });
-
-      // 白い枠のサイズ（設定値に基づいて調整）
+        }); // 白い枠のサイズ（設定値に基づいて調整）
       const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;
       const borderWidth = Math.max(10, Math.floor(img.width / 100) * borderMultiplier);
 
-      // フォントサイズの計算（白枠サイズを考慮して調整）
-      const fontSizeMultiplier = 1 + borderMultiplier * 0.1; // 白枠サイズに応じてフォントサイズも少し調整
-      const baseFontSize = Math.max(12, Math.floor(img.width / 50) * fontSizeMultiplier);
-      const largeFontSize = Math.floor(baseFontSize * 1.3); // カメラ情報用のフォント（2行目よりほんの少し大きい程度）
-      const mediumFontSize = Math.floor(baseFontSize * 1.1); // テクニカル情報用の中間サイズフォント
+      // フォントサイズを画像サイズに合わせて固定設定（枠サイズによる動的調整なし）
+      const baseFontSize = Math.max(12, Math.floor(img.width / 50));
+      const largeFontSize = Math.floor(baseFontSize * 1.3); // カメラ情報用のフォント
+      const mediumFontSize = Math.floor(baseFontSize * 1.1); // テクニカル情報用のフォント
       const smallFontSize = baseFontSize; // その他の詳細情報用のフォント
       const lineHeight = baseFontSize * 1.5; // 行間の調整
 
       // 下部のExif情報表示領域の高さを計算（大きいフォント + 中間フォント + その他の情報）
       const headerLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
-      const totalLines = headerLines + otherExifTexts.length;
-
-      // 実際に必要なテキスト表示エリアの高さを計算
-      // 白枠サイズに応じてパディングも調整
-      const padding = Math.max(20, borderWidth * 0.7); // パディングも白枠に比例
+      const totalLines = headerLines + otherExifTexts.length; // 実際に必要なテキスト表示エリアの高さを計算
+      // パディングは枠サイズと若干の比例関係を持たせつつも、過剰にならないよう調整
+      const padding = Math.max(20, Math.min(30, borderWidth * 0.5)); // パディングの上限を設定
       const requiredTextHeight = lineHeight * (totalLines + 0.7) + padding; // テキストに必要な高さ
-      const minExifAreaHeight = Math.max(120, borderWidth * 2); // 最低高さも白枠サイズに応じて調整
+      const minExifAreaHeight = Math.max(120, borderWidth * 1.5); // 最低高さも適度に調整
       const exifAreaHeight = Math.max(minExifAreaHeight, requiredTextHeight);
 
       // 新しいキャンバスのサイズを設定（白枠 + 画像 + 下部のExif領域）
@@ -185,16 +180,14 @@ export const embedTextInImage = ({
         ctx.textAlign = 'center';
         ctx.fillText(cameraInfoText, totalWidth / 2, startY);
         startY += lineHeight * 1.2; // 間隔の調整
-      }
-
-      // 詳細情報（焦点距離 / F値 / シャッター速度 / ISO）を描画（中サイズフォント）
+      } // 詳細情報（焦点距離 / F値 / シャッター速度 / ISO）を描画（中サイズフォント）
       if (detailsInfoText) {
         ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(detailsInfoText, totalWidth / 2, startY);
-        // 白枠サイズに比例して行間も調整
-        startY += lineHeight * (1.2 + borderMultiplier * 0.05);
+        // 固定行間で調整
+        startY += lineHeight * 1.2;
       }
 
       // その他の情報を描画（左揃え、通常サイズ）
