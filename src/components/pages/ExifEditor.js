@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import DropZone from '../organisms/DropZone';
 import ImagePreviewPanel from '../organisms/ImagePreviewPanel';
 import OptionPanel from '../organisms/OptionPanel';
@@ -16,14 +16,7 @@ const ExifEditor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
   // カスタムフックの利用
-  const {
-    exifData,
-    isProcessing: isExifProcessing,
-    selectedExifTags,
-    fetchExifData,
-    updateTagSelection,
-    resetExifData,
-  } = useExif();
+  const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
 
   const {
     image,

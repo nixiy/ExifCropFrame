@@ -1,4 +1,4 @@
-import { JAPANESE_TAG_NAMES } from './constants';
+// import { JAPANESE_TAG_NAMES } from './constants'; // その他のExif情報表示を削除したため不要に
 
 /**
  * 画像にテキストを埋め込む関数
@@ -69,31 +69,13 @@ export const embedTextInImage = ({
       const exposureTime = selectedTagKeys.includes('ExposureTime') ? exifData['ExposureTime'] : '';
       const iso = selectedTagKeys.includes('ISOSpeedRatings')
         ? `ISO${exifData['ISOSpeedRatings']}`
-        : '';
-
-      // スラッシュで区切ってコンパクトに表示、スペースを調整して視認性を向上
+        : ''; // スラッシュで区切ってコンパクトに表示、スペースを調整して視認性を向上
       const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
       if (details.length > 0) {
         detailsInfoText = details.join(' / ');
-      } // その他の選択されたExif情報を準備
-      const otherExifTexts = selectedTagKeys
-        .filter(
-          key =>
-            ![
-              'Make',
-              'Model',
-              'FocalLength',
-              'FNumber',
-              'ExposureTime',
-              'ISOSpeedRatings',
-              'LensModel',
-            ].includes(key)
-        )
-        .map(key => {
-          // 日本語表示名に変換 (constants.jsのJAPANESE_TAG_NAMESを使用)
-          const displayName = JAPANESE_TAG_NAMES[key] || key;
-          return `${displayName}: ${exifData[key]}`;
-        }); // 白い枠のサイズ（設定値に基づいて調整）
+      }
+
+      // 白い枠のサイズ（設定値に基づいて調整）
       const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;
       const borderWidth = Math.max(10, Math.floor(img.width / 100) * borderMultiplier);
 
@@ -102,11 +84,9 @@ export const embedTextInImage = ({
       const largeFontSize = Math.floor(baseFontSize * 1.0); // カメラ情報用のフォント
       const mediumFontSize = Math.floor(baseFontSize * 0.8); // テクニカル情報用のフォント
       const smallFontSize = baseFontSize; // その他の詳細情報用のフォント
-      const lineHeight = baseFontSize * 1.5; // 行間の調整
-
-      // 下部のExif情報表示領域の高さを計算（大きいフォント + 中間フォント + その他の情報）
+      const lineHeight = baseFontSize * 1.5; // 行間の調整      // 下部のExif情報表示領域の高さを計算（カメラ情報 + テクニカル情報）
       const headerLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
-      const totalLines = headerLines + otherExifTexts.length; // 実際に必要なテキスト表示エリアの高さを計算
+      const totalLines = headerLines; // 実際に必要なテキスト表示エリアの高さを計算
       // パディングは枠サイズと若干の比例関係を持たせつつも、過剰にならないよう調整
       const padding = Math.max(20, Math.min(30, borderWidth * 0.5)); // パディングの上限を設定
       const requiredTextHeight = lineHeight * (totalLines + 0.7) + padding; // テキストに必要な高さ
@@ -153,41 +133,6 @@ export const embedTextInImage = ({
         ctx.fillText(detailsInfoText, totalWidth / 2, startY);
         // 固定行間で調整
         startY += lineHeight * 1.2;
-      }
-
-      // その他の情報を描画（左揃え、通常サイズ）
-      if (otherExifTexts.length > 0) {
-        ctx.font = `${smallFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
-        ctx.fillStyle = textColor;
-        ctx.textAlign = 'left';
-
-        // メインセクションと他の情報の間に区切り線を追加（オプション）
-        if (cameraInfoText || detailsInfoText) {
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(totalWidth * 0.2, startY - lineHeight * 0.5);
-          ctx.lineTo(totalWidth * 0.8, startY - lineHeight * 0.5);
-          ctx.stroke();
-        } // 2カラムレイアウトの場合の設定（デフォルトで2列）
-        const shouldUseColumns = otherExifTexts.length > 3 && img.width > 600;
-        const columnWidth = (totalWidth - startX * 2) / (shouldUseColumns ? 2 : 1);
-
-        otherExifTexts.forEach((text, index) => {
-          let x = startX;
-          let y = startY;
-
-          // 2カラム表示の場合
-          if (shouldUseColumns) {
-            const column = Math.floor(index / Math.ceil(otherExifTexts.length / 2));
-            x = startX + column * columnWidth;
-            y = startY + (index % Math.ceil(otherExifTexts.length / 2)) * lineHeight;
-          } else {
-            y = startY + index * lineHeight;
-          }
-
-          ctx.fillText(text, x, y);
-        });
       }
 
       // 生成した画像のURLを取得

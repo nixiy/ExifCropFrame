@@ -1,7 +1,6 @@
 import React from 'react';
 import OptionGroup from '../molecules/OptionGroup';
 import ColorPicker from '../atoms/ColorPicker';
-import Checkbox from '../atoms/Checkbox';
 import Select from '../atoms/Select';
 import Button from '../atoms/Button';
 import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';

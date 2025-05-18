@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '../atoms/Button';
 import CloseButton from '../atoms/CloseButton';
 
 /**
@@ -12,7 +11,7 @@ import CloseButton from '../atoms/CloseButton';
  * @param {boolean} props.hasExifData - EXIF情報があるかどうか
  * @returns {JSX.Element} - 画像プレビューコンポーネント
  */
-const ImagePreviewPanel = ({ image, onClear, onEmbedClick, showEmbedOptions, hasExifData }) => {
+const ImagePreviewPanel = ({ image, onClear }) => {
   if (!image) return null;
   return (
     <div className="image-preview">
@@ -20,13 +19,6 @@ const ImagePreviewPanel = ({ image, onClear, onEmbedClick, showEmbedOptions, has
         <img src={image.src} alt={image.name} />
         <CloseButton onClick={onClear} position="top-right" />
       </div>{' '}
-      {hasExifData && !showEmbedOptions && (
-        <div className="button-container">
-          <Button type="success" onClick={onEmbedClick}>
-            Exif情報を画像に埋め込む
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

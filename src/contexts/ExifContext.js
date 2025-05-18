@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { getExifData } from '../utils/exifUtils';
-import { DEFAULT_SELECTED_TAGS, JAPANESE_TAG_NAMES } from '../utils/constants';
+import { DEFAULT_SELECTED_TAGS } from '../utils/constants';
 
 // コンテキストの作成
 const ExifContext = createContext();
@@ -42,14 +42,6 @@ export const ExifProvider = ({ children }) => {
   };
 
   /**
-   * タグの選択状態を更新する
-   * @param {Object} tags - 更新後の選択状態
-   */
-  const updateTagSelection = tags => {
-    setSelectedExifTags(tags);
-  };
-
-  /**
    * すべてのデータをリセットする
    */
   const resetExifData = () => {
@@ -62,7 +54,6 @@ export const ExifProvider = ({ children }) => {
     isProcessing,
     selectedExifTags,
     fetchExifData,
-    updateTagSelection,
     resetExifData,
   };
 
