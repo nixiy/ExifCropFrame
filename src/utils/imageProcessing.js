@@ -5,6 +5,7 @@
  * @param {Object} options.exifData - EXIF情報
  * @param {Object} options.selectedTags - 選択されたタグ
  * @param {string} options.textColor - テキスト色
+ * @param {string} options.backgroundColor - 背景色
  * @param {number} options.borderSize - 枠線サイズ（1-5）
  * @param {boolean} options.textShadow - テキスト影の有無
  * @param {boolean} options.useColumns - 2カラム表示の有無
@@ -16,6 +17,7 @@ export const embedTextInImage = ({
   exifData,
   selectedTags,
   textColor,
+  backgroundColor,
   borderSize,
   textShadow,
   useColumns,
@@ -147,15 +149,13 @@ export const embedTextInImage = ({
       const totalHeight = img.height + borderWidth * 2 + exifAreaHeight;
 
       canvas.width = totalWidth;
-      canvas.height = totalHeight;
-
-      // 背景を白で塗りつぶす
-      ctx.fillStyle = '#ffffff';
+      canvas.height = totalHeight; // 背景を指定された色で塗りつぶす
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, totalWidth, totalHeight); // 画像を描画（白枠の分だけオフセット）
       ctx.drawImage(img, borderWidth, borderWidth);
 
-      // Exif情報の背景を描画（純粋な白色で統一）
-      ctx.fillStyle = '#ffffff'; // 完全な白色
+      // Exif情報の背景を描画（指定された背景色で統一）
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, borderWidth + img.height, totalWidth, exifAreaHeight);
 
       // テキスト全体を縦方向に中央揃えするための開始Y位置を計算

@@ -13,6 +13,7 @@ export const useImageProcessor = () => {
 
   // 埋め込みオプション
   const [textColor, setTextColor] = useState('#000000');
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [textShadow, setTextShadow] = useState(true);
   const [borderSize, setBorderSize] = useState(2);
   const [useColumns, setUseColumns] = useState(true);
@@ -37,12 +38,12 @@ export const useImageProcessor = () => {
         alert('表示するExif情報が選択されていません');
         return;
       }
-
       const dataURL = await embedTextInImage({
         image,
         exifData,
         selectedTags,
         textColor,
+        backgroundColor,
         borderSize,
         textShadow,
         useColumns,
@@ -85,7 +86,6 @@ export const useImageProcessor = () => {
     setImage(null);
     setEmbeddedImage(null);
   };
-
   return {
     image,
     setImage,
@@ -94,6 +94,8 @@ export const useImageProcessor = () => {
     canvasRef,
     textColor,
     setTextColor,
+    backgroundColor,
+    setBackgroundColor,
     textShadow,
     setTextShadow,
     borderSize,

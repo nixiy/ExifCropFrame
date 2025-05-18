@@ -34,6 +34,8 @@ const ExifEditor = () => {
     canvasRef,
     textColor,
     setTextColor,
+    backgroundColor,
+    setBackgroundColor,
     textShadow,
     setTextShadow,
     borderSize,
@@ -160,6 +162,8 @@ const ExifEditor = () => {
             <OptionPanel
               textColor={textColor}
               onTextColorChange={setTextColor}
+              backgroundColor={backgroundColor}
+              onBackgroundColorChange={setBackgroundColor}
               borderSize={borderSize}
               onBorderSizeChange={setBorderSize}
               textShadow={textShadow}

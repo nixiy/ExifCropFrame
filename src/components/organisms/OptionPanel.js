@@ -11,6 +11,8 @@ import { BORDER_SIZE_OPTIONS } from '../../utils/constants';
  * @param {Object} props - props
  * @param {string} props.textColor - テキスト色
  * @param {Function} props.onTextColorChange - テキスト色変更ハンドラ
+ * @param {string} props.backgroundColor - 背景色
+ * @param {Function} props.onBackgroundColorChange - 背景色変更ハンドラ
  * @param {number} props.borderSize - 枠線サイズ
  * @param {Function} props.onBorderSizeChange - 枠線サイズ変更ハンドラ
  * @param {boolean} props.textShadow - テキスト影の有無
@@ -24,6 +26,8 @@ import { BORDER_SIZE_OPTIONS } from '../../utils/constants';
 const OptionPanel = ({
   textColor,
   onTextColorChange,
+  backgroundColor,
+  onBackgroundColorChange,
   borderSize,
   onBorderSizeChange,
   textShadow,
@@ -35,11 +39,16 @@ const OptionPanel = ({
 }) => {
   return (
     <div className="embed-options">
-      <h3>埋め込みオプション</h3>
+      <h3>埋め込みオプション</h3>{' '}
       <OptionGroup label="テキスト色: ">
         <ColorPicker value={textColor} onChange={e => onTextColorChange(e.target.value)} />
       </OptionGroup>
-
+      <OptionGroup label="背景色: ">
+        <ColorPicker
+          value={backgroundColor}
+          onChange={e => onBackgroundColorChange(e.target.value)}
+        />
+      </OptionGroup>
       <OptionGroup label="白枠のサイズ: ">
         <Select
           options={BORDER_SIZE_OPTIONS}
@@ -47,21 +56,18 @@ const OptionPanel = ({
           onChange={e => onBorderSizeChange(Number(e.target.value))}
         />
       </OptionGroup>
-
       <OptionGroup isCheckbox={true} label="">
         <label>
           <Checkbox checked={textShadow} onChange={e => onTextShadowChange(e.target.checked)} />
           テキスト影を表示
         </label>
       </OptionGroup>
-
       <OptionGroup isCheckbox={true} label="">
         <label>
           <Checkbox checked={useColumns} onChange={e => onUseColumnsChange(e.target.checked)} />
           情報を2列で表示（可能な場合）
         </label>
       </OptionGroup>
-
       <div className="embed-buttons">
         <Button type="primary" onClick={onGenerateImage} disabled={isProcessing}>
           {isProcessing ? '処理中...' : '画像を生成'}
