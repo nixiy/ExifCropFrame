@@ -297,10 +297,18 @@ function App() {
       let detailsInfoText = ''; // メーカーと型番を取得
       const make = selectedTags.includes('Make') ? exifData['Make'] : '';
       const model = selectedTags.includes('Model') ? exifData['Model'] : '';
+      const lensModel = selectedTags.includes('LensModel') ? exifData['LensModel'] : '';
 
       if (make || model) {
-        // メーカー名と型番の間にスペースを追加し、メーカー名の後に必要に応じてスペースを追加
-        cameraInfoText = make && model ? `${make.trim()}  ${model.trim()}` : make || model;
+        // メーカー名と型番を結合し、レンズモデル情報も含める
+        let cameraText = make && model ? `${make.trim()}  ${model.trim()}` : make || model;
+
+        // レンズモデル情報があれば、カメラ情報の後に「/」で区切って追加
+        if (lensModel) {
+          cameraInfoText = `${cameraText} / ${lensModel.trim()}`;
+        } else {
+          cameraInfoText = cameraText;
+        }
       } // 2行目の情報（焦点距離 / F値 / 露出時間 / ISO）を準備
       const focalLength = selectedTags.includes('FocalLength') ? exifData['FocalLength'] : '';
       const fNumber = selectedTags.includes('FNumber') ? exifData['FNumber'] : '';
@@ -324,6 +332,7 @@ function App() {
               'FNumber',
               'ExposureTime',
               'ISOSpeedRatings',
+              'LensModel', // LensModelをフィルタリング対象に追加
             ].includes(key)
         )
         .map(key => {
