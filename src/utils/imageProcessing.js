@@ -173,9 +173,9 @@ export const embedTextInImage = ({
         ctx.shadowBlur = 0;
       }
 
-      // カメラ情報（メーカー・型番）を描画（細身フォント、やや大きめ）
+      // カメラ情報（メーカー・型番）を描画（太字フォント、やや大きめ）
       if (cameraInfoText) {
-        ctx.font = `${largeFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
+        ctx.font = `bold ${largeFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // 太字フォントを使用
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(cameraInfoText, totalWidth / 2, startY);
