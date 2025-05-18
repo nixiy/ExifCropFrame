@@ -7,7 +7,16 @@ function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [exifData, setExifData] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [embeddedImage, setEmbeddedImage] = useState(null);
+  const [showEmbedOptions, setShowEmbedOptions] = useState(false);
+  const [textPosition, setTextPosition] = useState('bottom');
+  const [textColor, setTextColor] = useState('#000000');
+  const [textShadow, setTextShadow] = useState(true);
+  const [borderSize, setBorderSize] = useState(2); // 白枠のサイズ（1-5の値）
+  const [selectedExifTags, setSelectedExifTags] = useState({});
+  const [useColumns, setUseColumns] = useState(true); // 2カラム表示を有効にするかどうか
   const dropRef = useRef(null);
+  const canvasRef = useRef(null);
 
   // ドラッグイベントのハンドラー
   const handleDragEnter = e => {
@@ -90,12 +99,12 @@ function App() {
               // 特定のタグのフォーマットを調整
               switch (tag) {
                 case 'ExposureTime':
-                  // 露出時間をより読みやすい形式に変換 (例: "1/100 sec")
+                  // 露出時間をより読みやすい形式に変換 (例: "1/100 s")
                   const expValue = exifTags[tag];
                   if (expValue < 1) {
-                    exifData[tag] = `1/${Math.round(1 / expValue)} 秒`;
+                    exifData[tag] = `1/${Math.round(1 / expValue)}s`;
                   } else {
-                    exifData[tag] = `${expValue} 秒`;
+                    exifData[tag] = `${expValue}s`;
                   }
                   break;
                 case 'FNumber':
@@ -118,7 +127,6 @@ function App() {
       });
     });
   };
-
   // ファイルの処理
   const processFile = async file => {
     // 画像ファイルのみを受け付ける
@@ -140,9 +148,233 @@ function App() {
 
       // Exif情報を取得
       const exif = await getExifData(file);
-      setExifData(exif);
+      setExifData(exif); // 指定されたExifタグのみを選択状態にする
+      const tagsObj = {};
+      const defaultSelectedTags = [
+        'Make',
+        'Model',
+        'ExposureTime',
+        'FNumber',
+        'ISOSpeedRatings',
+        'FocalLength',
+      ];
+
+      Object.keys(exif).forEach(key => {
+        // デフォルトで選択するタグリストに含まれるかどうかをチェック
+        tagsObj[key] = defaultSelectedTags.includes(key);
+      });
+      setSelectedExifTags(tagsObj);
     };
     reader.readAsDataURL(file);
+  };
+  // 画像にテキストを埋め込む（白枠付きで下部に余裕を持たせた形式）
+  const embedTextInImage = () => {
+    if (!image || !exifData || !canvasRef.current) return;
+
+    setIsProcessing(true);
+
+    // 画像を読み込む
+    const img = new Image();
+    img.onload = () => {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+
+      // テキスト用の設定
+      const selectedTags = Object.entries(selectedExifTags)
+        .filter(([key, isSelected]) => isSelected)
+        .map(([key]) => key);
+
+      if (selectedTags.length === 0) {
+        setIsProcessing(false);
+        alert('表示するExif情報が選択されていません');
+        return;
+      } // メーカーと型番、およびその他の情報を別々に準備
+      let cameraInfoText = '';
+      let detailsInfoText = ''; // メーカーと型番を取得
+      const make = selectedTags.includes('Make') ? exifData['Make'] : '';
+      const model = selectedTags.includes('Model') ? exifData['Model'] : '';
+
+      if (make || model) {
+        // メーカー名と型番の間にスペースを追加し、メーカー名の後に必要に応じてスペースを追加
+        cameraInfoText = make && model ? `${make.trim()}  ${model.trim()}` : make || model;
+      } // 2行目の情報（焦点距離 / F値 / 露出時間 / ISO）を準備
+      const focalLength = selectedTags.includes('FocalLength') ? exifData['FocalLength'] : '';
+      const fNumber = selectedTags.includes('FNumber') ? exifData['FNumber'] : '';
+      const exposureTime = selectedTags.includes('ExposureTime') ? exifData['ExposureTime'] : '';
+      const iso = selectedTags.includes('ISOSpeedRatings')
+        ? `ISO${exifData['ISOSpeedRatings']}`
+        : ''; // スペースを削除// スラッシュで区切ってコンパクトに表示、スペースを調整して視認性を向上
+      const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
+      if (details.length > 0) {
+        detailsInfoText = details.join(' / '); // スラッシュ（/）で区切る
+      }
+
+      // その他の選択されたExif情報を準備
+      const otherExifTexts = selectedTags
+        .filter(
+          key =>
+            ![
+              'Make',
+              'Model',
+              'FocalLength',
+              'FNumber',
+              'ExposureTime',
+              'ISOSpeedRatings',
+            ].includes(key)
+        )
+        .map(key => {
+          // 日本語表示名に変換
+          let displayName = key;
+          switch (key) {
+            case 'DateTime':
+              displayName = '撮影日時';
+              break;
+            case 'WhiteBalance':
+              displayName = 'ホワイトバランス';
+              break;
+            case 'Flash':
+              displayName = 'フラッシュ';
+              break;
+            case 'ExposureProgram':
+              displayName = '露出プログラム';
+              break;
+            case 'MeteringMode':
+              displayName = '測光モード';
+              break;
+            case 'Resolution':
+              displayName = '解像度';
+              break;
+            default:
+              break;
+          }
+          return `${displayName}: ${exifData[key]}`;
+        }); // フォントサイズの計算
+      const baseFontSize = Math.max(12, Math.floor(img.width / 50));
+      const largeFontSize = Math.floor(baseFontSize * 1.3); // カメラ情報用のフォント（2行目よりほんの少し大きい程度）
+      const mediumFontSize = Math.floor(baseFontSize * 1.1); // テクニカル情報用の中間サイズフォント
+      const smallFontSize = baseFontSize; // その他の詳細情報用のフォント
+      const lineHeight = baseFontSize * 1.5; // 行間の調整
+
+      // 下部のExif情報表示領域の高さを計算（大きいフォント + 中間フォント + その他の情報）
+      const headerLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
+      const totalLines = headerLines + otherExifTexts.length;
+      const exifAreaHeight = Math.max(120, lineHeight * (totalLines + 1.5)); // 余白を少し増やす
+      // 白い枠のサイズ（設定値に基づいて調整）
+      const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;
+      const borderWidth = Math.max(10, Math.floor(img.width / 100) * borderMultiplier);
+
+      // 新しいキャンバスのサイズを設定（白枠 + 画像 + 下部のExif領域）
+      const totalWidth = img.width + borderWidth * 2;
+      const totalHeight = img.height + borderWidth * 2 + exifAreaHeight;
+
+      canvas.width = totalWidth;
+      canvas.height = totalHeight;
+
+      // 背景を白で塗りつぶす
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+      // 画像を描画（白枠の分だけオフセット）
+      ctx.drawImage(img, borderWidth, borderWidth);
+      // Exif情報の背景を描画（微妙にグラデーションを入れる）
+      const gradient = ctx.createLinearGradient(0, borderWidth + img.height, 0, totalHeight);
+      gradient.addColorStop(0, '#f8f9fa');
+      gradient.addColorStop(1, '#f0f0f0');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, borderWidth + img.height, totalWidth, exifAreaHeight);
+
+      // テキスト描画位置の基準を設定（上部に少し余白をとる）
+      const startX = borderWidth + 10;
+      let startY = borderWidth + img.height + 20 + lineHeight;
+      // テキスト影の設定（すべてのテキストに適用）
+      if (textShadow) {
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
+        ctx.shadowBlur = 2;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      } else {
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowBlur = 0;
+      } // カメラ情報（メーカー・型番）を描画（細身フォント、やや大きめ）
+      if (cameraInfoText) {
+        ctx.font = `${largeFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
+        ctx.fillStyle = textColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(cameraInfoText, totalWidth / 2, startY);
+        startY += lineHeight * 1.2; // 間隔の調整
+      }
+
+      // 詳細情報（焦点距離 / F値 / シャッター速度 / ISO）を描画（中サイズフォント）
+      if (detailsInfoText) {
+        ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
+        ctx.fillStyle = textColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(detailsInfoText, totalWidth / 2, startY);
+        startY += lineHeight * 1.3; // 次のセクションまでの間隔を調整
+      } // その他の情報を描画（左揃え、通常サイズ）
+      if (otherExifTexts.length > 0) {
+        ctx.font = `${smallFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
+        ctx.fillStyle = textColor;
+        ctx.textAlign = 'left';
+
+        // メインセクションと他の情報の間に区切り線を追加（オプション）
+        if (cameraInfoText || detailsInfoText) {
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(totalWidth * 0.2, startY - lineHeight * 0.5);
+          ctx.lineTo(totalWidth * 0.8, startY - lineHeight * 0.5);
+          ctx.stroke();
+        }
+
+        // 2カラムレイアウトの場合の設定
+        const shouldUseColumns = useColumns && otherExifTexts.length > 3 && img.width > 600;
+        const columnWidth = (totalWidth - startX * 2) / (shouldUseColumns ? 2 : 1);
+
+        otherExifTexts.forEach((text, index) => {
+          let x = startX;
+          let y = startY;
+
+          // 2カラム表示の場合
+          if (shouldUseColumns) {
+            const column = Math.floor(index / Math.ceil(otherExifTexts.length / 2));
+            x = startX + column * columnWidth;
+            y = startY + (index % Math.ceil(otherExifTexts.length / 2)) * lineHeight;
+          } else {
+            y = startY + index * lineHeight;
+          }
+
+          ctx.fillText(text, x, y);
+        });
+      }
+
+      // 生成した画像のURLを取得
+      const dataURL = canvas.toDataURL(image.type || 'image/jpeg');
+      setEmbeddedImage(dataURL);
+      setIsProcessing(false);
+    };
+
+    img.src = image.src;
+  };
+
+  // 埋め込み画像のダウンロード
+  const downloadEmbeddedImage = () => {
+    if (!embeddedImage) return;
+
+    // ダウンロードリンクを作成
+    const link = document.createElement('a');
+    link.href = embeddedImage;
+
+    // ファイル名を設定（元のファイル名に-exifを付加）
+    const fileName =
+      image.name.replace(/\.[^.]+$/, '') + '-exif.' + (image.type.split('/')[1] || 'jpg');
+    link.download = fileName;
+
+    // リンクをクリックしてダウンロード開始
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -270,19 +502,145 @@ function App() {
                 }}
               >
                 クリア
-              </button>
+              </button>{' '}
               {exifData && Object.keys(exifData).length > 0 && (
                 <button
                   className="embed-button"
-                  onClick={() => {
-                    // 画像にExif情報を埋め込む機能は次のステップで実装します
-                    alert('この機能は開発中です');
-                  }}
+                  onClick={() => setShowEmbedOptions(!showEmbedOptions)}
                 >
                   Exif情報を画像に埋め込む
                 </button>
               )}
             </div>
+
+            {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
+              <div className="embed-options">
+                <h3>埋め込みオプション</h3>{' '}
+                <div className="option-group">
+                  <label>テキスト色: </label>
+                  <input
+                    type="color"
+                    value={textColor}
+                    onChange={e => setTextColor(e.target.value)}
+                  />
+                </div>
+                <div className="option-group">
+                  <label>白枠のサイズ: </label>
+                  <select value={borderSize} onChange={e => setBorderSize(Number(e.target.value))}>
+                    <option value="1">極細</option>
+                    <option value="2">細い</option>
+                    <option value="3">標準</option>
+                    <option value="4">太い</option>
+                    <option value="5">極太</option>
+                  </select>
+                </div>
+                <div className="option-group checkbox-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={textShadow}
+                      onChange={e => setTextShadow(e.target.checked)}
+                    />
+                    テキスト影を表示
+                  </label>
+                </div>
+                <div className="option-group checkbox-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={useColumns}
+                      onChange={e => setUseColumns(e.target.checked)}
+                    />
+                    情報を2列で表示（可能な場合）
+                  </label>
+                </div>
+                <div className="exif-tags-selector">
+                  <h4>表示するExif項目を選択</h4>
+                  <div className="tags-list">
+                    {Object.keys(exifData).map(tag => {
+                      // 日本語表示名に変換
+                      let displayName = tag;
+                      switch (tag) {
+                        case 'Make':
+                          displayName = 'メーカー';
+                          break;
+                        case 'Model':
+                          displayName = '機種';
+                          break;
+                        case 'DateTime':
+                          displayName = '撮影日時';
+                          break;
+                        case 'ExposureTime':
+                          displayName = '露出時間';
+                          break;
+                        case 'FNumber':
+                          displayName = 'F値';
+                          break;
+                        case 'ISOSpeedRatings':
+                          displayName = 'ISO感度';
+                          break;
+                        case 'FocalLength':
+                          displayName = '焦点距離';
+                          break;
+                        case 'WhiteBalance':
+                          displayName = 'ホワイトバランス';
+                          break;
+                        case 'Flash':
+                          displayName = 'フラッシュ';
+                          break;
+                        case 'ExposureProgram':
+                          displayName = '露出プログラム';
+                          break;
+                        case 'MeteringMode':
+                          displayName = '測光モード';
+                          break;
+                        case 'Resolution':
+                          displayName = '解像度';
+                          break;
+                        default:
+                          break;
+                      }
+                      return (
+                        <label key={tag} className="tag-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={!!selectedExifTags[tag]}
+                            onChange={e => {
+                              setSelectedExifTags({
+                                ...selectedExifTags,
+                                [tag]: e.target.checked,
+                              });
+                            }}
+                          />
+                          <span>{displayName}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="embed-buttons">
+                  <button
+                    className="generate-button"
+                    onClick={embedTextInImage}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? '処理中...' : '画像を生成'}
+                  </button>
+                </div>
+                {embeddedImage && (
+                  <div className="embedded-image-preview">
+                    <h3>プレビュー</h3>
+                    <img src={embeddedImage} alt="Exif情報付き画像" />
+                    <button className="download-button" onClick={downloadEmbeddedImage}>
+                      画像をダウンロード
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 非表示のCanvasエレメント */}
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
           </div>
         )}
       </div>

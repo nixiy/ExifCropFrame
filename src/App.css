@@ -118,3 +118,147 @@
 .embed-button:hover {
   background-color: #218838;
 }
+
+/* 埋め込みオプション関連のスタイル */
+.embed-options {
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.embed-options h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  color: #333;
+}
+
+.option-group {
+  margin-bottom: 15px;
+}
+
+.option-group label {
+  display: inline-block;
+  margin-right: 10px;
+  min-width: 100px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-group input[type='checkbox'] {
+  margin-right: 8px;
+}
+
+.option-group select,
+.option-group input[type='color'] {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.exif-tags-selector {
+  margin-top: 20px;
+}
+
+.exif-tags-selector h4 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.exif-tags-selector {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tag-checkbox {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e9ecef;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.tag-checkbox input {
+  margin-right: 5px;
+}
+
+.tag-checkbox:has(input:checked) {
+  background-color: #d1e7ff;
+  border: 1px solid #007bff;
+}
+
+/* CSS :has()セレクタが利用できないブラウザのためのフォールバック */
+.tag-checkbox input:checked + span {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.embed-buttons {
+  margin: 20px 0;
+}
+
+.generate-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.generate-button:hover {
+  background-color: #0069d9;
+}
+
+.generate-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.embedded-image-preview {
+  margin-top: 20px;
+}
+
+.embedded-image-preview img {
+  max-width: 100%;
+  margin: 15px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.download-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.download-button:hover {
+  background-color: #0069d9;
+}
