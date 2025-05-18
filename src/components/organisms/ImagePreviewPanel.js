@@ -44,7 +44,8 @@ const ImagePreviewPanel = ({ image, onClear, onEmbedClick, showEmbedOptions, has
       <div style={{ position: 'relative' }}>
         <img src={image.src} alt={image.name} />
         <CloseButton onClick={onClear} position="top-right" />
-      </div>      {hasExifData && !showEmbedOptions && (
+      </div>{' '}
+      {hasExifData && !showEmbedOptions && (
         <div className="button-container">
           <Button type="success" onClick={onEmbedClick}>
             Exif情報を画像に埋め込む
