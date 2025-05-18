@@ -125,8 +125,8 @@ export const embedTextInImage = ({
 
       // フォントサイズを画像サイズに合わせて固定設定（枠サイズによる動的調整なし）
       const baseFontSize = Math.max(12, Math.floor(img.width / 50));
-      const largeFontSize = Math.floor(baseFontSize * 1.3); // カメラ情報用のフォント
-      const mediumFontSize = Math.floor(baseFontSize * 1.1); // テクニカル情報用のフォント
+      const largeFontSize = Math.floor(baseFontSize * 1.0); // カメラ情報用のフォント
+      const mediumFontSize = Math.floor(baseFontSize * 0.8); // テクニカル情報用のフォント
       const smallFontSize = baseFontSize; // その他の詳細情報用のフォント
       const lineHeight = baseFontSize * 1.5; // 行間の調整
 
