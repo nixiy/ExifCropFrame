@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import DropZone from '../organisms/DropZone';
 import ImagePreviewPanel from '../organisms/ImagePreviewPanel';
-import ExifInfoPanel from '../organisms/ExifInfoPanel';
 import OptionPanel from '../organisms/OptionPanel';
-import TagSelector from '../organisms/TagSelector';
 import EmbeddedImagePreview from '../organisms/EmbeddedImagePreview';
 import Button from '../atoms/Button';
 import { useExifData } from '../../hooks/useExifData';
@@ -155,8 +153,7 @@ const ExifEditor = () => {
           onEmbedClick={() => setShowEmbedOptions(true)}
           showEmbedOptions={showEmbedOptions}
           hasExifData={!!exifData && Object.keys(exifData).length > 0}
-        />
-
+        />{' '}
         <div className="info-container">
           <div className="image-info">
             <h3>画像情報</h3>
@@ -174,11 +171,10 @@ const ExifEditor = () => {
               </>
             )}
           </div>
-          <ExifInfoPanel exifData={exifData} isProcessing={isExifProcessing} />{' '}
         </div>
-
         {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
           <>
+            {' '}
             <OptionPanel
               textColor={textColor}
               onTextColorChange={setTextColor}
@@ -191,17 +187,9 @@ const ExifEditor = () => {
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
             />
-
-            <TagSelector
-              exifData={exifData}
-              selectedTags={selectedExifTags}
-              onTagChange={updateTagSelection}
-            />
-
             <EmbeddedImagePreview embeddedImage={embeddedImage} onDownload={downloadImage} />
           </>
         )}
-
         {/* 非表示のCanvasエレメント */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
       </DropZone>

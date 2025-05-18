@@ -35,17 +35,12 @@ export const useExifData = () => {
       setIsProcessing(false);
     }
   };
-
   /**
    * タグの選択状態を更新する
-   * @param {string} tag - タグ名
-   * @param {boolean} isSelected - 選択状態
+   * @param {Object} tags - 更新後の選択状態
    */
-  const updateTagSelection = (tag, isSelected) => {
-    setSelectedExifTags(prev => ({
-      ...prev,
-      [tag]: isSelected,
-    }));
+  const updateTagSelection = tags => {
+    setSelectedExifTags(tags);
   };
 
   /**
