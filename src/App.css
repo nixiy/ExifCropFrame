@@ -210,36 +210,6 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.secondary-button {
-  background-color: #f1f3f4;
-  color: #202124;
-  border: 1px solid #dadce0;
-}
-
-.secondary-button:hover {
-  background-color: #e8eaed;
-}
-
-.danger-button {
-  background-color: #ea4335;
-  color: white;
-}
-
-.danger-button:hover {
-  background-color: #d93025;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.success-button {
-  background-color: #34a853;
-  color: white;
-}
-
-.success-button:hover {
-  background-color: #2d9144;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
 .button:disabled {
   background-color: #e0e0e0;
   color: #9e9e9e;
