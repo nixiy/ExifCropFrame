@@ -7,6 +7,7 @@
  * @param {string} options.textColor - テキスト色
  * @param {string} options.backgroundColor - 背景色
  * @param {number} options.borderSize - 枠線サイズ（1-5）
+ * @param {string} options.aspectRatio - アスペクト比（'original', '16:9', '21:9', '4:3', '3:2', '1:1'）
  * @param {HTMLCanvasElement} options.canvas - キャンバス要素
  * @returns {Promise<string>} - 生成された画像のDataURL
  */
@@ -17,6 +18,7 @@ export const embedTextInImage = ({
   textColor,
   backgroundColor,
   borderSize,
+  aspectRatio,
   canvas,
 }) => {
   return new Promise((resolve, reject) => {
@@ -73,12 +75,36 @@ export const embedTextInImage = ({
         detailsInfoText = details.join(' / ');
       }
 
+      // アスペクト比に基づいてクロップサイズを計算
+      let cropWidth = img.width;
+      let cropHeight = img.height;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      // 選択されたアスペクト比に基づいて画像をクロップ
+      if (aspectRatio !== 'original') {
+        const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
+        const targetRatio = widthRatio / heightRatio;
+
+        const currentRatio = img.width / img.height;
+
+        if (targetRatio > currentRatio) {
+          // ターゲットアスペクト比が現在より横長の場合、高さを調整
+          cropHeight = img.width / targetRatio;
+          offsetY = (img.height - cropHeight) / 2;
+        } else {
+          // ターゲットアスペクト比が現在より縦長の場合、幅を調整
+          cropWidth = img.height * targetRatio;
+          offsetX = (img.width - cropWidth) / 2;
+        }
+      }
+
       // 白い枠のサイズ（設定値に基づいて調整）
       const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;
-      const borderWidth = Math.max(10, Math.floor(img.width / 100) * borderMultiplier);
+      const borderWidth = Math.max(10, Math.floor(cropWidth / 100) * borderMultiplier);
 
       // フォントサイズを画像サイズに合わせて固定設定（枠サイズによる動的調整なし）
-      const baseFontSize = Math.max(12, Math.floor(img.width / 50));
+      const baseFontSize = Math.max(12, Math.floor(cropWidth / 50));
       const largeFontSize = Math.floor(baseFontSize * 1.0); // カメラ情報用のフォント
       const mediumFontSize = Math.floor(baseFontSize * 0.8); // テクニカル情報用のフォント
       const lineHeight = baseFontSize * 1.5; // 行間の調整      // 下部のExif情報表示領域の高さを計算（カメラ情報 + テクニカル情報）
@@ -91,23 +117,35 @@ export const embedTextInImage = ({
       const exifAreaHeight = Math.max(minExifAreaHeight, requiredTextHeight);
 
       // 新しいキャンバスのサイズを設定（白枠 + 画像 + 下部のExif領域）
-      const totalWidth = img.width + borderWidth * 2;
-      const totalHeight = img.height + borderWidth * 2 + exifAreaHeight;
+      const totalWidth = cropWidth + borderWidth * 2;
+      const totalHeight = cropHeight + borderWidth * 2 + exifAreaHeight;
 
       canvas.width = totalWidth;
       canvas.height = totalHeight; // 背景を指定された色で塗りつぶす
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, totalWidth, totalHeight); // 画像を描画（白枠の分だけオフセット）
-      ctx.drawImage(img, borderWidth, borderWidth);
+
+      // クロップした画像を描画
+      ctx.drawImage(
+        img,
+        offsetX,
+        offsetY,
+        cropWidth,
+        cropHeight, // ソース画像のクロップ範囲
+        borderWidth,
+        borderWidth,
+        cropWidth,
+        cropHeight // キャンバスへの描画位置とサイズ
+      );
 
       // Exif情報の背景を描画（指定された背景色で統一）
       ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, borderWidth + img.height, totalWidth, exifAreaHeight);
+      ctx.fillRect(0, borderWidth + cropHeight, totalWidth, exifAreaHeight);
 
       // 実際のテキストの高さを考慮してより正確に中央揃え
       const actualTextHeight = lineHeight * totalLines;
       const verticalCenterOffset = Math.max(0, (exifAreaHeight - actualTextHeight) / 2);
-      let startY = borderWidth + img.height + verticalCenterOffset + lineHeight * 0.8; // 行の高さ調整      // テキスト影は使用しない設定
+      let startY = borderWidth + cropHeight + verticalCenterOffset + lineHeight * 0.8; // 行の高さ調整      // テキスト影は使用しない設定
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
       ctx.shadowBlur = 0;

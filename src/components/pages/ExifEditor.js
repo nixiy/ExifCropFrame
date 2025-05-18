@@ -30,6 +30,8 @@ const ExifEditor = () => {
     setBackgroundColor,
     borderSize,
     setBorderSize,
+    aspectRatio,
+    setAspectRatio,
     processImage,
     downloadImage,
     resetImage,
@@ -143,6 +145,8 @@ const ExifEditor = () => {
               onBackgroundColorChange={setBackgroundColor}
               borderSize={borderSize}
               onBorderSizeChange={setBorderSize}
+              aspectRatio={aspectRatio}
+              onAspectRatioChange={setAspectRatio}
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
             />{' '}
