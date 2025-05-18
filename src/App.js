@@ -323,15 +323,10 @@ function App() {
 
       // 背景を白で塗りつぶす
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, totalWidth, totalHeight);
-
-      // 画像を描画（白枠の分だけオフセット）
+      ctx.fillRect(0, 0, totalWidth, totalHeight); // 画像を描画（白枠の分だけオフセット）
       ctx.drawImage(img, borderWidth, borderWidth);
-      // Exif情報の背景を描画（微妙にグラデーションを入れる）
-      const gradient = ctx.createLinearGradient(0, borderWidth + img.height, 0, totalHeight);
-      gradient.addColorStop(0, '#f8f9fa');
-      gradient.addColorStop(1, '#f0f0f0');
-      ctx.fillStyle = gradient;
+      // Exif情報の背景を描画（純粋な白色で統一）
+      ctx.fillStyle = '#ffffff'; // 完全な白色
       ctx.fillRect(0, borderWidth + img.height, totalWidth, exifAreaHeight);
 
       // テキスト描画位置の基準を設定（上部に少し余白をとる）
