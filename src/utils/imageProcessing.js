@@ -7,8 +7,6 @@
  * @param {string} options.textColor - テキスト色
  * @param {string} options.backgroundColor - 背景色
  * @param {number} options.borderSize - 枠線サイズ（1-5）
- * @param {boolean} options.textShadow - テキスト影の有無
- * @param {boolean} options.useColumns - 2カラム表示の有無
  * @param {HTMLCanvasElement} options.canvas - キャンバス要素
  * @returns {Promise<string>} - 生成された画像のDataURL
  */
@@ -19,8 +17,6 @@ export const embedTextInImage = ({
   textColor,
   backgroundColor,
   borderSize,
-  textShadow,
-  useColumns,
   canvas,
 }) => {
   return new Promise((resolve, reject) => {
@@ -159,19 +155,10 @@ export const embedTextInImage = ({
       // 実際のテキストの高さを考慮してより正確に中央揃え
       const actualTextHeight = lineHeight * totalLines;
       const verticalCenterOffset = Math.max(0, (exifAreaHeight - actualTextHeight) / 2);
-      let startY = borderWidth + img.height + verticalCenterOffset + lineHeight * 0.8; // 行の高さ調整
-
-      // テキスト影の設定（すべてのテキストに適用）
-      if (textShadow) {
-        ctx.shadowOffsetX = 1;
-        ctx.shadowOffsetY = 1;
-        ctx.shadowBlur = 2;
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-      } else {
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.shadowBlur = 0;
-      }
+      let startY = borderWidth + img.height + verticalCenterOffset + lineHeight * 0.8; // 行の高さ調整      // テキスト影は使用しない設定
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 0;
 
       // カメラ情報（メーカー・型番）を描画（太字フォント、やや大きめ）
       if (cameraInfoText) {
@@ -204,10 +191,8 @@ export const embedTextInImage = ({
           ctx.moveTo(totalWidth * 0.2, startY - lineHeight * 0.5);
           ctx.lineTo(totalWidth * 0.8, startY - lineHeight * 0.5);
           ctx.stroke();
-        }
-
-        // 2カラムレイアウトの場合の設定
-        const shouldUseColumns = useColumns && otherExifTexts.length > 3 && img.width > 600;
+        } // 2カラムレイアウトの場合の設定（デフォルトで2列）
+        const shouldUseColumns = otherExifTexts.length > 3 && img.width > 600;
         const columnWidth = (totalWidth - startX * 2) / (shouldUseColumns ? 2 : 1);
 
         otherExifTexts.forEach((text, index) => {

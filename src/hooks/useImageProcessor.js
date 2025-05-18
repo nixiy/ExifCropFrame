@@ -11,13 +11,10 @@ export const useImageProcessor = () => {
   const [embeddedImage, setEmbeddedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const canvasRef = useRef(null);
-
   // 埋め込みオプション（初期値はconstantsから取得）
   const [textColor, setTextColor] = useState(DEFAULT_COLORS.TEXT);
   const [backgroundColor, setBackgroundColor] = useState(DEFAULT_COLORS.BACKGROUND);
-  const [textShadow, setTextShadow] = useState(true);
   const [borderSize, setBorderSize] = useState(2);
-  const [useColumns, setUseColumns] = useState(true);
 
   /**
    * 画像にEXIF情報を埋め込む
@@ -46,8 +43,6 @@ export const useImageProcessor = () => {
         textColor,
         backgroundColor,
         borderSize,
-        textShadow,
-        useColumns,
         canvas: canvasRef.current,
       });
 
@@ -97,12 +92,8 @@ export const useImageProcessor = () => {
     setTextColor,
     backgroundColor,
     setBackgroundColor,
-    textShadow,
-    setTextShadow,
     borderSize,
     setBorderSize,
-    useColumns,
-    setUseColumns,
     processImage,
     downloadImage,
     resetImage,

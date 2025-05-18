@@ -36,12 +36,8 @@ const ExifEditor = () => {
     setTextColor,
     backgroundColor,
     setBackgroundColor,
-    textShadow,
-    setTextShadow,
     borderSize,
     setBorderSize,
-    useColumns,
-    setUseColumns,
     processImage,
     downloadImage,
     resetImage,
@@ -166,10 +162,6 @@ const ExifEditor = () => {
               onBackgroundColorChange={setBackgroundColor}
               borderSize={borderSize}
               onBorderSizeChange={setBorderSize}
-              textShadow={textShadow}
-              onTextShadowChange={setTextShadow}
-              useColumns={useColumns}
-              onUseColumnsChange={setUseColumns}
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
             />{' '}

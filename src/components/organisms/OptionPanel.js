@@ -15,10 +15,6 @@ import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
  * @param {Function} props.onBackgroundColorChange - 背景色変更ハンドラ
  * @param {number} props.borderSize - 枠線サイズ
  * @param {Function} props.onBorderSizeChange - 枠線サイズ変更ハンドラ
- * @param {boolean} props.textShadow - テキスト影の有無
- * @param {Function} props.onTextShadowChange - テキスト影変更ハンドラ
- * @param {boolean} props.useColumns - 2カラム表示の有無
- * @param {Function} props.onUseColumnsChange - カラム表示変更ハンドラ
  * @param {Function} props.onGenerateImage - 画像生成ハンドラ
  * @param {boolean} props.isProcessing - 処理中かどうか
  * @returns {JSX.Element} - オプションパネルコンポーネント
@@ -30,10 +26,6 @@ const OptionPanel = ({
   onBackgroundColorChange,
   borderSize,
   onBorderSizeChange,
-  textShadow,
-  onTextShadowChange,
-  useColumns,
-  onUseColumnsChange,
   onGenerateImage,
   isProcessing,
 }) => {
@@ -60,18 +52,6 @@ const OptionPanel = ({
           value={borderSize}
           onChange={e => onBorderSizeChange(Number(e.target.value))}
         />
-      </OptionGroup>
-      <OptionGroup isCheckbox={true} label="">
-        <label>
-          <Checkbox checked={textShadow} onChange={e => onTextShadowChange(e.target.checked)} />
-          テキスト影を表示
-        </label>
-      </OptionGroup>
-      <OptionGroup isCheckbox={true} label="">
-        <label>
-          <Checkbox checked={useColumns} onChange={e => onUseColumnsChange(e.target.checked)} />
-          情報を2列で表示（可能な場合）
-        </label>
       </OptionGroup>
       <div className="embed-buttons">
         <Button type="primary" onClick={onGenerateImage} disabled={isProcessing}>
