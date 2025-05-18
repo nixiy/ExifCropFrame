@@ -104,8 +104,7 @@ export const getExifData = file => {
           if (tags.LensID) {
             exifData['LensID'] = tags.LensID;
           }
-        }
-      } catch (e) {
+        }      } catch (e) {
         console.error('Exif情報の解析に失敗しました:', e);
       } finally {
         resolve(exifData);

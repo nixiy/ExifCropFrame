@@ -20,8 +20,7 @@ export const useImageProcessor = () => {
    * 画像にEXIF情報を埋め込む
    * @param {Object} exifData - EXIF情報
    * @param {Object} selectedTags - 選択されたタグ
-   */
-  const processImage = async (exifData, selectedTags) => {
+   */  const processImage = async (exifData, selectedTags) => {
     if (!image || !exifData || !canvasRef.current) return;
 
     setIsProcessing(true);
@@ -36,6 +35,7 @@ export const useImageProcessor = () => {
         alert('表示するExif情報が選択されていません');
         return;
       }
+
       const dataURL = await embedTextInImage({
         image,
         exifData,

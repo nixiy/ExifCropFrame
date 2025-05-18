@@ -38,18 +38,14 @@ const ExifEditor = () => {
   const loadSampleImage = async () => {
     try {
       // サンプル画像のパス (publicフォルダ内の画像を直接参照)
-      const sampleImgPath = '/images/sample-image.jpg';
-
-      // サンプル画像のURLをフェッチしてBlobに変換
+      const sampleImgPath = '/images/sample-image.jpg'; // サンプル画像のURLをフェッチしてBlobに変換
       const response = await fetch(sampleImgPath);
       const blob = await response.blob();
-
       // Blobからファイルオブジェクトを作成
       const file = new File([blob], 'sample-image.jpg', { type: blob.type });
       handleFileSelect(file);
-
-      // 自動的にオプション画面も開く (Exif読み込みに時間がかかるため少し遅延)
-      setTimeout(() => setShowEmbedOptions(true), 1000);
+      // 自動的にオプション画面を即時表示
+      setShowEmbedOptions(true);
     } catch (error) {
       console.error('サンプル画像のロード中にエラーが発生しました:', error);
     }
@@ -62,7 +58,6 @@ const ExifEditor = () => {
       loadSampleImage();
     }
   }, []);
-
   // 画像とEXIFデータが揃ったら自動的に画像生成を実行
   useEffect(() => {
     // 画像とEXIFデータが存在し、canvasが準備できている場合
@@ -74,12 +69,8 @@ const ExifEditor = () => {
       !embeddedImage &&
       !isImageProcessing
     ) {
-      console.log('useEffectから自動画像生成を開始します');
-      // 少し遅延させて確実にレンダリングが完了してから実行
-      const timer = setTimeout(() => {
-        processImage(exifData, selectedExifTags);
-      }, 1000);
-      return () => clearTimeout(timer);
+      // 待機なしで即時実行
+      processImage(exifData, selectedExifTags);
     }
   }, [image, exifData, showEmbedOptions, embeddedImage, isImageProcessing]);
 
@@ -96,10 +87,8 @@ const ExifEditor = () => {
       // EXIF情報の取得
       await fetchExifData(file);
 
-      // オプション画面を表示
-      setTimeout(() => {
-        setShowEmbedOptions(true);
-      }, 1000);
+      // オプション画面を即時表示
+      setShowEmbedOptions(true);
     } catch (error) {
       console.error('ファイル処理中にエラーが発生しました:', error);
     }

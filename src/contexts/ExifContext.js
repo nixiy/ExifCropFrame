@@ -19,11 +19,11 @@ export const ExifProvider = ({ children }) => {
   /**
    * ファイルからEXIF情報を取得する
    * @param {File} file - 画像ファイル
-   */
-  const fetchExifData = async file => {
+   */  const fetchExifData = async file => {
     setIsProcessing(true);
     try {
       const exif = await getExifData(file);
+
       setExifData(exif);
 
       // デフォルトで選択するタグを設定
