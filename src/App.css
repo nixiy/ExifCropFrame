@@ -119,6 +119,21 @@
   background-color: #218838;
 }
 
+.test-button {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.test-button:hover {
+  background-color: #138496;
+}
+
 /* 埋め込みオプション関連のスタイル */
 .embed-options {
   width: 100%;

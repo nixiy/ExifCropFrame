@@ -2,14 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import EXIF from 'exif-js';
 import './App.css';
 
+// 開発環境用のサンプル画像
+import sampleImg from './sample-image.jpg'; // srcフォルダ内のサンプル画像
+
 function App() {
   const [image, setImage] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [exifData, setExifData] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [embeddedImage, setEmbeddedImage] = useState(null);
-  const [showEmbedOptions, setShowEmbedOptions] = useState(false);
-  const [textPosition, setTextPosition] = useState('bottom');
+  const [showEmbedOptions, setShowEmbedOptions] = useState(false);  const [textPosition, setTextPosition] = useState('bottom');
   const [textColor, setTextColor] = useState('#000000');
   const [textShadow, setTextShadow] = useState(true);
   const [borderSize, setBorderSize] = useState(2); // 白枠のサイズ（1-5の値）
@@ -17,6 +19,30 @@ function App() {
   const [useColumns, setUseColumns] = useState(true); // 2カラム表示を有効にするかどうか
   const dropRef = useRef(null);
   const canvasRef = useRef(null);
+
+  // 開発環境で自動的にサンプル画像をロードする関数
+  const loadSampleImage = async () => {
+    try {
+      // サンプル画像のURLをフェッチしてBlobに変換
+      const response = await fetch(sampleImg);
+      const blob = await response.blob();
+
+      // Blobからファイルオブジェクトを作成
+      const file = new File([blob], 'sample-image.jpg', { type: blob.type });      // 通常の画像処理フローを使用
+      processFile(file);
+
+      // 自動的にオプション画面も開く (Exif読み込みに時間がかかるため少し遅延)
+      setTimeout(() => setShowEmbedOptions(true), 1000);
+    } catch (error) {
+      console.error('サンプル画像のロード中にエラーが発生しました:', error);
+    }
+  };  // 開発環境でのテスト用に自動的にサンプル画像をロード
+  useEffect(() => {
+    // 開発環境のみで実行し、画像がまだロードされていない場合のみ実行
+    if (process.env.NODE_ENV === 'development' && !image) {
+      loadSampleImage();
+    }
+  }, []); // コンポーネントのマウント時のみ実行
 
   // ドラッグイベントのハンドラー
   const handleDragEnter = e => {
@@ -494,15 +520,23 @@ function App() {
               )}
             </div>
             <div className="button-container">
+              {' '}
               <button
                 className="clear-button"
                 onClick={() => {
                   setImage(null);
                   setExifData(null);
+                  setEmbeddedImage(null);
+                  setShowEmbedOptions(false);
+                  setSelectedExifTags({});
                 }}
               >
                 クリア
-              </button>{' '}
+              </button>{' '}              {process.env.NODE_ENV === 'development' && !image && (
+                <button className="test-button" onClick={loadSampleImage}>
+                  テスト画像読込
+                </button>
+              )}{' '}
               {exifData && Object.keys(exifData).length > 0 && (
                 <button
                   className="embed-button"
