@@ -140,23 +140,6 @@
   border-radius: 4px;
 }
 
-.exif-tags-selector {
-  margin-top: 20px;
-}
-
-.exif-tags-selector h4 {
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.exif-tags-selector {
-  background-color: #fafafa;
-  border-radius: 6px;
-  padding: 15px;
-  margin: 20px auto;
-  max-width: 800px;
-}
-
 .tags-list {
   display: flex;
   flex-wrap: wrap;
@@ -207,15 +190,6 @@
   margin: 15px 0;
 }
 
-.preview-hint {
-  font-size: 14px;
-  color: #6c757d;
-  font-style: italic;
-  margin-bottom: 10px;
-}
-
-/* 未使用のスタイルを削除 */
-
 /* Atomic Designパターン用のボタンスタイル */
 .button {
   border: none;
@@ -253,16 +227,6 @@
 
 .danger-button:hover {
   background-color: #d93025;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.info-button {
-  background-color: #34a853;
-  color: white;
-}
-
-.info-button:hover {
-  background-color: #2d9144;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
