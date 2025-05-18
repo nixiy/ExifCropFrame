@@ -11,7 +11,8 @@ function App() {
   const [exifData, setExifData] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [embeddedImage, setEmbeddedImage] = useState(null);
-  const [showEmbedOptions, setShowEmbedOptions] = useState(false);  const [textPosition, setTextPosition] = useState('bottom');
+  const [showEmbedOptions, setShowEmbedOptions] = useState(false);
+  const [textPosition, setTextPosition] = useState('bottom');
   const [textColor, setTextColor] = useState('#000000');
   const [textShadow, setTextShadow] = useState(true);
   const [borderSize, setBorderSize] = useState(2); // 白枠のサイズ（1-5の値）
@@ -28,7 +29,7 @@ function App() {
       const blob = await response.blob();
 
       // Blobからファイルオブジェクトを作成
-      const file = new File([blob], 'sample-image.jpg', { type: blob.type });      // 通常の画像処理フローを使用
+      const file = new File([blob], 'sample-image.jpg', { type: blob.type }); // 通常の画像処理フローを使用
       processFile(file);
 
       // 自動的にオプション画面も開く (Exif読み込みに時間がかかるため少し遅延)
@@ -36,13 +37,33 @@ function App() {
     } catch (error) {
       console.error('サンプル画像のロード中にエラーが発生しました:', error);
     }
-  };  // 開発環境でのテスト用に自動的にサンプル画像をロード
+  }; // 開発環境でのテスト用に自動的にサンプル画像をロード
   useEffect(() => {
     // 開発環境のみで実行し、画像がまだロードされていない場合のみ実行
     if (process.env.NODE_ENV === 'development' && !image) {
       loadSampleImage();
     }
   }, []); // コンポーネントのマウント時のみ実行
+
+  // 画像とEXIFデータが揃ったら自動的に画像生成を実行
+  useEffect(() => {
+    // 画像とEXIFデータが存在し、canvasが準備できている場合
+    if (
+      image &&
+      exifData &&
+      canvasRef.current &&
+      showEmbedOptions &&
+      !embeddedImage &&
+      !isProcessing
+    ) {
+      console.log('useEffectから自動画像生成を開始します');
+      // 少し遅延させて確実にレンダリングが完了してから実行
+      const timer = setTimeout(() => {
+        embedTextInImage();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [image, exifData, showEmbedOptions, embeddedImage, isProcessing]);
 
   // ドラッグイベントのハンドラー
   const handleDragEnter = e => {
@@ -189,7 +210,11 @@ function App() {
         // デフォルトで選択するタグリストに含まれるかどうかをチェック
         tagsObj[key] = defaultSelectedTags.includes(key);
       });
-      setSelectedExifTags(tagsObj);
+      setSelectedExifTags(tagsObj); // 画像とEXIFデータが読み込まれた後、オプション画面のみを表示する
+      // （実際の画像生成はuseEffectで処理）
+      setTimeout(() => {
+        setShowEmbedOptions(true); // オプション画面を表示
+      }, 1000);
     };
     reader.readAsDataURL(file);
   };
@@ -373,12 +398,18 @@ function App() {
 
           ctx.fillText(text, x, y);
         });
-      }
-
-      // 生成した画像のURLを取得
+      } // 生成した画像のURLを取得
       const dataURL = canvas.toDataURL(image.type || 'image/jpeg');
       setEmbeddedImage(dataURL);
       setIsProcessing(false);
+
+      // 少し待ってからプレビュー領域にスクロール
+      setTimeout(() => {
+        const previewElement = document.querySelector('.embedded-image-preview');
+        if (previewElement) {
+          previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     };
 
     img.src = image.src;
@@ -532,7 +563,8 @@ function App() {
                 }}
               >
                 クリア
-              </button>{' '}              {process.env.NODE_ENV === 'development' && !image && (
+              </button>{' '}
+              {process.env.NODE_ENV === 'development' && !image && (
                 <button className="test-button" onClick={loadSampleImage}>
                   テスト画像読込
                 </button>
@@ -660,10 +692,13 @@ function App() {
                   >
                     {isProcessing ? '処理中...' : '画像を生成'}
                   </button>
-                </div>
+                </div>{' '}
                 {embeddedImage && (
                   <div className="embedded-image-preview">
-                    <h3>プレビュー</h3>
+                    <h3>生成された画像</h3>
+                    <p className="preview-hint">
+                      設定を変更した場合は「画像を生成」ボタンを押して再生成できます
+                    </p>
                     <img src={embeddedImage} alt="Exif情報付き画像" />
                     <button className="download-button" onClick={downloadEmbeddedImage}>
                       画像をダウンロード
