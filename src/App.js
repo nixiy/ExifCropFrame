@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import EXIF from 'exif-js';
 import ExifParser from 'exif-parser';
 import './App.css';
 
@@ -105,163 +104,124 @@ function App() {
       const file = e.target.files[0];
       processFile(file);
     }
-  }; // Exif情報を取得する関数
+  }; // Exif情報を取得する関数（exif-parserのみを使用）
   const getExifData = file => {
     return new Promise(resolve => {
       setIsProcessing(true);
       const exifData = {};
 
-      // 従来のEXIF.jsを使った処理
-      EXIF.getData(file, function () {
-        const exifTags = EXIF.getAllTags(this);
+      const fileReader = new FileReader();
+      fileReader.onload = function () {
+        try {
+          const buffer = fileReader.result;
+          const parser = ExifParser.create(buffer);
+          const result = parser.parse();
 
-        if (exifTags && Object.keys(exifTags).length > 0) {
-          // 一般的なExifタグ
-          const relevantTags = [
-            'Make',
-            'Model',
-            'DateTime',
-            'ExposureTime',
-            'FNumber',
-            'ISOSpeedRatings',
-            'FocalLength',
-            'GPSLatitude',
-            'GPSLongitude',
-            'GPSAltitude',
-            'ExposureProgram',
-            'MeteringMode',
-            'Flash',
-            'WhiteBalance',
-            'LensModel', // レンズモデル情報を追加
-            'LensInfo', // レンズ情報を追加
-          ];
+          if (result && result.tags) {
+            const tags = result.tags;
 
-          // 解像度情報を特別に処理
-          if (
-            exifTags['PixelXDimension'] !== undefined &&
-            exifTags['PixelYDimension'] !== undefined
-          ) {
-            exifData['Resolution'] =
-              `${exifTags['PixelXDimension']} × ${exifTags['PixelYDimension']}`;
-          }
+            // 一般的なExifタグをマッピング
+            const tagMappings = {
+              // 基本情報
+              Make: tags.Make,
+              Model: tags.Model,
+              DateTime: tags.DateTimeOriginal || tags.DateTime,
 
-          // レンズ情報を処理
-          // exif-jsではLensModelとLensInfoが取得できる場合があります
-          if (exifTags['LensModel']) {
-            exifData['LensModel'] = exifTags['LensModel'];
-          }
+              // 露出情報
+              ExposureTime: tags.ExposureTime,
+              FNumber: tags.FNumber,
+              ISOSpeedRatings: tags.ISO,
+              FocalLength: tags.FocalLength,
+              ExposureProgram: tags.ExposureProgram,
+              MeteringMode: tags.MeteringMode,
+              Flash: tags.Flash,
+              WhiteBalance: tags.WhiteBalance,
 
-          if (exifTags['LensInfo']) {
-            exifData['LensInfo'] = exifTags['LensInfo'];
-          }
+              // 解像度情報
+              Resolution:
+                tags.ExifImageWidth && tags.ExifImageHeight
+                  ? `${tags.ExifImageWidth} × ${tags.ExifImageHeight}`
+                  : undefined,
 
-          // レンズIDを処理（存在する場合）
-          if (exifTags['LensID']) {
-            exifData['LensID'] = exifTags['LensID'];
-          }
+              // GPS情報
+              GPSLatitude: tags.GPSLatitude,
+              GPSLongitude: tags.GPSLongitude,
+              GPSAltitude: tags.GPSAltitude,
 
-          relevantTags.forEach(tag => {
-            if (exifTags[tag] !== undefined) {
-              // 特定のタグのフォーマットを調整
-              switch (tag) {
-                case 'ExposureTime':
-                  // 露出時間をより読みやすい形式に変換 (例: "1/100 s")
-                  const expValue = exifTags[tag];
-                  if (expValue < 1) {
-                    exifData[tag] = `1/${Math.round(1 / expValue)}s`;
-                  } else {
-                    exifData[tag] = `${expValue}s`;
-                  }
-                  break;
-                case 'FNumber':
-                  // F値をフォーマット (例: "f/2.8")
-                  exifData[tag] = `f/${exifTags[tag]}`;
-                  break;
-                case 'FocalLength':
-                  // 焦点距離をフォーマット (例: "24mm")
-                  exifData[tag] = `${exifTags[tag]}mm`;
-                  break;
-                default:
-                  exifData[tag] = exifTags[tag];
-              }
-            }
-          });
-        }
+              // レンズ情報
+              LensModel: tags.LensModel || tags.LensType || tags.Lens,
+            };
 
-        // exif-parser を使用して追加のレンズ情報を取得する
-        // これは特に、exif-jsがレンズデータを正しく取得できない場合に役立ちます
-        // ファイルを読み込んでパースする
-        if (!exifData['LensModel'] || !exifData['LensInfo']) {
-          const fileReader = new FileReader();
-          fileReader.onload = function () {
-            try {
-              const buffer = fileReader.result;
-              // ArrayBufferをバッファに変換する
-              const parser = ExifParser.create(buffer);
-              const result = parser.parse();
-
-              // メーカーノートやIFDによって取得できるタグが異なります
-              if (result.tags) {
-                // レンズモデル情報が不足している場合に追加
-                if (!exifData['LensModel'] && result.tags.LensModel) {
-                  exifData['LensModel'] = result.tags.LensModel;
-                }
-
-                // レンズ仕様情報が不足している場合に追加
-                if (!exifData['LensInfo'] && result.tags.LensSpecification) {
-                  const lens = result.tags.LensSpecification;
-                  if (Array.isArray(lens) && lens.length >= 4) {
-                    // 多くの場合、配列は[最小焦点距離, 最大焦点距離, 最小F値, 最大F値]の形式
-                    const minFocal = lens[0];
-                    const maxFocal = lens[1];
-                    const minFNumber = lens[2];
-                    const maxFNumber = lens[3];
-
-                    if (minFocal === maxFocal) {
-                      exifData['LensInfo'] = `${minFocal}mm f/${minFNumber}`;
+            // 有効なタグのみをexifDataに追加
+            Object.entries(tagMappings).forEach(([key, value]) => {
+              if (value !== undefined) {
+                // 特定のタグのフォーマットを調整
+                switch (key) {
+                  case 'ExposureTime':
+                    // 露出時間をより読みやすい形式に変換 (例: "1/100 s")
+                    if (value < 1) {
+                      exifData[key] = `1/${Math.round(1 / value)}s`;
                     } else {
-                      exifData['LensInfo'] =
-                        `${minFocal}-${maxFocal}mm f/${minFNumber}-${maxFNumber}`;
+                      exifData[key] = `${value}s`;
                     }
-                  }
-                }
-
-                // MakerNotesからレンズ情報を抽出（主にCanon, Nikon, Sonyなど）
-                if (!exifData['LensModel'] && result.tags.LensType) {
-                  exifData['LensModel'] = result.tags.LensType;
-                }
-
-                if (!exifData['LensModel'] && result.tags.Lens) {
-                  exifData['LensModel'] = result.tags.Lens;
-                }
-
-                // Sony特有のタグを処理
-                if (!exifData['LensModel'] && result.tags.SonyLensID) {
-                  exifData['LensModel'] = `Sony Lens (ID: ${result.tags.SonyLensID})`;
+                    break;
+                  case 'FNumber':
+                    // F値をフォーマット (例: "f/2.8")
+                    exifData[key] = `f/${value}`;
+                    break;
+                  case 'FocalLength':
+                    // 焦点距離をフォーマット (例: "24mm")
+                    exifData[key] = `${value}mm`;
+                    break;
+                  default:
+                    exifData[key] = value;
                 }
               }
-            } catch (e) {
-              console.error('レンズ情報の解析に失敗しました:', e);
-            } finally {
-              setIsProcessing(false);
-              resolve(exifData);
+            });
+
+            // レンズ仕様情報の処理
+            if (tags.LensSpecification) {
+              const lens = tags.LensSpecification;
+              if (Array.isArray(lens) && lens.length >= 4) {
+                const minFocal = lens[0];
+                const maxFocal = lens[1];
+                const minFNumber = lens[2];
+                const maxFNumber = lens[3];
+
+                if (minFocal === maxFocal) {
+                  exifData['LensInfo'] = `${minFocal}mm f/${minFNumber}`;
+                } else {
+                  exifData['LensInfo'] = `${minFocal}-${maxFocal}mm f/${minFNumber}-${maxFNumber}`;
+                }
+              }
             }
-          };
 
-          fileReader.onerror = function () {
-            console.error('ファイルの読み込みに失敗しました');
-            setIsProcessing(false);
-            resolve(exifData);
-          };
+            // Sony特有のタグを処理
+            if (!exifData['LensModel'] && tags.SonyLensID) {
+              exifData['LensModel'] = `Sony Lens (ID: ${tags.SonyLensID})`;
+            }
 
-          // ファイルをArrayBufferとして読み込む
-          fileReader.readAsArrayBuffer(file);
-        } else {
-          // レンズ情報がすでに取得できている場合はここで終了
+            // MakerNotes内のLensID（合成タグ）があれば追加
+            if (tags.LensID) {
+              exifData['LensID'] = tags.LensID;
+            }
+          }
+        } catch (e) {
+          console.error('Exif情報の解析に失敗しました:', e);
+        } finally {
           setIsProcessing(false);
           resolve(exifData);
         }
-      });
+      };
+
+      fileReader.onerror = function () {
+        console.error('ファイルの読み込みに失敗しました');
+        setIsProcessing(false);
+        resolve(exifData);
+      };
+
+      // ファイルをArrayBufferとして読み込む
+      fileReader.readAsArrayBuffer(file);
     });
   };
   // ファイルの処理
