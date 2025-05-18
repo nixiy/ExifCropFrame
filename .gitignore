@@ -34,3 +34,6 @@ yarn-error.log*
 # OS関連
 Thumbs.db
 desktop.ini
+
+# テスト用画像
+/img

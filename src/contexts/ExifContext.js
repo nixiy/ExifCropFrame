@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { getExifData } from '../utils/exifUtils';
-import { DEFAULT_SELECTED_TAGS } from '../utils/constants';
+import { DEFAULT_SELECTED_TAGS, JAPANESE_TAG_NAMES } from '../utils/constants';
 
 // コンテキストの作成
 const ExifContext = createContext();

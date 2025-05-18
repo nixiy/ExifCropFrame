@@ -4,7 +4,7 @@ import ImagePreviewPanel from '../organisms/ImagePreviewPanel';
 import OptionPanel from '../organisms/OptionPanel';
 import EmbeddedImagePreview from '../organisms/EmbeddedImagePreview';
 import Button from '../atoms/Button';
-import { useExifData } from '../../hooks/useExifData';
+import { useExif } from '../../contexts/ExifContext';
 import { useImageProcessor } from '../../hooks/useImageProcessor';
 import { processImageFile } from '../../utils/imageProcessing';
 
@@ -15,7 +15,6 @@ import { processImageFile } from '../../utils/imageProcessing';
 const ExifEditor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
-
   // カスタムフックの利用
   const {
     exifData,
@@ -24,7 +23,7 @@ const ExifEditor = () => {
     fetchExifData,
     updateTagSelection,
     resetExifData,
-  } = useExifData();
+  } = useExif();
 
   const {
     image,

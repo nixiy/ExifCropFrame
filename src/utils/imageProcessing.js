@@ -1,3 +1,5 @@
+import { JAPANESE_TAG_NAMES } from './constants';
+
 /**
  * 画像にテキストを埋め込む関数
  * @param {Object} options - オプション
@@ -73,9 +75,7 @@ export const embedTextInImage = ({
       const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
       if (details.length > 0) {
         detailsInfoText = details.join(' / ');
-      }
-
-      // その他の選択されたExif情報を準備
+      } // その他の選択されたExif情報を準備
       const otherExifTexts = selectedTagKeys
         .filter(
           key =>
@@ -90,30 +90,8 @@ export const embedTextInImage = ({
             ].includes(key)
         )
         .map(key => {
-          // 日本語表示名に変換
-          let displayName = key;
-          switch (key) {
-            case 'DateTime':
-              displayName = '撮影日時';
-              break;
-            case 'WhiteBalance':
-              displayName = 'ホワイトバランス';
-              break;
-            case 'Flash':
-              displayName = 'フラッシュ';
-              break;
-            case 'ExposureProgram':
-              displayName = '露出プログラム';
-              break;
-            case 'MeteringMode':
-              displayName = '測光モード';
-              break;
-            case 'Resolution':
-              displayName = '解像度';
-              break;
-            default:
-              break;
-          }
+          // 日本語表示名に変換 (constants.jsのJAPANESE_TAG_NAMESを使用)
+          const displayName = JAPANESE_TAG_NAMES[key] || key;
           return `${displayName}: ${exifData[key]}`;
         }); // 白い枠のサイズ（設定値に基づいて調整）
       const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;

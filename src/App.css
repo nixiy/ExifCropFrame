@@ -199,25 +199,7 @@
   justify-content: center;
 }
 
-.generate-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.generate-button:hover {
-  background-color: #0069d9;
-}
-
-.generate-button:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
+/* 未使用のスタイルを削除 */
 
 .embedded-image-preview {
   margin: 20px auto;
@@ -237,20 +219,7 @@
   margin-bottom: 10px;
 }
 
-.download-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.download-button:hover {
-  background-color: #0069d9;
-}
+/* 未使用のスタイルを削除 */
 
 /* Atomic Designパターン用のボタンスタイル */
 .button {
@@ -336,27 +305,7 @@
   background-color: rgba(220, 53, 69, 0.8);
 }
 
-/* ダウンロードボタン（↓）のスタイル */
-.download-icon-button {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  z-index: 10;
-  transition: background-color 0.2s ease;
-}
-
-.download-icon-button:hover {
-  background-color: rgba(0, 123, 255, 0.8);
-}
+/* ダウンロードボタンのスタイル - インラインスタイルを使用しているため削除 */
 
 /* カラーピッカー関連のスタイル */
 .color-picker-container {
