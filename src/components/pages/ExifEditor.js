@@ -153,25 +153,7 @@ const ExifEditor = () => {
           onEmbedClick={() => setShowEmbedOptions(true)}
           showEmbedOptions={showEmbedOptions}
           hasExifData={!!exifData && Object.keys(exifData).length > 0}
-        />{' '}
-        <div className="info-container">
-          <div className="image-info">
-            <h3>画像情報</h3>
-            {image && (
-              <>
-                <p>
-                  <strong>ファイル名:</strong> {image.name}
-                </p>
-                <p>
-                  <strong>タイプ:</strong> {image.type}
-                </p>
-                <p>
-                  <strong>サイズ:</strong> {image.size}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
+        />
         {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
           <>
             {' '}

@@ -3,31 +3,6 @@ import Button from '../atoms/Button';
 import CloseButton from '../atoms/CloseButton';
 
 /**
- * 画像情報表示コンポーネント
- * @param {Object} props - props
- * @param {Object} props.image - 画像情報
- * @returns {JSX.Element} - 画像情報コンポーネント
- */
-const ImageInfo = ({ image }) => {
-  if (!image) return null;
-
-  return (
-    <div className="image-info">
-      <h3>画像情報</h3>
-      <p>
-        <strong>ファイル名:</strong> {image.name}
-      </p>
-      <p>
-        <strong>タイプ:</strong> {image.type}
-      </p>
-      <p>
-        <strong>サイズ:</strong> {image.size}
-      </p>
-    </div>
-  );
-};
-
-/**
  * 画像プレビューコンポーネント
  * @param {Object} props - props
  * @param {Object} props.image - 画像情報
