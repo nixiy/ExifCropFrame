@@ -1,5 +1,3 @@
-// import { JAPANESE_TAG_NAMES } from './constants'; // その他のExif情報表示を削除したため不要に
-
 /**
  * 画像にテキストを埋め込む関数
  * @param {Object} options - オプション
@@ -34,7 +32,7 @@ export const embedTextInImage = ({
 
       // テキスト用の設定
       const selectedTagKeys = Object.entries(selectedTags)
-        .filter(([key, isSelected]) => isSelected)
+        .filter(([, isSelected]) => isSelected)
         .map(([key]) => key);
 
       if (selectedTagKeys.length === 0) {
@@ -83,7 +81,6 @@ export const embedTextInImage = ({
       const baseFontSize = Math.max(12, Math.floor(img.width / 50));
       const largeFontSize = Math.floor(baseFontSize * 1.0); // カメラ情報用のフォント
       const mediumFontSize = Math.floor(baseFontSize * 0.8); // テクニカル情報用のフォント
-      const smallFontSize = baseFontSize; // その他の詳細情報用のフォント
       const lineHeight = baseFontSize * 1.5; // 行間の調整      // 下部のExif情報表示領域の高さを計算（カメラ情報 + テクニカル情報）
       const headerLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
       const totalLines = headerLines; // 実際に必要なテキスト表示エリアの高さを計算
@@ -106,9 +103,6 @@ export const embedTextInImage = ({
       // Exif情報の背景を描画（指定された背景色で統一）
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, borderWidth + img.height, totalWidth, exifAreaHeight);
-
-      // テキスト全体を縦方向に中央揃えするための開始Y位置を計算
-      const startX = borderWidth + padding * 0.5; // パディングを考慮した横位置
 
       // 実際のテキストの高さを考慮してより正確に中央揃え
       const actualTextHeight = lineHeight * totalLines;
