@@ -4,7 +4,7 @@ import ColorPicker from '../atoms/ColorPicker';
 import Checkbox from '../atoms/Checkbox';
 import Select from '../atoms/Select';
 import Button from '../atoms/Button';
-import { BORDER_SIZE_OPTIONS } from '../../utils/constants';
+import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
 
 /**
  * 埋め込みオプションパネルコンポーネント
@@ -41,12 +41,17 @@ const OptionPanel = ({
     <div className="embed-options">
       <h3>埋め込みオプション</h3>{' '}
       <OptionGroup label="テキスト色: ">
-        <ColorPicker value={textColor} onChange={e => onTextColorChange(e.target.value)} />
+        <ColorPicker
+          value={textColor}
+          onChange={e => onTextColorChange(e.target.value)}
+          presets={DEFAULT_COLORS.PRESET_TEXT_COLORS}
+        />
       </OptionGroup>
       <OptionGroup label="背景色: ">
         <ColorPicker
           value={backgroundColor}
           onChange={e => onBackgroundColorChange(e.target.value)}
+          presets={DEFAULT_COLORS.PRESET_BACKGROUND_COLORS}
         />
       </OptionGroup>
       <OptionGroup label="白枠のサイズ: ">

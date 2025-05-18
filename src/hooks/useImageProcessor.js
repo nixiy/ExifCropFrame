@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { embedTextInImage } from '../utils/imageProcessing';
+import { DEFAULT_COLORS } from '../utils/constants';
 
 /**
  * 画像処理に関するカスタムフック
@@ -11,9 +12,9 @@ export const useImageProcessor = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const canvasRef = useRef(null);
 
-  // 埋め込みオプション
-  const [textColor, setTextColor] = useState('#000000');
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  // 埋め込みオプション（初期値はconstantsから取得）
+  const [textColor, setTextColor] = useState(DEFAULT_COLORS.TEXT);
+  const [backgroundColor, setBackgroundColor] = useState(DEFAULT_COLORS.BACKGROUND);
   const [textShadow, setTextShadow] = useState(true);
   const [borderSize, setBorderSize] = useState(2);
   const [useColumns, setUseColumns] = useState(true);
