@@ -44,14 +44,14 @@ const ExifEditor = () => {
     downloadImage,
     resetImage,
   } = useImageProcessor();
-
   // 開発環境用のサンプル画像
   const loadSampleImage = async () => {
     try {
-      const sampleImg = await import('../../sample-image.jpg');
+      // サンプル画像のパス (publicフォルダ内の画像を直接参照)
+      const sampleImgPath = '/images/sample-image.jpg';
 
       // サンプル画像のURLをフェッチしてBlobに変換
-      const response = await fetch(sampleImg.default);
+      const response = await fetch(sampleImgPath);
       const blob = await response.blob();
 
       // Blobからファイルオブジェクトを作成
