@@ -122,6 +122,13 @@ const ExifEditor = () => {
     processImage(exifData, selectedExifTags, cropInfo);
   };
 
+  /**
+   * ダウンロード時の処理（元画像で再生成）
+   */
+  const handleDownload = () => {
+    downloadImage(exifData, selectedExifTags, cropInfo);
+  };
+
   return (
     <div>
       {' '}
@@ -157,7 +164,7 @@ const ExifEditor = () => {
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
             />{' '}
-            <EmbeddedImagePreview embeddedImage={embeddedImage} onDownload={downloadImage} />
+            <EmbeddedImagePreview embeddedImage={embeddedImage} onDownload={handleDownload} />
           </>
         )}
         {/* 非表示のCanvasエレメント */}

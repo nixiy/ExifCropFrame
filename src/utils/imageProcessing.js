@@ -290,13 +290,46 @@ export const processImageFile = file => {
 
     const reader = new FileReader();
     reader.onload = e => {
-      resolve({
-        src: e.target.result,
-        name: file.name,
-        type: file.type,
-        size: Math.round(file.size / 1024) + ' KB',
-        originalFile: file,
-      });
+      const originalSrc = e.target.result;
+      // プレビュー用縮小画像を生成
+      const img = new window.Image();
+      img.onload = () => {
+        // 最大幅・高さ
+        const maxSize = 1000;
+        let { width, height } = img;
+        let scale = 1;
+        if (width > maxSize || height > maxSize) {
+          scale = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const previewSrc = canvas.toDataURL('image/jpeg', 0.8);
+        resolve({
+          src: originalSrc,
+          previewSrc,
+          name: file.name,
+          type: file.type,
+          size: Math.round(file.size / 1024) + ' KB',
+          originalFile: file,
+        });
+      };
+      img.onerror = () => {
+        // 画像の読み込みに失敗した場合はプレビューなしで返す
+        resolve({
+          src: originalSrc,
+          previewSrc: originalSrc,
+          name: file.name,
+          type: file.type,
+          size: Math.round(file.size / 1024) + ' KB',
+          originalFile: file,
+        });
+      };
+      img.src = originalSrc;
     };
 
     reader.onerror = () => {

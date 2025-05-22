@@ -68,7 +68,7 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
         >
           <img
             ref={imgRef}
-            src={image.src}
+            src={image.previewSrc || image.src}
             alt={image.name}
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
