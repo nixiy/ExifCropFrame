@@ -45,12 +45,21 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
     }
   };
 
+  // ReactCropに渡す前にundefinedを補正
+  const safeCrop = {
+    ...internalCrop,
+    x: internalCrop.x ?? 0,
+    y: internalCrop.y ?? 0,
+    width: internalCrop.width ?? 1,
+    height: internalCrop.height ?? 1,
+  };
+
   if (!image) return null;
   return (
     <div className="image-preview">
       <div style={{ position: 'relative' }}>
         <ReactCrop
-          crop={internalCrop}
+          crop={safeCrop}
           onChange={c => {
             setInternalCrop(c);
             if (onCropChange) onCropChange(c, imgRef.current, null);
