@@ -109,12 +109,13 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, aspectRatio }) 
           }}
           onComplete={handleCropComplete}
           aspect={internalCrop.aspect}
+          style={{ maxWidth: '100%', maxHeight: 500 }}
         >
           <img
             ref={imgRef}
             src={image.src}
             alt={image.name}
-            style={{ maxWidth: '100%', maxHeight: 500 }}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </ReactCrop>
         <CloseButton onClick={onClear} position="top-right" />
