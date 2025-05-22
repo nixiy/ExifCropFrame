@@ -64,7 +64,7 @@ const OptionPanel = ({
         />
       </OptionGroup>
       <div className="embed-buttons">
-        <Button type="primary" onClick={onGenerateImage} disabled={isProcessing}>
+        <Button onClick={onGenerateImage} disabled={isProcessing}>
           {isProcessing ? '処理中...' : '画像を生成'}
         </Button>
       </div>

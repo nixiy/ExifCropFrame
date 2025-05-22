@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import DropZone from '../organisms/DropZone';
 import ImagePreviewPanel from '../organisms/ImagePreviewPanel';
 import OptionPanel from '../organisms/OptionPanel';
@@ -17,7 +17,6 @@ const ExifEditor = () => {
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
   const [crop, setCrop] = useState({ unit: '%', width: 80, aspect: undefined });
   const [cropInfo, setCropInfo] = useState(null);
-  const imageRef = useRef(null);
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
 
@@ -128,9 +127,7 @@ const ExifEditor = () => {
       {' '}
       {process.env.NODE_ENV === 'development' && !image && (
         <div style={{ margin: '0 auto', maxWidth: '800px', textAlign: 'right' }}>
-          <Button type="info" onClick={loadSampleImage}>
-            テスト画像読込
-          </Button>
+          <Button onClick={loadSampleImage}>テスト画像読込</Button>
         </div>
       )}
       <DropZone

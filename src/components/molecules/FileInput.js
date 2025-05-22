@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '../atoms/Button';
 
 /**
  * ファイル入力コンポーネント

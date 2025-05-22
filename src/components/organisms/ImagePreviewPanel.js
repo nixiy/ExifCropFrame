@@ -19,16 +19,6 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, aspectRatio }) 
     crop || { unit: '%', width: 80, aspect: undefined }
   );
 
-  // アスペクト比が変更されたらcropのaspectも更新
-  useEffect(() => {
-    if (aspectRatio && aspectRatio !== 'original') {
-      const [w, h] = aspectRatio.split(':').map(Number);
-      setInternalCrop(prev => ({ ...prev, aspect: w / h }));
-    } else {
-      setInternalCrop(prev => ({ ...prev, aspect: undefined }));
-    }
-  }, [aspectRatio, image]);
-
   // 指定アスペクト比で画像中央にフィットする初期クロップ領域を計算
   const getDefaultCrop = () => {
     if (!imgRef.current || !aspectRatio || aspectRatio === 'original') {
