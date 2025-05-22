@@ -14,7 +14,7 @@ import CloseButton from '../atoms/CloseButton';
  * @param {number} props.downloadProgress - ダウンロード進捗（%）
  * @returns {JSX.Element} - 画像プレビューコンポーネント
  */
-const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true }) => {
+const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true, aspect }) => {
   const imgRef = useRef(null);
   const [internalCrop, setInternalCrop] = useState(crop);
   // 画像の表示サイズを管理
@@ -126,7 +126,7 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
               }
             }}
             onComplete={handleCropComplete}
-            aspect={internalCrop.aspect}
+            aspect={aspect}
             style={{ maxWidth: '100%', maxHeight: 500 }}
           >
             <img

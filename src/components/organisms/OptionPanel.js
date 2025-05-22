@@ -5,6 +5,12 @@ import Select from '../atoms/Select';
 import Button from '../atoms/Button';
 import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
 
+const ASPECT_RATIO_OPTIONS = [
+  { value: 1, label: '1:1' },
+  { value: 21 / 9, label: '21:9' },
+  { value: 16 / 9, label: '16:9' },
+];
+
 /**
  * 埋め込みオプションパネルコンポーネント
  * @param {Object} props - props
@@ -18,6 +24,8 @@ import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
  * @param {boolean} props.isProcessing - 処理中かどうか
  * @param {boolean} props.showCrop - クロップ領域表示フラグ
  * @param {Function} props.onShowCropChange - クロップ領域表示変更ハンドラ
+ * @param {number} props.aspect - アスペクト比
+ * @param {Function} props.onAspectChange - アスペクト比変更ハンドラ
  * @returns {JSX.Element} - オプションパネルコンポーネント
  */
 const OptionPanel = ({
@@ -31,6 +39,8 @@ const OptionPanel = ({
   isProcessing,
   showCrop,
   onShowCropChange,
+  aspect,
+  onAspectChange,
 }) => {
   return (
     <div className="embed-options">
@@ -55,6 +65,13 @@ const OptionPanel = ({
             options={BORDER_SIZE_OPTIONS}
             value={borderSize}
             onChange={e => onBorderSizeChange(Number(e.target.value))}
+          />
+        </OptionGroup>
+        <OptionGroup label="アスペクト比: ">
+          <Select
+            options={ASPECT_RATIO_OPTIONS}
+            value={aspect}
+            onChange={e => onAspectChange(Number(e.target.value))}
           />
         </OptionGroup>
         <OptionGroup label="クロップ領域を表示" isCheckbox>

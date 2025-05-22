@@ -18,6 +18,7 @@ const ExifEditor = () => {
   const [crop, setCrop] = useState();
   const [cropInfo, setCropInfo] = useState(null);
   const [showCrop, setShowCrop] = useState(false);
+  const [aspect, setAspect] = useState(21 / 9); // デフォルト21:9
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
 
@@ -78,6 +79,14 @@ const ExifEditor = () => {
       processImage(exifData, selectedExifTags);
     }
   }, [image, exifData, showEmbedOptions, embeddedImage, isImageProcessing]);
+
+  // アスペクト比変更時にcropも即座に合わせる
+  useEffect(() => {
+    if (!crop) return;
+    // 幅を基準に高さを再計算
+    const newHeight = crop.width / aspect;
+    setCrop({ ...crop, aspect, height: newHeight });
+  }, [aspect]);
 
   /**
    * ファイル選択時のハンドラー
@@ -154,6 +163,7 @@ const ExifEditor = () => {
             crop={crop}
             onCropChange={handleCropChange}
             showCrop={showCrop}
+            aspect={aspect}
           />
           {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
             <OptionPanel
@@ -167,6 +177,8 @@ const ExifEditor = () => {
               isProcessing={isImageProcessing}
               showCrop={showCrop}
               onShowCropChange={setShowCrop}
+              aspect={aspect}
+              onAspectChange={setAspect}
             />
           )}
         </div>
