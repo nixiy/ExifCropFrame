@@ -1,6 +1,6 @@
 # ExifCropFrame
 
-url: https://github.com/nixiy/ExifCropFrame
+appUrl: https://nixiy.github.io/ExifCropFrame
 
 ドラッグアンドドロップした写真のExifを読み込み、以下を行うReactアプリ
 
