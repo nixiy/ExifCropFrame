@@ -5,7 +5,7 @@ body {
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 20px;
+  padding: 8px; /* bodyのpaddingも詰める */
   background-color: #ffffff;
 }
 
@@ -16,7 +16,7 @@ code {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px 12px 20px 12px; /* 上部paddingを減らす */
   background-color: white;
   border-radius: 8px;
 }
@@ -25,4 +25,6 @@ h1,
 h2,
 h3 {
   color: #333;
+  margin-top: 10px;
+  margin-bottom: 12px;
 }
