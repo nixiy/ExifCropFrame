@@ -43,38 +43,11 @@ export const embedTextInImage = ({
         return;
       }
 
-      // メーカーと型番、およびその他の情報を別々に準備
-      let cameraInfoText = '';
-      let detailsInfoText = '';
+      // --- テキスト生成を関数に分離 ---
+      const cameraInfoText = getCameraInfoText(exifData, selectedTagKeys);
+      const detailsInfoText = getDetailsInfoText(exifData, selectedTagKeys);
 
-      // メーカーと型番を取得
-      const make = selectedTagKeys.includes('Make') ? exifData['Make'] : '';
-      const model = selectedTagKeys.includes('Model') ? exifData['Model'] : '';
-      const lensModel = selectedTagKeys.includes('LensModel') ? exifData['LensModel'] : '';
-
-      if (make || model) {
-        // メーカー名と型番を結合し、レンズモデル情報も含める
-        let cameraText = make && model ? `${make.trim()}  ${model.trim()}` : make || model;
-
-        // レンズモデル情報があれば、カメラ情報の後に「/」で区切って追加
-        if (lensModel) {
-          cameraInfoText = `${cameraText} / ${lensModel.trim()}`;
-        } else {
-          cameraInfoText = cameraText;
-        }
-      }
-
-      // 2行目の情報（焦点距離 / F値 / 露出時間 / ISO）を準備
-      const focalLength = selectedTagKeys.includes('FocalLength') ? exifData['FocalLength'] : '';
-      const fNumber = selectedTagKeys.includes('FNumber') ? exifData['FNumber'] : '';
-      const exposureTime = selectedTagKeys.includes('ExposureTime') ? exifData['ExposureTime'] : '';
-      const iso = selectedTagKeys.includes('ISOSpeedRatings')
-        ? `ISO${exifData['ISOSpeedRatings']}`
-        : ''; // スラッシュで区切ってコンパクトに表示、スペースを調整
-      const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
-      if (details.length > 0) {
-        detailsInfoText = details.join(' / ');
-      } // アスペクト比に基づいてクロップサイズを計算
+      // アスペクト比に基づいてクロップサイズを計算
       let cropWidth = img.width;
       let cropHeight = img.height;
       let offsetX = 0;
@@ -276,6 +249,30 @@ export const embedTextInImage = ({
     img.src = image.src;
   });
 };
+
+// 1行目のカメラ情報テキスト生成
+function getCameraInfoText(exifData, selectedTagKeys) {
+  const make = selectedTagKeys.includes('Make') ? exifData['Make'] : '';
+  const model = selectedTagKeys.includes('Model') ? exifData['Model'] : '';
+  const lensModel = selectedTagKeys.includes('LensModel') ? exifData['LensModel'] : '';
+  let cameraText = make && model ? `${make.trim()}  ${model.trim()}` : make || model;
+  if (lensModel) {
+    return `${cameraText} / ${lensModel.trim()}`;
+  } else {
+    return cameraText;
+  }
+}
+// 2行目の詳細情報テキスト生成
+function getDetailsInfoText(exifData, selectedTagKeys) {
+  const focalLength = selectedTagKeys.includes('FocalLength') ? exifData['FocalLength'] : '';
+  const fNumber = selectedTagKeys.includes('FNumber') ? exifData['FNumber'] : '';
+  const exposureTime = selectedTagKeys.includes('ExposureTime') ? exifData['ExposureTime'] : '';
+  const iso = selectedTagKeys.includes('ISOSpeedRatings')
+    ? `ISO${exifData['ISOSpeedRatings']}`
+    : '';
+  const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
+  return details.length > 0 ? details.join(' / ') : '';
+}
 
 /**
  * ファイルを処理して画像情報を取得する
