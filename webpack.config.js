@@ -7,6 +7,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
+    publicPath: '/', // Add this line
     // publicPath の設定を削除
   },
   module: {
@@ -30,10 +31,20 @@ module.exports = {
         type: 'asset/resource',
       },
     ],
-  },
-  plugins: [
+  },  plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
+      templateParameters: (compilation, assets, assetTags, options) => {
+        return {
+          isProduction: process.env.NODE_ENV === 'production',
+          publicPath: process.env.NODE_ENV === 'production' ? '/ExifCropFrame/' : '/',
+          process: { // process オブジェクトを維持
+            env: {
+              NODE_ENV: process.env.NODE_ENV || 'development'
+            }
+          }
+        };
+      },
     }),
     new CopyWebpackPlugin({
       patterns: [

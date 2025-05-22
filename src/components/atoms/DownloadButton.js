@@ -8,58 +8,17 @@ import React from 'react';
  * @returns {JSX.Element} - ダウンロードボタンコンポーネント
  */
 const DownloadButton = ({ onClick, position = 'top-right' }) => {
-  // ボタンの位置を計算
-  let positionStyle = {};
-
-  if (position.includes('top')) {
-    positionStyle.top = '10px';
-  } else if (position.includes('bottom')) {
-    positionStyle.bottom = '10px';
-  }
-
-  if (position.includes('right')) {
-    positionStyle.right = '10px';
-  } else if (position.includes('left')) {
-    positionStyle.left = '10px';
-  }
-
-  // ボタンのスタイル
-  const buttonStyle = {
-    position: 'absolute',
-    ...positionStyle,
-    width: '30px',
-    height: '30px',
-    borderRadius: '50%',
-    border: 'none',
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    padding: 0,
-    zIndex: 10,
-    transition: 'background-color 0.2s ease',
-  };
-
-  // ダウンロードアイコンのスタイル
-  const iconStyle = {
-    width: '16px',
-    height: '16px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  };
+  // ポジションに応じたクラス名を生成
+  const positionClass = `position-${position}`;
 
   return (
     <button
-      className="download-btn"
-      style={buttonStyle}
+      className={`download-btn ${positionClass}`}
       onClick={onClick}
       title="画像をダウンロード"
       aria-label="画像をダウンロード"
     >
-      <div style={iconStyle}>DL</div>
+      <span className="download-icon">DL</span>
     </button>
   );
 };

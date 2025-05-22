@@ -65,35 +65,7 @@
 
 /* クリアボタン用のスタイル削除 */
 
-.embed-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.embed-button:hover {
-  background-color: #218838;
-}
-
-.test-button {
-  background-color: #17a2b8;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.test-button:hover {
-  background-color: #138496;
-}
+/* 以下のボタンクラスは削除し、.buttonクラスに統合 */
 
 /* 埋め込みオプション関連のスタイル */
 .embed-options {
@@ -300,8 +272,38 @@
   color: white;
 }
 
+.secondary-button {
+  background-color: #757575;
+  color: white;
+}
+
+.danger-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.info-button {
+  background-color: #17a2b8;
+  color: white;
+}
+
 .primary-button:hover {
   background-color: #3367d6;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.secondary-button:hover {
+  background-color: #636363;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.danger-button:hover {
+  background-color: #c82333;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.info-button:hover {
+  background-color: #138496;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -329,18 +331,70 @@
   font-weight: normal;
   z-index: 10;
   transition: all 0.2s ease;
+  top: 10px;
+}
+
+.close-button.position-top-right {
+  right: 10px;
+}
+
+.close-button.position-top-left {
+  left: 10px;
 }
 
 .close-button:hover {
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(220, 53, 69, 0.8);
 }
 
-/* ダウンロードボタンのスタイル - インラインスタイルを使用しているため削除 */
+/* ダウンロードボタンのスタイル */
 .download-btn {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0;
+  z-index: 10;
+  transition: background-color 0.2s ease;
   user-select: none;
 }
+
+.download-btn.position-top-right {
+  top: 10px;
+  right: 10px;
+}
+
+.download-btn.position-top-left {
+  top: 10px;
+  left: 10px;
+}
+
+.download-btn.position-bottom-right {
+  bottom: 10px;
+  right: 10px;
+}
+
+.download-btn.position-bottom-left {
+  bottom: 10px;
+  left: 10px;
+}
+
+.download-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .download-btn:hover {
   background-color: rgba(0, 123, 255, 0.8);
 }
@@ -410,33 +464,4 @@
   }
 }
 
-.header-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  min-height: 48px;
-}
-.app-title {
-  margin: 0 auto;
-  text-align: center;
-  flex: 0 1 auto;
-  font-size: 2.2rem;
-  font-weight: bold;
-  letter-spacing: 0.05em;
-}
-.github-link {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #333;
-  text-decoration: none;
-  transition: color 0.2s;
-  display: inline-flex;
-  align-items: center;
-}
-.github-link:hover {
-  color: #4078c0;
-}
+/* このセクションは既に上部に定義されているため削除 */

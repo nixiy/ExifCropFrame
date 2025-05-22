@@ -9,10 +9,28 @@ import React from 'react';
  * @param {React.ReactNode} props.children - 子要素
  * @returns {JSX.Element} - ボタンコンポーネント
  */
-const Button = ({ onClick, disabled, children }) => (
-  <button className="button primary-button" onClick={onClick} disabled={disabled}>
-    {children}
-  </button>
-);
+const Button = ({ type = 'primary', onClick, disabled, children }) => {
+  // ボタンタイプに応じたクラス名を設定
+  const getButtonClassName = () => {
+    switch (type) {
+      case 'primary':
+        return 'button primary-button';
+      case 'secondary':
+        return 'button secondary-button';
+      case 'danger':
+        return 'button danger-button';
+      case 'info':
+        return 'button info-button';
+      default:
+        return 'button primary-button';
+    }
+  };
+
+  return (
+    <button className={getButtonClassName()} onClick={onClick} disabled={disabled}>
+      {children}
+    </button>
+  );
+};
 
 export default Button;
