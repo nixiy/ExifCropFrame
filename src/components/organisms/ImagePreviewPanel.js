@@ -60,7 +60,17 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
           crop={safeCrop}
           onChange={c => {
             setInternalCrop(c);
-            if (onCropChange) onCropChange(c, imgRef.current, null);
+            // onCropChangeはcropが変わった時のみ呼ぶ（無限ループ防止）
+            // crop値が変化した場合のみ呼ぶ
+            if (
+              onCropChange &&
+              (c.x !== internalCrop.x ||
+                c.y !== internalCrop.y ||
+                c.width !== internalCrop.width ||
+                c.height !== internalCrop.height)
+            ) {
+              onCropChange(c, imgRef.current, null);
+            }
           }}
           onComplete={handleCropComplete}
           aspect={internalCrop.aspect}
