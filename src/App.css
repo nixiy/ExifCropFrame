@@ -198,6 +198,50 @@
 .tag-checkbox {
   display: inline-flex;
   align-items: center;
+  .editor-horizontal-row > .image-preview,
+  .editor-horizontal-row > .embed-options {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+.header-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  min-height: 48px;
+}
+
+.app-logo {
+  height: 80px; /* 200pxから100pxに縮小 */
+  width: auto;
+  display: block;
+  margin: 0 auto; /* 上下の余白を均一に16pxに設定 */
+  user-select: none;
+  pointer-events: none;
+}
+
+/* .app-title は不要になったので残す場合は非表示にするか削除可 */
+.app-title {
+  display: none;
+}
+
+.github-link {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+}
+.github-link:hover {
+  color: #4078c0;
+
   background-color: #f0f0f0;
   padding: 5px 10px;
   border-radius: 4px;
@@ -358,7 +402,7 @@
     gap: 8px; /* 間隔を12pxから8pxにさらに減らす */
     align-items: stretch;
   }
-  .editor-horizontal-row > .image-preview,
+  <<<<<<< Updated upstream .editor-horizontal-row > .image-preview,
   .editor-horizontal-row > .embed-options {
     max-width: 100%;
     width: 100%;

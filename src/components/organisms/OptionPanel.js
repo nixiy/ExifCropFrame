@@ -52,7 +52,7 @@ const OptionPanel = ({
             onChange={e => onTextColorChange(e.target.value)}
             presets={DEFAULT_COLORS.PRESET_TEXT_COLORS}
           />
-        </OptionGroup>{' '}
+        </OptionGroup>
         <OptionGroup label="背景色: ">
           <ColorPicker
             value={backgroundColor}
@@ -66,7 +66,7 @@ const OptionPanel = ({
             value={borderSize}
             onChange={e => onBorderSizeChange(Number(e.target.value))}
           />
-        </OptionGroup>{' '}
+        </OptionGroup>
         <OptionGroup label="アスペクト比: ">
           <Select
             options={ASPECT_RATIO_OPTIONS}
