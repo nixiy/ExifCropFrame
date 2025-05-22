@@ -206,6 +206,9 @@
 .embedded-image-preview {
   margin: 20px auto;
   max-width: 800px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px 0;
 }
 
 .embedded-image-preview img {
@@ -297,6 +300,9 @@
   align-items: flex-start;
   justify-content: center;
   margin-bottom: 20px;
+  background-color: unset;
+  border-radius: unset;
+  padding: unset;
 }
 
 .editor-horizontal-row > .image-preview {

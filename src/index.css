@@ -6,7 +6,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #888888;
 }
 
 code {
@@ -17,7 +17,7 @@ code {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: white;
+  background-color: #888888;
   border-radius: 8px;
 }
 

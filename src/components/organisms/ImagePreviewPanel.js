@@ -17,16 +17,66 @@ import CloseButton from '../atoms/CloseButton';
 const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true }) => {
   const imgRef = useRef(null);
   const [internalCrop, setInternalCrop] = useState(crop);
+  // 画像の表示サイズを管理
+  const [imgDisplaySize, setImgDisplaySize] = useState({ width: 0, height: 0 });
 
   // crop propが変わったときのみ反映
   useEffect(() => {
     setInternalCrop(crop);
   }, [crop]);
 
+  // 画像読み込み時に表示サイズを取得
+  const handleImgLoad = e => {
+    const el = e.target;
+    setImgDisplaySize({ width: el.width, height: el.height });
+  };
+
+  // ウィンドウリサイズ時にも画像表示サイズを再取得
+  useEffect(() => {
+    const updateImgSize = () => {
+      if (imgRef.current) {
+        setImgDisplaySize({ width: imgRef.current.width, height: imgRef.current.height });
+      }
+    };
+    window.addEventListener('resize', updateImgSize);
+    updateImgSize();
+    return () => window.removeEventListener('resize', updateImgSize);
+  }, [image]);
+
+  // クロップ値を画像枠内に収める補正関数
+  const clampCropToImage = (crop, imgEl) => {
+    if (!imgEl) return crop;
+    const displayWidth = imgEl.width;
+    const displayHeight = imgEl.height;
+    let x = Math.max(0, crop.x ?? 0);
+    let y = Math.max(0, crop.y ?? 0);
+    let width = crop.width ?? 1;
+    let height = crop.height ?? 1;
+    // x, y, width, heightが画像枠を超えないように補正
+    if (x + width > displayWidth) width = displayWidth - x;
+    if (y + height > displayHeight) height = displayHeight - y;
+    return { ...crop, x, y, width, height };
+  };
+
+  // クロップ値を画像枠内に収める補正関数（UI最大枠用）
+  const clampCropToDisplay = crop => {
+    let x = Math.max(0, crop.x ?? 0);
+    let y = Math.max(0, crop.y ?? 0);
+    let width = crop.width ?? 1;
+    let height = crop.height ?? 1;
+    if (x + width > imgDisplaySize.width) width = imgDisplaySize.width - x;
+    if (y + height > imgDisplaySize.height) height = imgDisplaySize.height - y;
+    width = Math.max(1, width);
+    height = Math.max(1, height);
+    return { ...crop, x, y, width, height };
+  };
+
   // クロップ完了時にピクセル値も親に渡す
   const handleCropComplete = c => {
     if (imgRef.current && c.width && c.height) {
       const imageEl = imgRef.current;
+      // 補正
+      const clampedCrop = clampCropToImage(c, imageEl);
       const displayWidth = imageEl.width;
       const displayHeight = imageEl.height;
       const naturalWidth = imageEl.naturalWidth;
@@ -34,12 +84,12 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
       const scaleX = naturalWidth / displayWidth;
       const scaleY = naturalHeight / displayHeight;
       const pixelCrop = {
-        x: Math.round(c.x * scaleX),
-        y: Math.round(c.y * scaleY),
-        width: Math.round(c.width * scaleX),
-        height: Math.round(c.height * scaleY),
+        x: Math.round(clampedCrop.x * scaleX),
+        y: Math.round(clampedCrop.y * scaleY),
+        width: Math.round(clampedCrop.width * scaleX),
+        height: Math.round(clampedCrop.height * scaleY),
       };
-      if (onCropChange) onCropChange(c, imageEl, pixelCrop);
+      if (onCropChange) onCropChange(clampedCrop, imageEl, pixelCrop);
     } else {
       if (onCropChange) onCropChange(c, imgRef.current, null);
     }
@@ -62,15 +112,17 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
           <ReactCrop
             crop={safeCrop}
             onChange={c => {
-              setInternalCrop(c);
+              // UI上の最大枠で補正
+              const clampedCrop = clampCropToDisplay(c);
+              setInternalCrop(clampedCrop);
               if (
                 onCropChange &&
-                (c.x !== internalCrop.x ||
-                  c.y !== internalCrop.y ||
-                  c.width !== internalCrop.width ||
-                  c.height !== internalCrop.height)
+                (clampedCrop.x !== internalCrop.x ||
+                  clampedCrop.y !== internalCrop.y ||
+                  clampedCrop.width !== internalCrop.width ||
+                  clampedCrop.height !== internalCrop.height)
               ) {
-                onCropChange(c, imgRef.current, null);
+                onCropChange(clampedCrop, imgRef.current, null);
               }
             }}
             onComplete={handleCropComplete}
@@ -82,6 +134,7 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
               src={image.previewSrc || image.src}
               alt={image.name}
               style={{ width: '100%', height: 'auto', display: 'block' }}
+              onLoad={handleImgLoad}
             />
           </ReactCrop>
         ) : (
