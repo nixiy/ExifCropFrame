@@ -15,7 +15,7 @@ import { processImageFile } from '../../utils/imageProcessing';
 const ExifEditor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
-  const [crop, setCrop] = useState({ unit: '%', width: 80, aspect: undefined });
+  const [crop, setCrop] = useState();
   const [cropInfo, setCropInfo] = useState(null);
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
@@ -85,6 +85,8 @@ const ExifEditor = () => {
       // 画像情報の取得
       const imageInfo = await processImageFile(file);
       setImage(imageInfo);
+      // 画像の最大枠でcrop初期化
+      setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
 
       // EXIF情報の取得
       await fetchExifData(file);

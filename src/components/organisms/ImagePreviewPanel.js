@@ -14,13 +14,11 @@ import CloseButton from '../atoms/CloseButton';
  */
 const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
   const imgRef = useRef(null);
-  const [internalCrop, setInternalCrop] = useState(
-    crop || { unit: '%', width: 80, aspect: undefined }
-  );
+  const [internalCrop, setInternalCrop] = useState(crop);
 
   // crop propが変わったときのみ反映
   useEffect(() => {
-    setInternalCrop(crop || { unit: '%', width: 80, aspect: undefined });
+    setInternalCrop(crop);
   }, [crop]);
 
   // クロップ完了時にピクセル値も親に渡す
