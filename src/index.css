@@ -7,6 +7,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   padding: 20px;
   background-color: #888888;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
 }
 
 code {
@@ -25,4 +29,16 @@ h1,
 h2,
 h3 {
   color: #333;
+}
+
+/* 必要に応じて画像やinput, textarea, selectなどは選択可に */
+img,
+input,
+textarea,
+select,
+button {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
 }

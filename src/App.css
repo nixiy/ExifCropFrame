@@ -267,6 +267,14 @@
 }
 
 /* ダウンロードボタンのスタイル - インラインスタイルを使用しているため削除 */
+.download-btn {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  user-select: none;
+}
+.download-btn:hover {
+  background-color: rgba(0, 123, 255, 0.8);
+}
 
 /* カラーピッカー関連のスタイル */
 .color-picker-container {
