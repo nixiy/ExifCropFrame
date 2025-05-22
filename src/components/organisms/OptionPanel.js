@@ -41,7 +41,7 @@ const OptionPanel = ({
           value={aspectRatio}
           onChange={e => onAspectRatioChange(e.target.value)}
         />
-      </OptionGroup>{' '}
+      </OptionGroup>
       <OptionGroup label="テキスト色: ">
         <ColorPicker
           value={textColor}

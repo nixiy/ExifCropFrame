@@ -6,13 +6,11 @@ import React from 'react';
  * @param {React.ReactNode} props.children - 子要素
  * @returns {JSX.Element} - メインレイアウトコンポーネント
  */
-const MainLayout = ({ children }) => {
-  return (
-    <div className="container">
-      <h1>ExifCropFrame</h1>
-      {children}
-    </div>
-  );
-};
+const MainLayout = ({ children }) => (
+  <div className="container">
+    <h1>ExifCropFrame</h1>
+    {children}
+  </div>
+);
 
 export default MainLayout;

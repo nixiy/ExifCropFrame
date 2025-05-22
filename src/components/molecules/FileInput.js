@@ -10,8 +10,7 @@ import Button from '../atoms/Button';
 const FileInput = ({ onFileSelect }) => {
   const handleChange = e => {
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      onFileSelect(file);
+      onFileSelect(e.target.files[0]);
     }
   };
 

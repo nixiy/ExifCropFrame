@@ -62,18 +62,21 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, aspectRatio }) 
     return crop;
   };
 
-  // 画像やアスペクト比が変わったときに初期クロップをセット
+  // アスペクト比や画像が変わったときに初期クロップをセット
   useEffect(() => {
-    if (image && imgRef.current && aspectRatio && aspectRatio !== 'original') {
-      setInternalCrop(getDefaultCrop());
-    } else if (image && imgRef.current) {
-      setInternalCrop(crop || { unit: '%', width: 80, aspect: undefined });
+    if (image && imgRef.current) {
+      if (aspectRatio && aspectRatio !== 'original') {
+        setInternalCrop(getDefaultCrop());
+      } else {
+        setInternalCrop(crop || { unit: '%', width: 80, aspect: undefined });
+      }
     }
   }, [aspectRatio, image]);
 
+  // crop propが変わったときのみ反映
   useEffect(() => {
     setInternalCrop(crop || { unit: '%', width: 80, aspect: undefined });
-  }, [crop, image]);
+  }, [crop]);
 
   // クロップ完了時にピクセル値も親に渡す
   const handleCropComplete = (c, percentCrop) => {

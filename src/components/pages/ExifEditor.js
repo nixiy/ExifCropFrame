@@ -142,9 +142,6 @@ const ExifEditor = () => {
         <ImagePreviewPanel
           image={image}
           onClear={handleClear}
-          onEmbedClick={() => setShowEmbedOptions(true)}
-          showEmbedOptions={showEmbedOptions}
-          hasExifData={!!exifData && Object.keys(exifData).length > 0}
           crop={crop}
           onCropChange={handleCropChange}
           aspectRatio={aspectRatio}

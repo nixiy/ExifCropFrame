@@ -7,8 +7,6 @@ import React from 'react';
  * @param {React.ReactNode} props.children - 子要素
  * @returns {JSX.Element} - ラベルコンポーネント
  */
-const Label = ({ htmlFor, children }) => {
-  return <label htmlFor={htmlFor}>{children}</label>;
-};
+const Label = ({ htmlFor, children }) => <label htmlFor={htmlFor}>{children}</label>;
 
 export default Label;

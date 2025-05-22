@@ -9,13 +9,11 @@ import Label from '../atoms/Label';
  * @param {boolean} props.isCheckbox - チェックボックスグループかどうか
  * @returns {JSX.Element} - オプショングループコンポーネント
  */
-const OptionGroup = ({ label, children, isCheckbox = false }) => {
-  return (
-    <div className={`option-group ${isCheckbox ? 'checkbox-group' : ''}`}>
-      <Label>{label}</Label>
-      {children}
-    </div>
-  );
-};
+const OptionGroup = ({ label, children, isCheckbox = false }) => (
+  <div className={`option-group${isCheckbox ? ' checkbox-group' : ''}`}>
+    <Label>{label}</Label>
+    {children}
+  </div>
+);
 
 export default OptionGroup;
