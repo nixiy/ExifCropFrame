@@ -60,17 +60,9 @@ export const embedTextInImage = ({
         cropHeight = Math.max(1, Math.min(pixelCrop.height, img.height));
         offsetX = Math.max(0, Math.min(pixelCrop.x, img.width - cropWidth));
         offsetY = Math.max(0, Math.min(pixelCrop.y, img.height - cropHeight));
-        console.log('ピクセルクロップで描画:', { cropWidth, cropHeight, offsetX, offsetY });
       } else if (cropInfo && cropInfo.crop) {
         // 従来のパーセント形式（後方互換性維持）
         const { crop } = cropInfo;
-        console.log('パーセント形式のクロップ情報を使用します');
-        console.log(
-          'クロップ参照画像サイズ:',
-          cropInfo.imageRef.width,
-          'x',
-          cropInfo.imageRef.height
-        );
 
         // naturalWidthが利用可能な場合はそちらを使う
         const refWidth = cropInfo.imageRef.naturalWidth || cropInfo.imageRef.width;
@@ -116,18 +108,6 @@ export const embedTextInImage = ({
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, totalWidth, totalHeight); // 画像を描画（白枠の分だけオフセット）      // クロップした画像を描画
       try {
-        console.log('DrawImage params:', {
-          img: img ? 'loaded' : 'not loaded',
-          sourceX: offsetX,
-          sourceY: offsetY,
-          sourceWidth: cropWidth,
-          sourceHeight: cropHeight,
-          destX: borderWidth,
-          destY: borderWidth,
-          destWidth: cropWidth,
-          destHeight: cropHeight,
-        });
-
         // 値の検証
         if (cropWidth <= 0 || cropHeight <= 0) {
           throw new Error('クロップサイズが無効です');
@@ -193,16 +173,6 @@ export const embedTextInImage = ({
       }
       // 生成した画像のURLを取得
       try {
-        // デバッグ情報
-        console.log('キャンバスサイズ:', canvas.width, 'x', canvas.height);
-        console.log('クロップ情報:', {
-          width: cropWidth,
-          height: cropHeight,
-          offsetX,
-          offsetY,
-        });
-        console.log('画像サイズ:', img.width, 'x', img.height);
-
         // 空のキャンバスをチェック
         if (canvas.width <= 0 || canvas.height <= 0) {
           throw new Error('キャンバスのサイズが無効です');
