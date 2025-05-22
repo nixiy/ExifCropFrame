@@ -9,7 +9,7 @@ import React from 'react';
 const MainLayout = ({ children }) => (
   <div className="container">
     <div className="header-bar">
-      <img src="/images/logo.png" alt="ExifCropFrame ロゴ" className="app-logo" />
+      <img src="images/logo.png" alt="ExifCropFrame ロゴ" className="app-logo" /> {/* 修正 */}
       <a
         href="https://github.com/nixiy/ExifCropFrame"
         target="_blank"

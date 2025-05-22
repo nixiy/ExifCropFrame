@@ -8,7 +8,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
-    publicPath: process.env.NODE_ENV === 'production' ? `${packageJson.homepage}/` : '/', // 追加
+    publicPath: process.env.NODE_ENV === 'production' ? '/ExifCropFrame/' : '/', // 修正
   },
   module: {
     rules: [
