@@ -1,24 +1,15 @@
 .container {
   text-align: center;
-  padding: 10px 0 20px 0; /* 上部paddingを減らす */
-}
-
-h1 {
-  margin-top: 10px; /* タイトル上部の余白を減らす */
-  margin-bottom: 24px; /* 下部余白をやや広めに */
-  font-size: 2.2rem;
-  font-weight: bold;
+  padding: 20px;
 }
 
 .drop-area {
   border-radius: 8px;
-  padding: 28px 12px 24px 12px; /* 上部paddingを減らす */
+  padding: 50px 20px;
   text-align: center;
   cursor: pointer;
-  margin: 16px auto 16px auto; /* 上下marginを統一 */
-  max-width: 600px;
-  min-width: 320px;
-  width: 100%;
+  margin: 20px auto;
+  max-width: 800px;
   transition: all 0.3s ease;
   background-color: #f8f8f8;
 }
@@ -54,18 +45,14 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 12px; /* 上部余白を減らす */
-  margin-bottom: 16px; /* 下部余白を追加 */
-  max-width: 600px;
-  min-width: 320px;
+  margin-top: 20px;
   width: 100%;
 }
 
 .image-preview img {
-  max-width: 600px;
-  width: 100%;
-  height: auto;
-  margin-bottom: 12px; /* 下部余白を減らす */
+  max-width: 100%;
+  max-height: 500px;
+  margin-bottom: 20px;
 }
 
 /* 画像情報モジュール関連スタイルを削除 */
@@ -111,25 +98,23 @@ h1 {
 /* 埋め込みオプション関連のスタイル */
 .embed-options {
   width: auto;
-  margin: 16px auto 16px auto; /* 上下marginを統一 */
-  padding: 16px 20px 16px 20px; /* paddingをやや詰める */
+  margin: 20px auto;
+  padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
   text-align: left;
-  max-width: 600px;
-  min-width: 320px;
-  width: 100%;
+  max-width: 800px;
 }
 
 .embed-options h3 {
   margin-top: 0;
-  margin-bottom: 12px;
-  padding-bottom: 6px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
   color: #333;
 }
 
 .option-group {
-  margin-bottom: 12px; /* 下部余白を詰める */
+  margin-bottom: 15px;
 }
 
 .option-group label {
@@ -188,7 +173,7 @@ h1 {
 }
 
 .embed-buttons {
-  margin: 16px 0 0 0; /* 上部余白を詰める */
+  margin: 20px 0;
   display: flex;
   justify-content: center;
 }
@@ -196,17 +181,13 @@ h1 {
 /* 未使用のスタイルを削除 */
 
 .embedded-image-preview {
-  margin: 16px auto 0 auto; /* 上部余白を減らし、下部余白を詰める */
-  max-width: 600px;
-  min-width: 320px;
-  width: 100%;
+  margin: 20px auto;
+  max-width: 800px;
 }
 
 .embedded-image-preview img {
-  max-width: 600px;
-  width: 100%;
-  height: auto;
-  margin: 10px 0 8px 0; /* 上下marginを詰める */
+  max-width: 100%;
+  margin: 15px 0;
 }
 
 /* Atomic Designパターン用のボタンスタイル */
