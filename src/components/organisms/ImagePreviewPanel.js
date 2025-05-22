@@ -69,7 +69,7 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, aspectRatio }) 
   }, [crop]);
 
   // クロップ完了時にピクセル値も親に渡す
-  const handleCropComplete = (c, percentCrop) => {
+  const handleCropComplete = c => {
     if (imgRef.current && c.width && c.height) {
       const imageEl = imgRef.current;
       const displayWidth = imageEl.width;

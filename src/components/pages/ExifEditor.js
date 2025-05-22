@@ -127,7 +127,9 @@ const ExifEditor = () => {
       {' '}
       {process.env.NODE_ENV === 'development' && !image && (
         <div style={{ margin: '0 auto', maxWidth: '800px', textAlign: 'right' }}>
-          <Button onClick={loadSampleImage}>テスト画像読込</Button>
+          <Button type="info" onClick={loadSampleImage}>
+            テスト画像読込
+          </Button>
         </div>
       )}
       <DropZone

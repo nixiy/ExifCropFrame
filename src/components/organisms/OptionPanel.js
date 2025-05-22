@@ -3,7 +3,7 @@ import OptionGroup from '../molecules/OptionGroup';
 import ColorPicker from '../atoms/ColorPicker';
 import Select from '../atoms/Select';
 import Button from '../atoms/Button';
-import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS, ASPECT_RATIO_OPTIONS } from '../../utils/constants';
+import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
 
 /**
  * 埋め込みオプションパネルコンポーネント
@@ -27,21 +27,12 @@ const OptionPanel = ({
   onBackgroundColorChange,
   borderSize,
   onBorderSizeChange,
-  aspectRatio,
-  onAspectRatioChange,
   onGenerateImage,
   isProcessing,
 }) => {
   return (
     <div className="embed-options">
       <h3>埋め込みオプション</h3>
-      <OptionGroup label="アスペクト比: ">
-        <Select
-          options={ASPECT_RATIO_OPTIONS}
-          value={aspectRatio}
-          onChange={e => onAspectRatioChange(e.target.value)}
-        />
-      </OptionGroup>
       <OptionGroup label="テキスト色: ">
         <ColorPicker
           value={textColor}
@@ -64,7 +55,7 @@ const OptionPanel = ({
         />
       </OptionGroup>
       <div className="embed-buttons">
-        <Button onClick={onGenerateImage} disabled={isProcessing}>
+        <Button type="primary" onClick={onGenerateImage} disabled={isProcessing}>
           {isProcessing ? '処理中...' : '画像を生成'}
         </Button>
       </div>
