@@ -30,7 +30,8 @@ export const embedTextInImage = ({
     // 画像を読み込む
     const img = new Image();
     img.onload = () => {
-      const ctx = canvas.getContext('2d');
+      // willReadFrequently: true を指定してパフォーマンス警告を解消
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
       // テキスト用の設定
       const selectedTagKeys = Object.entries(selectedTags)
