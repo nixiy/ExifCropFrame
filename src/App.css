@@ -113,14 +113,37 @@
   color: #333;
 }
 
+/* 横並び用のflex行を追加 */
+.embed-options .options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
 .option-group {
-  margin-bottom: 15px;
+  margin-bottom: 0;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
 }
 
 .option-group label {
   display: inline-block;
   margin-right: 10px;
-  min-width: 100px;
+  min-width: 80px;
+}
+
+/* レスポンシブ対応: 600px以下は縦並び */
+@media (max-width: 600px) {
+  .embed-options .options-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-group {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 .checkbox-group label {
@@ -183,6 +206,9 @@
 .embedded-image-preview {
   margin: 20px auto;
   max-width: 800px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px 0;
 }
 
 .embedded-image-preview img {
@@ -241,6 +267,14 @@
 }
 
 /* ダウンロードボタンのスタイル - インラインスタイルを使用しているため削除 */
+.download-btn {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  user-select: none;
+}
+.download-btn:hover {
+  background-color: rgba(0, 123, 255, 0.8);
+}
 
 /* カラーピッカー関連のスタイル */
 .color-picker-container {
@@ -265,4 +299,41 @@
   background-color: #fff;
   font-size: 14px;
   min-width: 130px;
+}
+
+.editor-horizontal-row {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 20px;
+  background-color: unset;
+  border-radius: unset;
+  padding: unset;
+}
+
+.editor-horizontal-row > .image-preview {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 60%;
+}
+
+.editor-horizontal-row > .embed-options {
+  flex: 0 0 320px;
+  min-width: 240px;
+  max-width: 380px;
+}
+
+@media (max-width: 900px) {
+  .editor-horizontal-row {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .editor-horizontal-row > .image-preview,
+  .editor-horizontal-row > .embed-options {
+    max-width: 100%;
+    width: 100%;
+  }
 }

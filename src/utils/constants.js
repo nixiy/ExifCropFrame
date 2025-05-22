@@ -28,8 +28,8 @@ export const BORDER_SIZE_OPTIONS = [
  * デフォルト色の設定
  */
 export const DEFAULT_COLORS = {
-  TEXT: '#ffffff', // 黒
-  BACKGROUND: '#000000', // 白
+  TEXT: '#808080', // 灰色のカラーコード
+  BACKGROUND: '#ffffff', // 白
   // プリセット色の追加オプション
   PRESET_TEXT_COLORS: [
     { value: '#000000', label: '黒' },

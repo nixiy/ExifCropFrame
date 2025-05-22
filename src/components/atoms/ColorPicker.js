@@ -9,7 +9,6 @@ import React from 'react';
  * @returns {JSX.Element} - カラーピッカーコンポーネント
  */
 const ColorPicker = ({ value, onChange, presets = [] }) => {
-  // プリセットカラーがある場合は、それを選択肢として表示
   const handleSelectChange = e => {
     if (e.target.value !== '') {
       onChange({ target: { value: e.target.value } });
@@ -20,9 +19,9 @@ const ColorPicker = ({ value, onChange, presets = [] }) => {
     <div className="color-picker-container">
       <input type="color" value={value} onChange={onChange} />
 
-      {presets && presets.length > 0 && (
+      {presets.length > 0 && (
         <select className="color-preset-select" onChange={handleSelectChange} value="">
-          <option value="">プリセットから選択</option>
+          <option value="">選択</option>
           {presets.map((preset, index) => (
             <option key={index} value={preset.value}>
               {preset.label}

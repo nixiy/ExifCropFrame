@@ -9,14 +9,10 @@ import React from 'react';
  * @param {React.ReactNode} props.children - 子要素
  * @returns {JSX.Element} - ボタンコンポーネント
  */
-const Button = ({ type = 'primary', onClick, disabled, children }) => {
-  const className = 'button primary-button';
-
-  return (
-    <button className={className} onClick={onClick} disabled={disabled}>
-      {children}
-    </button>
-  );
-};
+const Button = ({ onClick, disabled, children }) => (
+  <button className="button primary-button" onClick={onClick} disabled={disabled}>
+    {children}
+  </button>
+);
 
 export default Button;

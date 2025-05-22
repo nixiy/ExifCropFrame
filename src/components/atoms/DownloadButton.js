@@ -30,8 +30,6 @@ const DownloadButton = ({ onClick, position = 'top-right' }) => {
     width: '30px',
     height: '30px',
     borderRadius: '50%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    color: 'white',
     border: 'none',
     cursor: 'pointer',
     display: 'flex',
@@ -42,15 +40,6 @@ const DownloadButton = ({ onClick, position = 'top-right' }) => {
     padding: 0,
     zIndex: 10,
     transition: 'background-color 0.2s ease',
-  };
-
-  // ホバー時のスタイル変更
-  const handleMouseEnter = e => {
-    e.target.style.backgroundColor = 'rgba(0, 123, 255, 0.8)'; // 青っぽい色に変化
-  };
-
-  const handleMouseLeave = e => {
-    e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
   };
 
   // ダウンロードアイコンのスタイル
@@ -64,14 +53,13 @@ const DownloadButton = ({ onClick, position = 'top-right' }) => {
 
   return (
     <button
+      className="download-btn"
       style={buttonStyle}
       onClick={onClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       title="画像をダウンロード"
       aria-label="画像をダウンロード"
     >
-      <div style={iconStyle}>{/* シンプルな下向き矢印 */}↓</div>
+      <div style={iconStyle}>DL</div>
     </button>
   );
 };

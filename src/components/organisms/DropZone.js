@@ -45,7 +45,7 @@ const DropZone = ({ isDragging, onDrop, onFileSelect, hasImage, children }) => {
 
   return (
     <div
-      className={`drop-area ${isDragging ? 'dragging' : ''}`}
+      className={`drop-area${isDragging ? ' dragging' : ''}`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}

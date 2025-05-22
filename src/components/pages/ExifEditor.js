@@ -15,6 +15,10 @@ import { processImageFile } from '../../utils/imageProcessing';
 const ExifEditor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
+  const [crop, setCrop] = useState();
+  const [cropInfo, setCropInfo] = useState(null);
+  const [showCrop, setShowCrop] = useState(false);
+  const [aspect, setAspect] = useState(21 / 9); // デフォルト21:9
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
 
@@ -23,6 +27,8 @@ const ExifEditor = () => {
     setImage,
     embeddedImage,
     isProcessing: isImageProcessing,
+    isDownloadProcessing,
+    downloadProgress,
     canvasRef,
     textColor,
     setTextColor,
@@ -74,6 +80,14 @@ const ExifEditor = () => {
     }
   }, [image, exifData, showEmbedOptions, embeddedImage, isImageProcessing]);
 
+  // アスペクト比変更時にcropも即座に合わせる
+  useEffect(() => {
+    if (!crop) return;
+    // 幅を基準に高さを再計算
+    const newHeight = crop.width / aspect;
+    setCrop({ ...crop, aspect, height: newHeight });
+  }, [aspect]);
+
   /**
    * ファイル選択時のハンドラー
    * @param {File} file - 選択されたファイル
@@ -83,6 +97,8 @@ const ExifEditor = () => {
       // 画像情報の取得
       const imageInfo = await processImageFile(file);
       setImage(imageInfo);
+      // 画像の最大枠でcrop初期化
+      setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
 
       // EXIF情報の取得
       await fetchExifData(file);
@@ -103,16 +119,30 @@ const ExifEditor = () => {
     setShowEmbedOptions(false);
   };
 
+  // クロップ変更時のハンドラ
+  const handleCropChange = (newCrop, imgEl, pixelCrop) => {
+    setCrop(newCrop);
+    if (imgEl) {
+      setCropInfo({ crop: newCrop, imageRef: imgEl, pixelCrop });
+    }
+  };
+
   /**
    * 画像生成処理
    */
   const handleGenerateImage = () => {
-    processImage(exifData, selectedExifTags);
+    processImage(exifData, selectedExifTags, cropInfo);
+  };
+
+  /**
+   * ダウンロード時の処理（元画像で再生成）
+   */
+  const handleDownload = () => {
+    downloadImage(exifData, selectedExifTags, cropInfo);
   };
 
   return (
     <div>
-      {' '}
       {process.env.NODE_ENV === 'development' && !image && (
         <div style={{ margin: '0 auto', maxWidth: '800px', textAlign: 'right' }}>
           <Button type="info" onClick={loadSampleImage}>
@@ -126,16 +156,16 @@ const ExifEditor = () => {
         onFileSelect={handleFileSelect}
         hasImage={!!image}
       >
-        <ImagePreviewPanel
-          image={image}
-          onClear={handleClear}
-          onEmbedClick={() => setShowEmbedOptions(true)}
-          showEmbedOptions={showEmbedOptions}
-          hasExifData={!!exifData && Object.keys(exifData).length > 0}
-        />
-        {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
-          <>
-            {' '}
+        <div className="editor-horizontal-row">
+          <ImagePreviewPanel
+            image={image}
+            onClear={handleClear}
+            crop={crop}
+            onCropChange={handleCropChange}
+            showCrop={showCrop}
+            aspect={aspect}
+          />
+          {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
             <OptionPanel
               textColor={textColor}
               onTextColorChange={setTextColor}
@@ -145,9 +175,20 @@ const ExifEditor = () => {
               onBorderSizeChange={setBorderSize}
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
-            />{' '}
-            <EmbeddedImagePreview embeddedImage={embeddedImage} onDownload={downloadImage} />
-          </>
+              showCrop={showCrop}
+              onShowCropChange={setShowCrop}
+              aspect={aspect}
+              onAspectChange={setAspect}
+            />
+          )}
+        </div>
+        {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
+          <EmbeddedImagePreview
+            embeddedImage={embeddedImage}
+            onDownload={handleDownload}
+            isDownloadProcessing={isDownloadProcessing}
+            downloadProgress={downloadProgress}
+          />
         )}
         {/* 非表示のCanvasエレメント */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />

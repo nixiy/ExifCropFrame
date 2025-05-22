@@ -6,7 +6,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #888888;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
 }
 
 code {
@@ -17,7 +21,7 @@ code {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: white;
+  background-color: #888888;
   border-radius: 8px;
 }
 
@@ -25,4 +29,16 @@ h1,
 h2,
 h3 {
   color: #333;
+}
+
+/* 必要に応じて画像やinput, textarea, selectなどは選択可に */
+img,
+input,
+textarea,
+select,
+button {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
 }

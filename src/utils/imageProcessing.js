@@ -7,6 +7,7 @@
  * @param {string} options.textColor - テキスト色
  * @param {string} options.backgroundColor - 背景色
  * @param {number} options.borderSize - 枠線サイズ（1-5）
+ * @param {Object} options.cropInfo - クロップ情報（カスタムクロップ用）
  * @param {HTMLCanvasElement} options.canvas - キャンバス要素
  * @returns {Promise<string>} - 生成された画像のDataURL
  */
@@ -17,6 +18,7 @@ export const embedTextInImage = ({
   textColor,
   backgroundColor,
   borderSize,
+  cropInfo,
   canvas,
 }) => {
   return new Promise((resolve, reject) => {
@@ -24,123 +26,164 @@ export const embedTextInImage = ({
       reject('必要なパラメータがありません');
       return;
     }
-
-    // 画像を読み込む
     const img = new Image();
     img.onload = () => {
-      const ctx = canvas.getContext('2d');
-
-      // テキスト用の設定
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const selectedTagKeys = Object.entries(selectedTags)
         .filter(([, isSelected]) => isSelected)
         .map(([key]) => key);
-
-      if (selectedTagKeys.length === 0) {
+      if (!selectedTagKeys.length) {
         reject('表示するExif情報が選択されていません');
         return;
       }
-
-      // メーカーと型番、およびその他の情報を別々に準備
-      let cameraInfoText = '';
-      let detailsInfoText = '';
-
-      // メーカーと型番を取得
-      const make = selectedTagKeys.includes('Make') ? exifData['Make'] : '';
-      const model = selectedTagKeys.includes('Model') ? exifData['Model'] : '';
-      const lensModel = selectedTagKeys.includes('LensModel') ? exifData['LensModel'] : '';
-
-      if (make || model) {
-        // メーカー名と型番を結合し、レンズモデル情報も含める
-        let cameraText = make && model ? `${make.trim()}  ${model.trim()}` : make || model;
-
-        // レンズモデル情報があれば、カメラ情報の後に「/」で区切って追加
-        if (lensModel) {
-          cameraInfoText = `${cameraText} / ${lensModel.trim()}`;
-        } else {
-          cameraInfoText = cameraText;
-        }
+      const cameraInfoText = getCameraInfoText(exifData, selectedTagKeys);
+      const detailsInfoText = getDetailsInfoText(exifData, selectedTagKeys);
+      let cropWidth = img.width;
+      let cropHeight = img.height;
+      let offsetX = 0;
+      let offsetY = 0;
+      if (cropInfo?.pixelCrop) {
+        const { pixelCrop } = cropInfo;
+        cropWidth = Math.max(1, Math.min(pixelCrop.width, img.width));
+        cropHeight = Math.max(1, Math.min(pixelCrop.height, img.height));
+        offsetX = Math.max(0, Math.min(pixelCrop.x, img.width - cropWidth));
+        offsetY = Math.max(0, Math.min(pixelCrop.y, img.height - cropHeight));
+      } else if (cropInfo?.crop) {
+        const { crop } = cropInfo;
+        const refWidth = cropInfo.imageRef.naturalWidth || cropInfo.imageRef.width;
+        const refHeight = cropInfo.imageRef.naturalHeight || cropInfo.imageRef.height;
+        const scaleX = img.width / refWidth;
+        const scaleY = img.height / refHeight;
+        cropWidth = Math.round(((crop.width * refWidth) / 100) * scaleX);
+        cropHeight = Math.round(((crop.height * refHeight) / 100) * scaleY);
+        offsetX = Math.round(((crop.x * refWidth) / 100) * scaleX);
+        offsetY = Math.round(((crop.y * refHeight) / 100) * scaleY);
       }
-
-      // 2行目の情報（焦点距離 / F値 / 露出時間 / ISO）を準備
-      const focalLength = selectedTagKeys.includes('FocalLength') ? exifData['FocalLength'] : '';
-      const fNumber = selectedTagKeys.includes('FNumber') ? exifData['FNumber'] : '';
-      const exposureTime = selectedTagKeys.includes('ExposureTime') ? exifData['ExposureTime'] : '';
-      const iso = selectedTagKeys.includes('ISOSpeedRatings')
-        ? `ISO${exifData['ISOSpeedRatings']}`
-        : ''; // スラッシュで区切ってコンパクトに表示、スペースを調整して視認性を向上
-      const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
-      if (details.length > 0) {
-        detailsInfoText = details.join(' / ');
+      if (cropWidth <= 0 || cropHeight <= 0) {
+        cropWidth = Math.max(1, cropWidth || img.width * 0.8);
+        cropHeight = Math.max(1, cropHeight || img.height * 0.8);
       }
-
-      // 白い枠のサイズ（設定値に基づいて調整）
       const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;
-      const borderWidth = Math.max(10, Math.floor(img.width / 100) * borderMultiplier);
-
-      // フォントサイズを画像サイズに合わせて固定設定（枠サイズによる動的調整なし）
-      const baseFontSize = Math.max(12, Math.floor(img.width / 50));
-      const largeFontSize = Math.floor(baseFontSize * 1.0); // カメラ情報用のフォント
-      const mediumFontSize = Math.floor(baseFontSize * 0.8); // テクニカル情報用のフォント
-      const lineHeight = baseFontSize * 1.5; // 行間の調整      // 下部のExif情報表示領域の高さを計算（カメラ情報 + テクニカル情報）
-      const headerLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
-      const totalLines = headerLines; // 実際に必要なテキスト表示エリアの高さを計算
-      // パディングは枠サイズと若干の比例関係を持たせつつも、過剰にならないよう調整
-      const padding = Math.max(20, Math.min(30, borderWidth * 0.5)); // パディングの上限を設定
-      const requiredTextHeight = lineHeight * (totalLines + 0.7) + padding; // テキストに必要な高さ
-      const minExifAreaHeight = Math.max(120, borderWidth * 1.5); // 最低高さも適度に調整
+      const borderWidth = Math.max(10, Math.floor(cropWidth / 100) * borderMultiplier);
+      const baseFontSize = Math.max(12, Math.floor(cropWidth / 50));
+      const largeFontSize = Math.floor(baseFontSize * 1.0);
+      const mediumFontSize = Math.floor(baseFontSize * 0.8);
+      const lineHeight = baseFontSize * 1.5;
+      const totalLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
+      const padding = Math.max(20, Math.min(30, borderWidth * 0.5));
+      const requiredTextHeight = lineHeight * (totalLines + 0.7) + padding;
+      const minExifAreaHeight = Math.max(120, borderWidth * 1.5);
       const exifAreaHeight = Math.max(minExifAreaHeight, requiredTextHeight);
-
-      // 新しいキャンバスのサイズを設定（白枠 + 画像 + 下部のExif領域）
-      const totalWidth = img.width + borderWidth * 2;
-      const totalHeight = img.height + borderWidth * 2 + exifAreaHeight;
-
+      const totalWidth = cropWidth + borderWidth * 2;
+      const totalHeight = cropHeight + borderWidth * 2 + exifAreaHeight;
       canvas.width = totalWidth;
-      canvas.height = totalHeight; // 背景を指定された色で塗りつぶす
+      canvas.height = totalHeight;
       ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, totalWidth, totalHeight); // 画像を描画（白枠の分だけオフセット）
-      ctx.drawImage(img, borderWidth, borderWidth);
-
-      // Exif情報の背景を描画（指定された背景色で統一）
+      ctx.fillRect(0, 0, totalWidth, totalHeight);
+      try {
+        if (cropWidth <= 0 || cropHeight <= 0) throw new Error('クロップサイズが無効です');
+        if (
+          offsetX < 0 ||
+          offsetY < 0 ||
+          offsetX + cropWidth > img.width ||
+          offsetY + cropHeight > img.height
+        ) {
+          offsetX = Math.max(0, Math.min(offsetX, img.width - 1));
+          offsetY = Math.max(0, Math.min(offsetY, img.height - 1));
+          cropWidth = Math.min(cropWidth, img.width - offsetX);
+          cropHeight = Math.min(cropHeight, img.height - offsetY);
+        }
+        ctx.drawImage(
+          img,
+          offsetX,
+          offsetY,
+          cropWidth,
+          cropHeight,
+          borderWidth,
+          borderWidth,
+          cropWidth,
+          cropHeight
+        );
+      } catch (error) {
+        console.error('画像描画エラー:', error);
+        throw new Error(`画像のクロップに失敗しました: ${error.message}`);
+      }
       ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, borderWidth + img.height, totalWidth, exifAreaHeight);
-
-      // 実際のテキストの高さを考慮してより正確に中央揃え
+      ctx.fillRect(0, borderWidth + cropHeight, totalWidth, exifAreaHeight);
       const actualTextHeight = lineHeight * totalLines;
       const verticalCenterOffset = Math.max(0, (exifAreaHeight - actualTextHeight) / 2);
-      let startY = borderWidth + img.height + verticalCenterOffset + lineHeight * 0.8; // 行の高さ調整      // テキスト影は使用しない設定
+      let startY = borderWidth + cropHeight + verticalCenterOffset + lineHeight * 0.8;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
       ctx.shadowBlur = 0;
-
-      // カメラ情報（メーカー・型番）を描画（太字フォント、やや大きめ）
       if (cameraInfoText) {
-        ctx.font = `bold ${largeFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // 太字フォントを使用
+        ctx.font = `bold ${largeFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`;
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(cameraInfoText, totalWidth / 2, startY);
-        startY += lineHeight * 1.2; // 間隔の調整
-      } // 詳細情報（焦点距離 / F値 / シャッター速度 / ISO）を描画（中サイズフォント）
+        startY += lineHeight * 1.2;
+      }
       if (detailsInfoText) {
-        ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
+        ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`;
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(detailsInfoText, totalWidth / 2, startY);
-        // 固定行間で調整
         startY += lineHeight * 1.2;
       }
-
-      // 生成した画像のURLを取得
-      const dataURL = canvas.toDataURL(image.type || 'image/jpeg');
-      resolve(dataURL);
+      try {
+        if (canvas.width <= 0 || canvas.height <= 0)
+          throw new Error('キャンバスのサイズが無効です');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const hasData = imageData.data.some(val => val !== 0);
+        if (!hasData) {
+          console.warn('キャンバスに画像データがありません');
+        }
+        let dataURL;
+        try {
+          dataURL = canvas.toDataURL('image/png');
+          if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
+            dataURL = canvas.toDataURL('image/jpeg', 0.95);
+          }
+        } catch (e) {
+          dataURL = canvas.toDataURL('image/jpeg', 0.9);
+        }
+        if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
+          throw new Error('不正なデータURLが生成されました');
+        }
+        resolve(dataURL);
+      } catch (error) {
+        console.error('データURL生成エラー:', error);
+        reject(`画像の生成に失敗しました: ${error.message}`);
+      }
     };
-
-    img.onerror = () => {
-      reject('画像の読み込みに失敗しました');
-    };
-
+    img.onerror = () => reject('画像の読み込みに失敗しました');
     img.src = image.src;
   });
 };
+
+// 1行目のカメラ情報テキスト生成
+function getCameraInfoText(exifData, selectedTagKeys) {
+  const make = selectedTagKeys.includes('Make') ? exifData['Make'] : '';
+  const model = selectedTagKeys.includes('Model') ? exifData['Model'] : '';
+  const lensModel = selectedTagKeys.includes('LensModel') ? exifData['LensModel'] : '';
+  let cameraText = make && model ? `${make.trim()}  ${model.trim()}` : make || model;
+  if (lensModel) {
+    return `${cameraText} / ${lensModel.trim()}`;
+  } else {
+    return cameraText;
+  }
+}
+// 2行目の詳細情報テキスト生成
+function getDetailsInfoText(exifData, selectedTagKeys) {
+  const focalLength = selectedTagKeys.includes('FocalLength') ? exifData['FocalLength'] : '';
+  const fNumber = selectedTagKeys.includes('FNumber') ? exifData['FNumber'] : '';
+  const exposureTime = selectedTagKeys.includes('ExposureTime') ? exifData['ExposureTime'] : '';
+  const iso = selectedTagKeys.includes('ISOSpeedRatings')
+    ? `ISO${exifData['ISOSpeedRatings']}`
+    : '';
+  const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
+  return details.length > 0 ? details.join(' / ') : '';
+}
 
 /**
  * ファイルを処理して画像情報を取得する
@@ -156,13 +199,46 @@ export const processImageFile = file => {
 
     const reader = new FileReader();
     reader.onload = e => {
-      resolve({
-        src: e.target.result,
-        name: file.name,
-        type: file.type,
-        size: Math.round(file.size / 1024) + ' KB',
-        originalFile: file,
-      });
+      const originalSrc = e.target.result;
+      // プレビュー用縮小画像を生成
+      const img = new window.Image();
+      img.onload = () => {
+        // 最大幅・高さ
+        const maxSize = 1000;
+        let { width, height } = img;
+        let scale = 1;
+        if (width > maxSize || height > maxSize) {
+          scale = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const previewSrc = canvas.toDataURL('image/jpeg', 0.8);
+        resolve({
+          src: originalSrc,
+          previewSrc,
+          name: file.name,
+          type: file.type,
+          size: Math.round(file.size / 1024) + ' KB',
+          originalFile: file,
+        });
+      };
+      img.onerror = () => {
+        // 画像の読み込みに失敗した場合はプレビューなしで返す
+        resolve({
+          src: originalSrc,
+          previewSrc: originalSrc,
+          name: file.name,
+          type: file.type,
+          size: Math.round(file.size / 1024) + ' KB',
+          originalFile: file,
+        });
+      };
+      img.src = originalSrc;
     };
 
     reader.onerror = () => {

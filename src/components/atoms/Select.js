@@ -8,16 +8,14 @@ import React from 'react';
  * @param {Function} props.onChange - 変更ハンドラ
  * @returns {JSX.Element} - セレクトコンポーネント
  */
-const Select = ({ options, value, onChange }) => {
-  return (
-    <select value={value} onChange={onChange}>
-      {options.map(option => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  );
-};
+const Select = ({ options, value, onChange }) => (
+  <select value={value} onChange={onChange}>
+    {options.map(option => (
+      <option key={option.value} value={option.value}>
+        {option.label}
+      </option>
+    ))}
+  </select>
+);
 
 export default Select;
