@@ -152,8 +152,6 @@ const ExifEditor = () => {
           onClear={handleClear}
           crop={crop}
           onCropChange={handleCropChange}
-          isDownloadProcessing={isDownloadProcessing}
-          downloadProgress={downloadProgress}
         />
         {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
           <>

@@ -14,14 +14,7 @@ import CloseButton from '../atoms/CloseButton';
  * @param {number} props.downloadProgress - ダウンロード進捗（%）
  * @returns {JSX.Element} - 画像プレビューコンポーネント
  */
-const ImagePreviewPanel = ({
-  image,
-  onClear,
-  crop,
-  onCropChange,
-  isDownloadProcessing,
-  downloadProgress,
-}) => {
+const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
   const imgRef = useRef(null);
   const [internalCrop, setInternalCrop] = useState(crop);
 
