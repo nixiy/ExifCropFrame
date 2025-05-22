@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DropZone from '../organisms/DropZone';
 import ImagePreviewPanel from '../organisms/ImagePreviewPanel';
 import OptionPanel from '../organisms/OptionPanel';
@@ -15,6 +15,9 @@ import { processImageFile } from '../../utils/imageProcessing';
 const ExifEditor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
+  const [crop, setCrop] = useState({ unit: '%', width: 80, aspect: undefined });
+  const [cropInfo, setCropInfo] = useState(null);
+  const imageRef = useRef(null);
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
 
@@ -105,11 +108,19 @@ const ExifEditor = () => {
     setShowEmbedOptions(false);
   };
 
+  // クロップ変更時のハンドラ
+  const handleCropChange = (newCrop, imgEl, pixelCrop) => {
+    setCrop(newCrop);
+    if (imgEl) {
+      setCropInfo({ crop: newCrop, imageRef: imgEl, pixelCrop });
+    }
+  };
+
   /**
    * 画像生成処理
    */
   const handleGenerateImage = () => {
-    processImage(exifData, selectedExifTags);
+    processImage(exifData, selectedExifTags, cropInfo);
   };
 
   return (
@@ -134,6 +145,8 @@ const ExifEditor = () => {
           onEmbedClick={() => setShowEmbedOptions(true)}
           showEmbedOptions={showEmbedOptions}
           hasExifData={!!exifData && Object.keys(exifData).length > 0}
+          crop={crop}
+          onCropChange={handleCropChange}
         />
         {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
           <>

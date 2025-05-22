@@ -22,7 +22,8 @@ export const useImageProcessor = () => {
    * 画像にEXIF情報を埋め込む
    * @param {Object} exifData - EXIF情報
    * @param {Object} selectedTags - 選択されたタグ
-   */ const processImage = async (exifData, selectedTags) => {
+   * @param {Object} cropInfo - クロップ情報
+   */ const processImage = async (exifData, selectedTags, cropInfo) => {
     if (!image || !exifData || !canvasRef.current) return;
 
     setIsProcessing(true);
@@ -46,6 +47,7 @@ export const useImageProcessor = () => {
         backgroundColor,
         borderSize,
         aspectRatio,
+        cropInfo,
         canvas: canvasRef.current,
       });
 

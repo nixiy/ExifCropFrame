@@ -8,6 +8,7 @@
  * @param {string} options.backgroundColor - 背景色
  * @param {number} options.borderSize - 枠線サイズ（1-5）
  * @param {string} options.aspectRatio - アスペクト比（'original', '16:9', '21:9', '4:3', '3:2', '1:1'）
+ * @param {Object} options.cropInfo - クロップ情報（カスタムクロップ用）
  * @param {HTMLCanvasElement} options.canvas - キャンバス要素
  * @returns {Promise<string>} - 生成された画像のDataURL
  */
@@ -19,6 +20,7 @@ export const embedTextInImage = ({
   backgroundColor,
   borderSize,
   aspectRatio,
+  cropInfo,
   canvas,
 }) => {
   return new Promise((resolve, reject) => {
@@ -69,20 +71,54 @@ export const embedTextInImage = ({
       const exposureTime = selectedTagKeys.includes('ExposureTime') ? exifData['ExposureTime'] : '';
       const iso = selectedTagKeys.includes('ISOSpeedRatings')
         ? `ISO${exifData['ISOSpeedRatings']}`
-        : ''; // スラッシュで区切ってコンパクトに表示、スペースを調整して視認性を向上
+        : ''; // スラッシュで区切ってコンパクトに表示、スペースを調整
       const details = [focalLength, fNumber, exposureTime, iso].filter(Boolean);
       if (details.length > 0) {
         detailsInfoText = details.join(' / ');
-      }
-
-      // アスペクト比に基づいてクロップサイズを計算
+      } // アスペクト比に基づいてクロップサイズを計算
       let cropWidth = img.width;
       let cropHeight = img.height;
       let offsetX = 0;
-      let offsetY = 0;
+      let offsetY = 0; // カスタムクロップ情報が指定されている場合はそれを使用
+      if (cropInfo && cropInfo.pixelCrop) {
+        // ピクセル単位のクロップ情報を優先
+        const { pixelCrop } = cropInfo;
+        // 画像サイズを超えないように制限
+        cropWidth = Math.max(1, Math.min(pixelCrop.width, img.width));
+        cropHeight = Math.max(1, Math.min(pixelCrop.height, img.height));
+        offsetX = Math.max(0, Math.min(pixelCrop.x, img.width - cropWidth));
+        offsetY = Math.max(0, Math.min(pixelCrop.y, img.height - cropHeight));
+        console.log('ピクセルクロップで描画:', { cropWidth, cropHeight, offsetX, offsetY });
+      } else if (cropInfo && cropInfo.crop) {
+        // 従来のパーセント形式（後方互換性維持）
+        const { crop } = cropInfo;
+        console.log('パーセント形式のクロップ情報を使用します');
+        console.log(
+          'クロップ参照画像サイズ:',
+          cropInfo.imageRef.width,
+          'x',
+          cropInfo.imageRef.height
+        );
 
-      // 選択されたアスペクト比に基づいて画像をクロップ
-      if (aspectRatio !== 'original') {
+        // naturalWidthが利用可能な場合はそちらを使う
+        const refWidth = cropInfo.imageRef.naturalWidth || cropInfo.imageRef.width;
+        const refHeight = cropInfo.imageRef.naturalHeight || cropInfo.imageRef.height;
+        const scaleX = img.width / refWidth;
+        const scaleY = img.height / refHeight;
+        cropWidth = Math.round(((crop.width * refWidth) / 100) * scaleX);
+        cropHeight = Math.round(((crop.height * refHeight) / 100) * scaleY);
+        offsetX = Math.round(((crop.x * refWidth) / 100) * scaleX);
+        offsetY = Math.round(((crop.y * refHeight) / 100) * scaleY);
+      }
+
+      // 値の検証と調整
+      if (cropWidth <= 0 || cropHeight <= 0) {
+        console.warn('クロップサイズが無効です。デフォルト値を使用します。');
+        cropWidth = Math.max(1, cropWidth || img.width * 0.8);
+        cropHeight = Math.max(1, cropHeight || img.height * 0.8);
+      }
+      // カスタムクロップがない場合はアスペクト比に基づいて自動クロップ
+      else if (aspectRatio !== 'original') {
         const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
         const targetRatio = widthRatio / heightRatio;
 
@@ -123,20 +159,54 @@ export const embedTextInImage = ({
       canvas.width = totalWidth;
       canvas.height = totalHeight; // 背景を指定された色で塗りつぶす
       ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, totalWidth, totalHeight); // 画像を描画（白枠の分だけオフセット）
+      ctx.fillRect(0, 0, totalWidth, totalHeight); // 画像を描画（白枠の分だけオフセット）      // クロップした画像を描画
+      try {
+        console.log('DrawImage params:', {
+          img: img ? 'loaded' : 'not loaded',
+          sourceX: offsetX,
+          sourceY: offsetY,
+          sourceWidth: cropWidth,
+          sourceHeight: cropHeight,
+          destX: borderWidth,
+          destY: borderWidth,
+          destWidth: cropWidth,
+          destHeight: cropHeight,
+        });
 
-      // クロップした画像を描画
-      ctx.drawImage(
-        img,
-        offsetX,
-        offsetY,
-        cropWidth,
-        cropHeight, // ソース画像のクロップ範囲
-        borderWidth,
-        borderWidth,
-        cropWidth,
-        cropHeight // キャンバスへの描画位置とサイズ
-      );
+        // 値の検証
+        if (cropWidth <= 0 || cropHeight <= 0) {
+          throw new Error('クロップサイズが無効です');
+        }
+
+        if (
+          offsetX < 0 ||
+          offsetY < 0 ||
+          offsetX + cropWidth > img.width ||
+          offsetY + cropHeight > img.height
+        ) {
+          console.warn('クロップ領域が画像の範囲外です - 値を調整します');
+          // クロップ領域を画像内に収める
+          offsetX = Math.max(0, Math.min(offsetX, img.width - 1));
+          offsetY = Math.max(0, Math.min(offsetY, img.height - 1));
+          cropWidth = Math.min(cropWidth, img.width - offsetX);
+          cropHeight = Math.min(cropHeight, img.height - offsetY);
+        }
+
+        ctx.drawImage(
+          img,
+          offsetX,
+          offsetY,
+          cropWidth,
+          cropHeight, // ソース画像のクロップ範囲
+          borderWidth,
+          borderWidth,
+          cropWidth,
+          cropHeight // キャンバスへの描画位置とサイズ
+        );
+      } catch (error) {
+        console.error('画像描画エラー:', error);
+        throw new Error(`画像のクロップに失敗しました: ${error.message}`);
+      }
 
       // Exif情報の背景を描画（指定された背景色で統一）
       ctx.fillStyle = backgroundColor;
@@ -159,20 +229,66 @@ export const embedTextInImage = ({
         startY += lineHeight * 1.2; // 間隔の調整
       } // 詳細情報（焦点距離 / F値 / シャッター速度 / ISO）を描画（中サイズフォント）
       if (detailsInfoText) {
-        ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`; // より細身のフォントを使用
+        ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`;
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(detailsInfoText, totalWidth / 2, startY);
         // 固定行間で調整
         startY += lineHeight * 1.2;
       }
-
       // 生成した画像のURLを取得
-      const dataURL = canvas.toDataURL(image.type || 'image/jpeg');
-      resolve(dataURL);
+      try {
+        // デバッグ情報
+        console.log('キャンバスサイズ:', canvas.width, 'x', canvas.height);
+        console.log('クロップ情報:', {
+          width: cropWidth,
+          height: cropHeight,
+          offsetX,
+          offsetY,
+          aspectRatio,
+        });
+        console.log('画像サイズ:', img.width, 'x', img.height);
+
+        // 空のキャンバスをチェック
+        if (canvas.width <= 0 || canvas.height <= 0) {
+          throw new Error('キャンバスのサイズが無効です');
+        }
+
+        // 画像データが正しく描画されているか確認
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const hasData = imageData.data.some(val => val !== 0);
+        if (!hasData) {
+          console.warn('キャンバスに画像データがありません');
+        }
+        // まずPNG形式で出力を試みる（より安全）
+        let dataURL;
+        try {
+          dataURL = canvas.toDataURL('image/png');
+
+          // PNGが失敗した場合はJPEGでも試す
+          if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
+            console.warn('PNG形式での出力に失敗しました、JPEGで試行します');
+            dataURL = canvas.toDataURL('image/jpeg', 0.95);
+          }
+        } catch (e) {
+          console.error('PNG形式での出力中にエラー:', e);
+          // JPEGでフォールバック
+          dataURL = canvas.toDataURL('image/jpeg', 0.9);
+        }
+
+        // データURLが正しいフォーマットであることを確認
+        if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
+          throw new Error('不正なデータURLが生成されました');
+        }
+        resolve(dataURL);
+      } catch (error) {
+        console.error('データURL生成エラー:', error);
+        reject(`画像の生成に失敗しました: ${error.message}`);
+      }
     };
 
-    img.onerror = () => {
+    img.onerror = error => {
+      console.error('画像読み込みエラー:', error);
       reject('画像の読み込みに失敗しました');
     };
 
