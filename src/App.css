@@ -337,3 +337,34 @@
     width: 100%;
   }
 }
+
+.header-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  min-height: 48px;
+}
+.app-title {
+  margin: 0 auto;
+  text-align: center;
+  flex: 0 1 auto;
+  font-size: 2.2rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+.github-link {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+}
+.github-link:hover {
+  color: #4078c0;
+}
