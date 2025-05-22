@@ -130,30 +130,38 @@ export const embedTextInImage = ({
         ctx.fillText(detailsInfoText, totalWidth / 2, startY);
         startY += lineHeight * 1.2;
       }
-      try {
-        if (canvas.width <= 0 || canvas.height <= 0)
-          throw new Error('キャンバスのサイズが無効です');
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const hasData = imageData.data.some(val => val !== 0);
-        if (!hasData) {
-          console.warn('キャンバスに画像データがありません');
-        }
-        let dataURL;
+      finalizeImage(); // ロゴ処理を削除し、直接finalizeImageを呼び出す
+
+      // 画像のDataURLを生成して返す関数
+      function finalizeImage() {
         try {
-          dataURL = canvas.toDataURL('image/png');
-          if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
-            dataURL = canvas.toDataURL('image/jpeg', 0.95);
+          if (canvas.width <= 0 || canvas.height <= 0)
+            throw new Error('キャンバスのサイズが無効です');
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const hasData = imageData.data.some(val => val !== 0);
+          if (!hasData) {
+            console.warn('キャンバスに画像データがありません');
           }
-        } catch (e) {
-          dataURL = canvas.toDataURL('image/jpeg', 0.9);
+
+          let dataURL;
+          try {
+            dataURL = canvas.toDataURL('image/png');
+            if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
+              dataURL = canvas.toDataURL('image/jpeg', 0.95);
+            }
+          } catch (e) {
+            dataURL = canvas.toDataURL('image/jpeg', 0.9);
+          }
+
+          if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
+            throw new Error('不正なデータURLが生成されました');
+          }
+
+          resolve(dataURL);
+        } catch (error) {
+          console.error('データURL生成エラー:', error);
+          reject(`画像の生成に失敗しました: ${error.message}`);
         }
-        if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
-          throw new Error('不正なデータURLが生成されました');
-        }
-        resolve(dataURL);
-      } catch (error) {
-        console.error('データURL生成エラー:', error);
-        reject(`画像の生成に失敗しました: ${error.message}`);
       }
     };
     img.onerror = () => reject('画像の読み込みに失敗しました');
