@@ -44,47 +44,86 @@ const OptionPanel = ({
 }) => {
   return (
     <div className="embed-options">
-      <h3>オプション</h3>
-      <div className="options-row">
-        <OptionGroup label="テキスト色: ">
-          <ColorPicker
-            value={textColor}
-            onChange={e => onTextColorChange(e.target.value)}
-            presets={DEFAULT_COLORS.PRESET_TEXT_COLORS}
-          />
-        </OptionGroup>
-        <OptionGroup label="背景色: ">
-          <ColorPicker
-            value={backgroundColor}
-            onChange={e => onBackgroundColorChange(e.target.value)}
-            presets={DEFAULT_COLORS.PRESET_BACKGROUND_COLORS}
-          />
-        </OptionGroup>
-        <OptionGroup label="枠サイズ: ">
-          <Select
-            options={BORDER_SIZE_OPTIONS}
-            value={borderSize}
-            onChange={e => onBorderSizeChange(Number(e.target.value))}
-          />
-        </OptionGroup>
-        <OptionGroup label="アスペクト比: ">
-          <Select
-            options={ASPECT_RATIO_OPTIONS}
-            value={aspect}
-            onChange={e => onAspectChange(Number(e.target.value))}
-          />
-        </OptionGroup>
-        <OptionGroup label="クロップ:" isCheckbox>
-          <input
-            type="checkbox"
-            checked={showCrop}
-            onChange={e => onShowCropChange(e.target.checked)}
-            style={{ marginLeft: 4 }}
-          />
-        </OptionGroup>
+      <h3>画像設定</h3>
+
+      <div className="options-section">
+        <h4 className="options-section-title">カラー設定</h4>
+        <div className="options-row">
+          {' '}
+          <OptionGroup label="テキスト色">
+            <ColorPicker
+              value={textColor}
+              onChange={e => onTextColorChange(e.target.value)}
+              presets={DEFAULT_COLORS.PRESET_TEXT_COLORS}
+            />
+          </OptionGroup>
+          <OptionGroup label="背景色">
+            <ColorPicker
+              value={backgroundColor}
+              onChange={e => onBackgroundColorChange(e.target.value)}
+              presets={DEFAULT_COLORS.PRESET_BACKGROUND_COLORS}
+            />
+          </OptionGroup>
+        </div>
       </div>
+
+      <div className="options-section">
+        <h4 className="options-section-title">レイアウト設定</h4>
+        <div className="options-row">
+          <OptionGroup label="枠サイズ">
+            <Select
+              options={BORDER_SIZE_OPTIONS}
+              value={borderSize}
+              onChange={e => onBorderSizeChange(Number(e.target.value))}
+            />
+          </OptionGroup>
+          <OptionGroup label="アスペクト比">
+            <Select
+              options={ASPECT_RATIO_OPTIONS}
+              value={aspect}
+              onChange={e => onAspectChange(Number(e.target.value))}
+            />
+          </OptionGroup>
+        </div>
+
+        <div className="options-row">
+          <div className="checkbox-group">
+            <label>
+              <input
+                type="checkbox"
+                checked={showCrop}
+                onChange={e => onShowCropChange(e.target.checked)}
+              />
+              クロップ領域を表示
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div className="embed-buttons">
-        <Button type="primary" onClick={onGenerateImage} disabled={isProcessing}>
+        <Button
+          type="primary"
+          onClick={onGenerateImage}
+          disabled={isProcessing}
+          isLoading={isProcessing}
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 10 12 15 7 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          }
+        >
           {isProcessing ? '処理中...' : '画像を生成'}
         </Button>
       </div>

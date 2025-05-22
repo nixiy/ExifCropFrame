@@ -1,142 +1,232 @@
+/* モダンUIスタイル - ExifCropFrame アプリケーション */
+
+/* 基本コンテナスタイル */
 .container {
   text-align: center;
-  padding: 15px; /* コンテナのパディングも20pxから15pxに減らす */
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f9f9fb;
+  color: #333;
+  font-family:
+    'Segoe UI',
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
 }
 
+/* ドロップエリア */
 .drop-area {
-  border-radius: 8px;
-  padding: 20px 15px; /* 上下のパディングをさらに30pxから20pxに、左右も20pxから15pxに減らす */
+  border-radius: 12px;
+  padding: 30px 20px;
   text-align: center;
   cursor: pointer;
-  margin: 5px auto; /* 上下のマージンを10pxから5pxに減らす */
+  margin: 10px auto;
   max-width: 800px;
   transition: all 0.3s ease;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
+  border: 2px dashed #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .drop-area.dragging {
-  background-color: rgba(0, 123, 255, 0.1);
+  background-color: rgba(66, 133, 244, 0.08);
+  border-color: #4285f4;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.15);
 }
 
-.drop-area p {
-  font-size: 15px; /* フォントサイズも少し小さく */
+.drop-area .drop-icon {
+  margin-bottom: 15px;
+  color: #4285f4;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.drop-area:hover .drop-icon {
+  transform: translateY(-5px);
+  opacity: 1;
+}
+
+.drop-area .drop-title {
+  font-size: 20px;
+  color: #333;
+  margin: 10px 0;
+  font-weight: 500;
+}
+
+.drop-area .drop-subtitle {
+  font-size: 16px;
   color: #5f6368;
-  margin: 6px 0; /* 上下のマージンを10pxから6pxに減らす */
+  margin: 8px 0;
+  font-weight: 400;
 }
 
+.drop-area .drop-support {
+  font-size: 14px;
+  color: #777;
+  margin-top: 15px;
+  font-style: italic;
+}
+
+/* ファイル入力ラベル */
 .file-input-label {
   background-color: #4285f4;
   color: white;
-  padding: 8px 16px; /* パディングを10px 20pxから8px 16pxに減らす */
-  border-radius: 2px;
+  padding: 12px 20px;
+  border-radius: 8px;
   cursor: pointer;
   display: inline-block;
-  margin-top: 6px; /* 上部マージンを10pxから6pxに減らす */
+  margin-top: 10px;
   font-weight: 500;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: none;
 }
 
 .file-input-label:hover {
   background-color: #3367d6;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
+/* 画像プレビュー */
 .image-preview {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px; /* 上部マージンを20pxから10pxに減らす */
+  margin-top: 20px;
   width: 100%;
 }
 
 .image-preview img {
   max-width: 100%;
   max-height: 500px;
-  margin-bottom: 15px; /* 下部マージンを20pxから15pxに減らす */
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* 画像情報モジュール関連スタイルを削除 */
-
+/* ボタンコンテナ */
 .button-container {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
-
-/* クリアボタン用のスタイル削除 */
-
-/* 以下のボタンクラスは削除し、.buttonクラスに統合 */
 
 /* 埋め込みオプション関連のスタイル */
 .embed-options {
   width: 100%;
-  margin: 6px auto; /* 上下の余白を10pxから6pxに減らす */
-  padding: 10px; /* パディングを15pxから10pxに減らす */
+  margin: 16px auto;
+  padding: 24px;
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   text-align: left;
   max-width: 800px;
   box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .embed-options h3 {
   margin-top: 0;
-  margin-bottom: 10px; /* マージンを15pxから10pxに減らす */
-  padding-bottom: 5px; /* パディングを10pxから5pxに減らす */
+  margin-bottom: 20px;
+  padding-bottom: 10px;
   color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 22px;
 }
 
-/* 横並び用のflex行を追加 */
+.options-section {
+  margin-bottom: 24px;
+  background-color: #f9f9fb;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.options-section-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.options-section-title::before {
+  content: '';
+  width: 4px;
+  height: 16px;
+  background-color: #4285f4;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.embed-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* 横並び用のflex行 */
 .embed-options .options-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px; /* 間隔を均一に縮小 */
-  margin-bottom: 3px;
+  gap: 16px;
+  margin-bottom: 16px;
   width: 100%;
-  justify-content: space-between; /* flex-startからspace-betweenに変更して均等配置 */
+  justify-content: space-between;
 }
 
 .option-group {
-  margin-bottom: 0;
-  min-width: 150px; /* 140pxから150pxに広げて全テキストを表示 */
+  margin-bottom: 12px;
+  min-width: 150px;
   display: flex;
   align-items: center;
   flex: 0 1 auto;
-  max-width: calc(50% - 5px); /* 横幅のマージンも5pxに縮小 */
-  font-size: 0.95em; /* フォントサイズをやや小さく */
+  max-width: calc(50% - 8px);
+  font-size: 0.95em;
 }
 
 .option-group label {
   display: inline-block;
-  margin-right: 5px; /* 8pxから5pxに縮めて右側のスペースを確保 */
-  min-width: 85px; /* 75pxから85pxに広げて完全に表示 */
-  white-space: nowrap; /* テキストの折り返しを防止 */
-  overflow: visible; /* はみ出しを許可して完全に表示 */
-  font-size: 0.93em; /* フォントサイズを少し縮小 */
+  margin-right: 10px;
+  min-width: 85px;
+  white-space: nowrap;
+  overflow: visible;
+  font-size: 0.95em;
+  color: #555;
+  font-weight: 500;
 }
 
 /* レスポンシブ対応: 600px以下は縦並び */
 @media (max-width: 600px) {
   .embed-options .options-row {
     flex-direction: column;
-    gap: 8px; /* 6pxから8pxに戻す */
+    gap: 12px;
   }
   .option-group {
     min-width: 0;
     width: 100%;
-    max-width: 100%; /* 最大幅を100%に設定して突き出しを防止 */
-    margin-bottom: 8px; /* 6pxから8pxに戻す */
-    font-size: 1em; /* フォントサイズを通常に */
+    max-width: 100%;
+    margin-bottom: 12px;
+    font-size: 1em;
   }
   .option-group label {
-    min-width: 85px; /* モバイル表示時はラベルをやや広めに */
+    min-width: 85px;
   }
   .embed-options {
-    padding: 10px; /* 8pxから10pxに広げる */
-    margin: 8px auto; /* 5pxから8pxに広げる */
+    padding: 16px;
+    margin: 12px auto;
   }
 }
 
+/* チェックボックスグループ */
 .checkbox-group label {
   display: flex;
   align-items: center;
@@ -144,181 +234,456 @@
 }
 
 .checkbox-group input[type='checkbox'] {
-  margin-right: 8px;
+  margin-right: 10px;
 }
 
+/* セレクトとカラーピッカー */
 .option-group select,
 .option-group input[type='color'] {
-  padding: 4px; /* パディングを5pxから4pxに減らす */
-  border: 1px solid #ddd;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 10px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s ease;
+  min-height: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 200px;
+}
+
+.option-group select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+/* カスタムセレクトのスタイル */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select select {
+  display: block;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 10px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+.custom-select select:hover {
+  border-color: #bbbbbb;
+  background-color: #ffffff;
+}
+
+.custom-select select:focus {
+  outline: none;
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.25);
+}
+
+.option-group select:hover,
+.option-group input[type='color']:hover {
+  border-color: #bbbbbb;
+  background-color: #ffffff;
+}
+
+.option-group select:focus,
+.option-group input[type='color']:focus {
+  outline: none;
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.25);
+}
+
+/* カラーピッカーのスタイル */
+.color-picker-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+}
+
+.color-picker-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.color-swatch-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background:
+    linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%),
+    linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%);
+  background-size: 10px 10px;
+  background-position:
+    0 0,
+    5px 5px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.color-swatch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.color-value {
+  font-size: 14px;
+  color: #555;
+}
+
+input[type='color'] {
+  -webkit-appearance: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 8px;
+}
+
+input[type='color']::-webkit-color-swatch {
+  border: none;
+  border-radius: 8px;
+}
+
+.color-preset-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 36px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.color-preset-select:hover {
+  border-color: #bbbbbb;
+  background-color: #ffffff;
+}
+
+.color-preset-select:focus {
+  outline: none;
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.25);
+}
+
+.color-presets-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 10;
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.color-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.color-preset-item {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.color-preset-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* チェックボックスのカスタムスタイル */
+.checkbox-group input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
   border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  transition: all 0.2s ease;
+}
+
+.checkbox-group input[type='checkbox']:checked {
+  background-color: #4285f4;
+  border-color: #4285f4;
+}
+
+.checkbox-group input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-group input[type='checkbox']:hover {
+  border-color: #999;
+}
+
+/* タグリスト */
+.tag-item {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   flex: 0 0 auto;
-  width: 75px; /* 80pxから75pxに調整 */
-  max-width: 100%;
-  white-space: nowrap; /* テキストの折り返しを防止 */
-  text-overflow: ellipsis; /* はみ出した場合に省略記号を表示 */
-  font-size: 0.93em; /* フォントサイズを少し小さく */
+  background-color: #f5f5f5;
+  transition: all 0.2s ease;
+  font-size: 0.93em;
+}
+
+.tag-item:hover {
+  background-color: #eef2ff;
+  border-color: #4285f4;
 }
 
 .tags-list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .tag-checkbox {
   display: inline-flex;
   align-items: center;
-  .editor-horizontal-row > .image-preview,
-  .editor-horizontal-row > .embed-options {
-    max-width: 100%;
-    width: 100%;
-  }
 }
 
+/* ヘッダー */
 .header-bar {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  min-height: 48px;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  min-height: 70px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.logo-container {
+  flex: 0 0 auto;
 }
 
 .app-logo {
-  height: 80px; /* 200pxから100pxに縮小 */
+  height: 50px;
   width: auto;
   display: block;
-  margin: 0 auto; /* 上下の余白を均一に16pxに設定 */
   user-select: none;
   pointer-events: none;
+  transition: all 0.3s ease;
 }
 
-/* .app-title は不要になったので残す場合は非表示にするか削除可 */
 .app-title {
-  display: none;
-}
-
-.github-link {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
   color: #333;
-  text-decoration: none;
-  transition: color 0.2s;
-  display: inline-flex;
-  align-items: center;
-}
-.github-link:hover {
-  color: #4078c0;
-
-  background-color: #f0f0f0;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  margin: 0;
+  background: linear-gradient(135deg, #4285f4, #34a853);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.tag-checkbox input {
-  margin-right: 5px;
-}
-
-.tag-checkbox:has(input:checked) {
-  background-color: #e8f0fe;
-  color: #1a73e8;
-}
-
-/* CSS :has()セレクタが利用できないブラウザのためのフォールバック */
-.tag-checkbox input:checked + span {
-  font-weight: bold;
-  color: #1a73e8;
-}
-
-.embed-buttons {
-  margin: 6px 0; /* 余白を10pxから6pxに減らす */
+.header-actions {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
-/* 未使用のスタイルを削除 */
+@media (max-width: 600px) {
+  .header-bar {
+    flex-direction: column;
+    padding: 15px 10px;
+    gap: 10px;
+  }
 
+  .app-title {
+    font-size: 20px;
+    margin: 5px 0;
+  }
+
+  .header-actions {
+    margin-top: 5px;
+  }
+}
+
+/* 埋め込み画像プレビュー */
 .embedded-image-preview {
-  margin: 8px auto; /* 余白を20pxから8pxに減らす */
-  max-width: 800px;
+  width: 100%;
+  margin: 16px auto;
+  padding: 20px;
   background-color: #ffffff;
-  border-radius: 8px;
-  padding: 10px 0; /* 余白を20pxから10pxに減らす */
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .embedded-image-preview img {
   max-width: 100%;
-  margin: 8px 0; /* マージンを15pxから8pxに減らす */
+  border-radius: 8px;
+  margin: 10px 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Atomic Designパターン用のボタンスタイル */
+/* ボタンスタイル */
 .button {
   border: none;
-  padding: 8px 16px;
-  border-radius: 2px;
+  padding: 12px 20px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .primary-button {
-  background-color: #4285f4;
+  background: linear-gradient(135deg, #4285f4, #3367d6);
   color: white;
 }
 
 .secondary-button {
-  background-color: #757575;
+  background: linear-gradient(135deg, #757575, #5c5c5c);
   color: white;
 }
 
 .danger-button {
-  background-color: #dc3545;
+  background: linear-gradient(135deg, #f44336, #d32f2f);
   color: white;
 }
 
 .info-button {
-  background-color: #17a2b8;
+  background: linear-gradient(135deg, #17a2b8, #0f7a8a);
   color: white;
 }
 
 .primary-button:hover {
-  background-color: #3367d6;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #3367d6, #2850a7);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .secondary-button:hover {
-  background-color: #636363;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #636363, #4a4a4a);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .danger-button:hover {
-  background-color: #c82333;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #e53935, #c62828);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .info-button:hover {
-  background-color: #138496;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #138496, #0a6475);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .button:disabled {
-  background-color: #e0e0e0;
+  background: #e0e0e0;
   color: #9e9e9e;
   cursor: not-allowed;
   box-shadow: none;
+  transform: none;
 }
 
 /* クローズボタン（✕）のスタイル */
 .close-button {
   position: absolute;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.4);
   color: white;
@@ -327,114 +692,90 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: normal;
   z-index: 10;
   transition: all 0.2s ease;
-  top: 10px;
+  top: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .close-button.position-top-right {
-  right: 10px;
+  right: 12px;
 }
 
 .close-button.position-top-left {
-  left: 10px;
+  left: 12px;
 }
 
 .close-button:hover {
-  background-color: rgba(220, 53, 69, 0.8);
+  background-color: rgba(220, 53, 69, 0.9);
+  transform: scale(1.05);
 }
 
 /* ダウンロードボタンのスタイル */
 .download-btn {
   position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
+  bottom: 12px;
+  right: 12px;
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
   cursor: pointer;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 0;
-  z-index: 10;
-  transition: background-color 0.2s ease;
-  user-select: none;
-}
-
-.download-btn.position-top-right {
-  top: 10px;
-  right: 10px;
-}
-
-.download-btn.position-top-left {
-  top: 10px;
-  left: 10px;
-}
-
-.download-btn.position-bottom-right {
-  bottom: 10px;
-  right: 10px;
-}
-
-.download-btn.position-bottom-left {
-  bottom: 10px;
-  left: 10px;
-}
-
-.download-icon {
-  width: 16px;
-  height: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .download-btn:hover {
-  background-color: rgba(0, 123, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: translateY(-1px);
 }
 
-/* カラーピッカー関連のスタイル */
-.color-picker-container {
+.download-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* GitHub ボタン */
+.github-link {
+  text-decoration: none;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.github-button {
   display: flex;
   align-items: center;
-  gap: 4px; /* 6pxから4pxに縮小 */
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  transition: all 0.2s ease;
+  border: 1px solid #e0e0e0;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.color-picker-container input[type='color'] {
-  width: 34px; /* 36pxから34pxに縮小 */
-  height: 24px; /* 26pxから24pxに縮小 */
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0;
-  cursor: pointer;
+.github-button:hover {
+  background-color: #e8f0fe;
+  color: #4285f4;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  border-color: #4285f4;
 }
 
-.color-preset-select {
-  padding: 3px 5px; /* パディングを減らす */
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
-  font-size: 13px; /* フォントサイズを14pxから13pxに減らす */
-  min-width: 95px; /* 100pxから95pxに調整 */
-  width: 95px; /* 幅を固定 */
-}
-
+/* エディターの水平レイアウト */
 .editor-horizontal-row {
   display: flex;
-  flex-direction: row;
-  gap: 15px; /* 間隔を24pxから15pxにさらに減らす */
+  gap: 24px;
   align-items: flex-start;
-  justify-content: center;
-  margin-bottom: 10px; /* 下部マージンを15pxから10pxに減らす */
-  background-color: unset;
-  border-radius: unset;
-  padding: unset;
+  margin-top: 24px;
 }
 
 .editor-horizontal-row > .image-preview {
@@ -444,24 +785,113 @@
 }
 
 .editor-horizontal-row > .embed-options {
-  flex: 0 0 300px; /* 幅を320pxから300pxに調整 */
-  min-width: 220px; /* 最小幅も240pxから220pxに調整 */
-  max-width: 340px; /* 最大幅も380pxから340pxに調整 */
-  box-sizing: border-box; /* boxSizingを追加してパディングとボーダーを幅に含める */
+  flex: 0 0 300px;
+  min-width: 220px;
+  max-width: 340px;
+  box-sizing: border-box;
 }
 
 @media (max-width: 900px) {
   .editor-horizontal-row {
     flex-direction: column;
-    gap: 8px; /* 間隔を12pxから8pxにさらに減らす */
+    gap: 16px;
     align-items: stretch;
   }
   .editor-horizontal-row > .image-preview,
   .editor-horizontal-row > .embed-options {
     max-width: 100%;
     width: 100%;
-    margin: 0 auto; /* マージンを追加してセンタリング */
+    margin: 0 auto;
   }
 }
 
-/* このセクションは既に上部に定義されているため削除 */
+/* アニメーションとトランジション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* アスペクト比選択UI */
+.aspect-ratio-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.aspect-ratio-option {
+  padding: 8px 12px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  font-size: 14px;
+}
+
+.aspect-ratio-option:hover {
+  background: #e3e3e3;
+}
+
+.aspect-ratio-option.selected {
+  background: #e8f0fe;
+  border-color: #4285f4;
+  color: #1a73e8;
+  font-weight: 500;
+}
+
+/* ローディングスピナー */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ツールチップ */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 12px;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
