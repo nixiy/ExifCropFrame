@@ -402,7 +402,7 @@
     gap: 8px; /* 間隔を12pxから8pxにさらに減らす */
     align-items: stretch;
   }
-  <<<<<<< Updated upstream .editor-horizontal-row > .image-preview,
+  .editor-horizontal-row > .image-preview,
   .editor-horizontal-row > .embed-options {
     max-width: 100%;
     width: 100%;
