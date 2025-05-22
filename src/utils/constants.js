@@ -25,6 +25,15 @@ export const BORDER_SIZE_OPTIONS = [
 ];
 
 /**
+ * アスペクト比のオプション
+ */
+export const ASPECT_RATIO_OPTIONS = [
+  { value: 1, label: '1:1' },
+  { value: 21 / 9, label: '21:9' },
+  { value: 16 / 9, label: '16:9' },
+];
+
+/**
  * デフォルト色の設定
  */
 export const DEFAULT_COLORS = {
