@@ -1,6 +1,6 @@
 # ExifCropFrame
 
-![ExifCropFrame](public/images/logo.png)
+![ExifCropFrame](public/images/logo_white.png)
 
 [![Demo App](https://img.shields.io/badge/Demo-Live%20App-4285F4?style=for-the-badge&logo=react)](https://nixiy.github.io/ExifCropFrame)
 [![GitHub repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/nixiy/ExifCropFrame)
