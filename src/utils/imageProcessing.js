@@ -7,7 +7,6 @@
  * @param {string} options.textColor - テキスト色
  * @param {string} options.backgroundColor - 背景色
  * @param {number} options.borderSize - 枠線サイズ（1-5）
- * @param {string} options.aspectRatio - アスペクト比（'original', '16:9', '21:9', '4:3', '3:2', '1:1'）
  * @param {Object} options.cropInfo - クロップ情報（カスタムクロップ用）
  * @param {HTMLCanvasElement} options.canvas - キャンバス要素
  * @returns {Promise<string>} - 生成された画像のDataURL
@@ -19,7 +18,6 @@ export const embedTextInImage = ({
   textColor,
   backgroundColor,
   borderSize,
-  aspectRatio,
   cropInfo,
   canvas,
 }) => {
@@ -116,23 +114,6 @@ export const embedTextInImage = ({
         console.warn('クロップサイズが無効です。デフォルト値を使用します。');
         cropWidth = Math.max(1, cropWidth || img.width * 0.8);
         cropHeight = Math.max(1, cropHeight || img.height * 0.8);
-      }
-      // カスタムクロップがない場合はアスペクト比に基づいて自動クロップ
-      else if (aspectRatio !== 'original') {
-        const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
-        const targetRatio = widthRatio / heightRatio;
-
-        const currentRatio = img.width / img.height;
-
-        if (targetRatio > currentRatio) {
-          // ターゲットアスペクト比が現在より横長の場合、高さを調整
-          cropHeight = img.width / targetRatio;
-          offsetY = (img.height - cropHeight) / 2;
-        } else {
-          // ターゲットアスペクト比が現在より縦長の場合、幅を調整
-          cropWidth = img.height * targetRatio;
-          offsetX = (img.width - cropWidth) / 2;
-        }
       }
 
       // 白い枠のサイズ（設定値に基づいて調整）
@@ -245,7 +226,6 @@ export const embedTextInImage = ({
           height: cropHeight,
           offsetX,
           offsetY,
-          aspectRatio,
         });
         console.log('画像サイズ:', img.width, 'x', img.height);
 

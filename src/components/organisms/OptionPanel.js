@@ -14,8 +14,6 @@ import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
  * @param {Function} props.onBackgroundColorChange - 背景色変更ハンドラ
  * @param {number} props.borderSize - 枠線サイズ
  * @param {Function} props.onBorderSizeChange - 枠線サイズ変更ハンドラ
- * @param {string} props.aspectRatio - アスペクト比
- * @param {Function} props.onAspectRatioChange - アスペクト比変更ハンドラ
  * @param {Function} props.onGenerateImage - 画像生成ハンドラ
  * @param {boolean} props.isProcessing - 処理中かどうか
  * @returns {JSX.Element} - オプションパネルコンポーネント

@@ -32,8 +32,6 @@ const ExifEditor = () => {
     setBackgroundColor,
     borderSize,
     setBorderSize,
-    aspectRatio,
-    setAspectRatio,
     processImage,
     downloadImage,
     resetImage,
@@ -143,7 +141,6 @@ const ExifEditor = () => {
           onClear={handleClear}
           crop={crop}
           onCropChange={handleCropChange}
-          aspectRatio={aspectRatio}
         />
         {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
           <>
@@ -155,8 +152,6 @@ const ExifEditor = () => {
               onBackgroundColorChange={setBackgroundColor}
               borderSize={borderSize}
               onBorderSizeChange={setBorderSize}
-              aspectRatio={aspectRatio}
-              onAspectRatioChange={setAspectRatio}
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
             />{' '}

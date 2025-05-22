@@ -10,58 +10,13 @@ import CloseButton from '../atoms/CloseButton';
  * @param {Function} props.onClear - クリアボタンハンドラ
  * @param {Function} props.onCropChange - クロップ範囲変更ハンドラ
  * @param {Object} props.crop - クロップ範囲
- * @param {string|undefined} props.aspectRatio - アスペクト比（例: '16:9'）
  * @returns {JSX.Element} - 画像プレビューコンポーネント
  */
-const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, aspectRatio }) => {
+const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
   const imgRef = useRef(null);
   const [internalCrop, setInternalCrop] = useState(
     crop || { unit: '%', width: 80, aspect: undefined }
   );
-
-  // 指定アスペクト比で画像中央にフィットする初期クロップ領域を計算
-  const getDefaultCrop = () => {
-    if (!imgRef.current || !aspectRatio || aspectRatio === 'original') {
-      return { unit: '%', width: 80, aspect: undefined };
-    }
-    const [w, h] = aspectRatio.split(':').map(Number);
-    const aspect = w / h;
-    const naturalWidth = imgRef.current.naturalWidth;
-    const naturalHeight = imgRef.current.naturalHeight;
-    const imgAspect = naturalWidth / naturalHeight;
-    let crop = { unit: 'px', aspect };
-    if (aspect > imgAspect) {
-      // 横長比率: 横いっぱい、縦を中央に
-      crop.width = naturalWidth;
-      crop.height = Math.round(naturalWidth / aspect);
-      crop.x = 0;
-      crop.y = Math.round((naturalHeight - crop.height) / 2);
-    } else {
-      // 縦長比率: 縦いっぱい、横を中央に
-      crop.height = naturalHeight;
-      crop.width = Math.round(naturalHeight * aspect);
-      crop.y = 0;
-      crop.x = Math.round((naturalWidth - crop.width) / 2);
-    }
-    // ReactCropは%単位が推奨なので変換
-    crop.unit = '%';
-    crop.x = (crop.x / naturalWidth) * 100;
-    crop.y = (crop.y / naturalHeight) * 100;
-    crop.width = (crop.width / naturalWidth) * 100;
-    crop.height = (crop.height / naturalHeight) * 100;
-    return crop;
-  };
-
-  // アスペクト比や画像が変わったときに初期クロップをセット
-  useEffect(() => {
-    if (image && imgRef.current) {
-      if (aspectRatio && aspectRatio !== 'original') {
-        setInternalCrop(getDefaultCrop());
-      } else {
-        setInternalCrop(crop || { unit: '%', width: 80, aspect: undefined });
-      }
-    }
-  }, [aspectRatio, image]);
 
   // crop propが変わったときのみ反映
   useEffect(() => {

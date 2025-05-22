@@ -15,8 +15,6 @@ export const useImageProcessor = () => {
   const [textColor, setTextColor] = useState(DEFAULT_COLORS.TEXT);
   const [backgroundColor, setBackgroundColor] = useState(DEFAULT_COLORS.BACKGROUND);
   const [borderSize, setBorderSize] = useState(2);
-  // アスペクト比の状態を追加
-  const [aspectRatio, setAspectRatio] = useState('original');
 
   /**
    * 画像にEXIF情報を埋め込む
@@ -31,7 +29,7 @@ export const useImageProcessor = () => {
     try {
       // 選択されたタグのチェック
       const selectedTagKeys = Object.entries(selectedTags)
-        .filter(([key, isSelected]) => isSelected)
+        .filter(([, isSelected]) => isSelected)
         .map(([key]) => key);
 
       if (selectedTagKeys.length === 0) {
@@ -46,7 +44,6 @@ export const useImageProcessor = () => {
         textColor,
         backgroundColor,
         borderSize,
-        aspectRatio,
         cropInfo,
         canvas: canvasRef.current,
       });
@@ -99,8 +96,6 @@ export const useImageProcessor = () => {
     setBackgroundColor,
     borderSize,
     setBorderSize,
-    aspectRatio,
-    setAspectRatio,
     processImage,
     downloadImage,
     resetImage,
