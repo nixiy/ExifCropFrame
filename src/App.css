@@ -97,13 +97,14 @@
 
 /* 埋め込みオプション関連のスタイル */
 .embed-options {
-  width: auto;
+  width: 100%;
   margin: 20px auto;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
   text-align: left;
   max-width: 800px;
+  box-sizing: border-box;
 }
 
 .embed-options h3 {
@@ -119,6 +120,8 @@
   flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 10px;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .option-group {
@@ -126,6 +129,7 @@
   min-width: 180px;
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
 .option-group label {
@@ -143,6 +147,10 @@
   .option-group {
     min-width: 0;
     width: 100%;
+    margin-bottom: 10px;
+  }
+  .embed-options {
+    padding: 15px;
   }
 }
 
@@ -161,6 +169,8 @@
   padding: 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  flex: 1;
+  max-width: 100%;
 }
 
 .tags-list {
