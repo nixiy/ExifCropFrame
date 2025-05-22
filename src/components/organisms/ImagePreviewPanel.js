@@ -10,13 +10,24 @@ import CloseButton from '../atoms/CloseButton';
  * @param {Function} props.onClear - クリアボタンハンドラ
  * @param {Function} props.onCropChange - クロップ範囲変更ハンドラ
  * @param {Object} props.crop - クロップ範囲
+ * @param {string|undefined} props.aspectRatio - アスペクト比（例: '16:9'）
  * @returns {JSX.Element} - 画像プレビューコンポーネント
  */
-const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
+const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, aspectRatio }) => {
   const imgRef = useRef(null);
   const [internalCrop, setInternalCrop] = useState(
     crop || { unit: '%', width: 80, aspect: undefined }
   );
+
+  // アスペクト比が変更されたらcropのaspectも更新
+  useEffect(() => {
+    if (aspectRatio && aspectRatio !== 'original') {
+      const [w, h] = aspectRatio.split(':').map(Number);
+      setInternalCrop(prev => ({ ...prev, aspect: w / h }));
+    } else {
+      setInternalCrop(prev => ({ ...prev, aspect: undefined }));
+    }
+  }, [aspectRatio, image]);
 
   useEffect(() => {
     setInternalCrop(crop || { unit: '%', width: 80, aspect: undefined });
@@ -26,12 +37,10 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
   const handleCropComplete = (c, percentCrop) => {
     if (imgRef.current && c.width && c.height) {
       const imageEl = imgRef.current;
-      // 表示サイズとnaturalサイズの比率で正確に計算
       const displayWidth = imageEl.width;
       const displayHeight = imageEl.height;
       const naturalWidth = imageEl.naturalWidth;
       const naturalHeight = imageEl.naturalHeight;
-      // react-image-cropのcropは表示サイズ基準なので、naturalサイズに変換
       const scaleX = naturalWidth / displayWidth;
       const scaleY = naturalHeight / displayHeight;
       const pixelCrop = {
@@ -54,7 +63,6 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
           crop={internalCrop}
           onChange={c => {
             setInternalCrop(c);
-            // onChangeではピクセル値は渡さない
             if (onCropChange) onCropChange(c, imgRef.current, null);
           }}
           onComplete={handleCropComplete}

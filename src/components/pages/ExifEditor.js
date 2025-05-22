@@ -147,6 +147,7 @@ const ExifEditor = () => {
           hasExifData={!!exifData && Object.keys(exifData).length > 0}
           crop={crop}
           onCropChange={handleCropChange}
+          aspectRatio={aspectRatio}
         />
         {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
           <>
