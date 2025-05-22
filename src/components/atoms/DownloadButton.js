@@ -71,7 +71,7 @@ const DownloadButton = ({ onClick, position = 'top-right' }) => {
       title="画像をダウンロード"
       aria-label="画像をダウンロード"
     >
-      <div style={iconStyle}>{/* シンプルな下向き矢印 */}↓</div>
+      <div style={iconStyle}>DL</div>
     </button>
   );
 };

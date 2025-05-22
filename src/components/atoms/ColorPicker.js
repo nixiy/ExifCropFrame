@@ -21,7 +21,7 @@ const ColorPicker = ({ value, onChange, presets = [] }) => {
 
       {presets.length > 0 && (
         <select className="color-preset-select" onChange={handleSelectChange} value="">
-          <option value="">プリセットから選択</option>
+          <option value="">選択</option>
           {presets.map((preset, index) => (
             <option key={index} value={preset.value}>
               {preset.label}

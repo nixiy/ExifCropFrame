@@ -34,7 +34,7 @@ const OptionPanel = ({
 }) => {
   return (
     <div className="embed-options">
-      <h3>埋め込みオプション</h3>
+      <h3>オプション</h3>
       <div className="options-row">
         <OptionGroup label="テキスト色: ">
           <ColorPicker
