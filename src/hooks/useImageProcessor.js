@@ -10,6 +10,8 @@ export const useImageProcessor = () => {
   const [image, setImage] = useState(null);
   const [embeddedImage, setEmbeddedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isDownloadProcessing, setIsDownloadProcessing] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(null); // 進捗（現状は未使用）
   const canvasRef = useRef(null);
   // 埋め込みオプション（初期値はconstantsから取得）
   const [textColor, setTextColor] = useState(DEFAULT_COLORS.TEXT);
@@ -104,34 +106,44 @@ export const useImageProcessor = () => {
    */
   const downloadImage = async (exifData, selectedTags, cropInfo) => {
     if (!image) return;
+    setIsDownloadProcessing(true);
+    setDownloadProgress(null); // 進捗初期化
     let newCropInfo = cropInfo;
-    // pixelCropがある場合は元画像サイズに変換
-    if (cropInfo && cropInfo.pixelCrop && image.previewSrc && image.originalFile) {
-      const previewImg = await loadImageElement(image.previewSrc);
-      const originalImgInfo = await getOriginalImageInfo(image.originalFile);
-      const originalImg = await loadImageElement(originalImgInfo.src);
-      const scaledPixelCrop = await scalePixelCropToOriginal(
-        cropInfo.pixelCrop,
-        previewImg,
-        originalImg
-      );
-      newCropInfo = {
-        ...cropInfo,
-        pixelCrop: scaledPixelCrop,
-        imageRef: originalImg,
-      };
+    try {
+      // pixelCropがある場合は元画像サイズに変換
+      if (cropInfo && cropInfo.pixelCrop && image.previewSrc && image.originalFile) {
+        const previewImg = await loadImageElement(image.previewSrc);
+        const originalImgInfo = await getOriginalImageInfo(image.originalFile);
+        const originalImg = await loadImageElement(originalImgInfo.src);
+        const scaledPixelCrop = await scalePixelCropToOriginal(
+          cropInfo.pixelCrop,
+          previewImg,
+          originalImg
+        );
+        newCropInfo = {
+          ...cropInfo,
+          pixelCrop: scaledPixelCrop,
+          imageRef: originalImg,
+        };
+      }
+      // ダウンロード用に高解像度で再生成
+      // 進捗を管理したい場合はここで setDownloadProgress を適宜呼ぶ
+      const dataURL = await processImage(exifData, selectedTags, newCropInfo, {
+        forDownload: true,
+      });
+      if (!dataURL) return;
+      const link = document.createElement('a');
+      link.href = dataURL;
+      const fileName =
+        image.name.replace(/\.[^.]+$/, '') + '-exif.' + (image.type.split('/')[1] || 'jpg');
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setIsDownloadProcessing(false);
+      setDownloadProgress(null);
     }
-    // ダウンロード用に高解像度で再生成
-    const dataURL = await processImage(exifData, selectedTags, newCropInfo, { forDownload: true });
-    if (!dataURL) return;
-    const link = document.createElement('a');
-    link.href = dataURL;
-    const fileName =
-      image.name.replace(/\.[^.]+$/, '') + '-exif.' + (image.type.split('/')[1] || 'jpg');
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   /**
@@ -146,6 +158,8 @@ export const useImageProcessor = () => {
     setImage,
     embeddedImage,
     isProcessing,
+    isDownloadProcessing,
+    downloadProgress,
     canvasRef,
     textColor,
     setTextColor,

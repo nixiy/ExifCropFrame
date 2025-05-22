@@ -25,6 +25,8 @@ const ExifEditor = () => {
     setImage,
     embeddedImage,
     isProcessing: isImageProcessing,
+    isDownloadProcessing,
+    downloadProgress,
     canvasRef,
     textColor,
     setTextColor,
@@ -150,6 +152,8 @@ const ExifEditor = () => {
           onClear={handleClear}
           crop={crop}
           onCropChange={handleCropChange}
+          isDownloadProcessing={isDownloadProcessing}
+          downloadProgress={downloadProgress}
         />
         {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
           <>
@@ -164,7 +168,12 @@ const ExifEditor = () => {
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
             />{' '}
-            <EmbeddedImagePreview embeddedImage={embeddedImage} onDownload={handleDownload} />
+            <EmbeddedImagePreview
+              embeddedImage={embeddedImage}
+              onDownload={handleDownload}
+              isDownloadProcessing={isDownloadProcessing}
+              downloadProgress={downloadProgress}
+            />
           </>
         )}
         {/* 非表示のCanvasエレメント */}

@@ -10,9 +10,18 @@ import CloseButton from '../atoms/CloseButton';
  * @param {Function} props.onClear - クリアボタンハンドラ
  * @param {Function} props.onCropChange - クロップ範囲変更ハンドラ
  * @param {Object} props.crop - クロップ範囲
+ * @param {boolean} props.isDownloadProcessing - ダウンロード画像生成中フラグ
+ * @param {number} props.downloadProgress - ダウンロード進捗（%）
  * @returns {JSX.Element} - 画像プレビューコンポーネント
  */
-const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
+const ImagePreviewPanel = ({
+  image,
+  onClear,
+  crop,
+  onCropChange,
+  isDownloadProcessing,
+  downloadProgress,
+}) => {
   const imgRef = useRef(null);
   const [internalCrop, setInternalCrop] = useState(crop);
 
@@ -60,8 +69,6 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
           crop={safeCrop}
           onChange={c => {
             setInternalCrop(c);
-            // onCropChangeはcropが変わった時のみ呼ぶ（無限ループ防止）
-            // crop値が変化した場合のみ呼ぶ
             if (
               onCropChange &&
               (c.x !== internalCrop.x ||
