@@ -1,14 +1,13 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const packageJson = require('./package.json'); // 追加
 
 module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
-    publicPath: process.env.NODE_ENV === 'production' ? '/ExifCropFrame/' : '/', // 修正
+    // publicPath の設定を削除
   },
   module: {
     rules: [
