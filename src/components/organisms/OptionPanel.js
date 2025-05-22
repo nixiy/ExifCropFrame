@@ -52,7 +52,7 @@ const OptionPanel = ({
             onChange={e => onTextColorChange(e.target.value)}
             presets={DEFAULT_COLORS.PRESET_TEXT_COLORS}
           />
-        </OptionGroup>
+        </OptionGroup>{' '}
         <OptionGroup label="背景色: ">
           <ColorPicker
             value={backgroundColor}
@@ -60,13 +60,13 @@ const OptionPanel = ({
             presets={DEFAULT_COLORS.PRESET_BACKGROUND_COLORS}
           />
         </OptionGroup>
-        <OptionGroup label="白枠のサイズ: ">
+        <OptionGroup label="枠サイズ: ">
           <Select
             options={BORDER_SIZE_OPTIONS}
             value={borderSize}
             onChange={e => onBorderSizeChange(Number(e.target.value))}
           />
-        </OptionGroup>
+        </OptionGroup>{' '}
         <OptionGroup label="アスペクト比: ">
           <Select
             options={ASPECT_RATIO_OPTIONS}
@@ -74,7 +74,7 @@ const OptionPanel = ({
             onChange={e => onAspectChange(Number(e.target.value))}
           />
         </OptionGroup>
-        <OptionGroup label="クロップ領域を表示" isCheckbox>
+        <OptionGroup label="クロップ:" isCheckbox>
           <input
             type="checkbox"
             checked={showCrop}
