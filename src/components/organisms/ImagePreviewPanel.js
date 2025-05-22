@@ -14,7 +14,7 @@ import CloseButton from '../atoms/CloseButton';
  * @param {number} props.downloadProgress - ダウンロード進捗（%）
  * @returns {JSX.Element} - 画像プレビューコンポーネント
  */
-const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
+const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true }) => {
   const imgRef = useRef(null);
   const [internalCrop, setInternalCrop] = useState(crop);
 
@@ -58,31 +58,40 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange }) => {
   return (
     <div className="image-preview">
       <div style={{ position: 'relative' }}>
-        <ReactCrop
-          crop={safeCrop}
-          onChange={c => {
-            setInternalCrop(c);
-            if (
-              onCropChange &&
-              (c.x !== internalCrop.x ||
-                c.y !== internalCrop.y ||
-                c.width !== internalCrop.width ||
-                c.height !== internalCrop.height)
-            ) {
-              onCropChange(c, imgRef.current, null);
-            }
-          }}
-          onComplete={handleCropComplete}
-          aspect={internalCrop.aspect}
-          style={{ maxWidth: '100%', maxHeight: 500 }}
-        >
+        {showCrop ? (
+          <ReactCrop
+            crop={safeCrop}
+            onChange={c => {
+              setInternalCrop(c);
+              if (
+                onCropChange &&
+                (c.x !== internalCrop.x ||
+                  c.y !== internalCrop.y ||
+                  c.width !== internalCrop.width ||
+                  c.height !== internalCrop.height)
+              ) {
+                onCropChange(c, imgRef.current, null);
+              }
+            }}
+            onComplete={handleCropComplete}
+            aspect={internalCrop.aspect}
+            style={{ maxWidth: '100%', maxHeight: 500 }}
+          >
+            <img
+              ref={imgRef}
+              src={image.previewSrc || image.src}
+              alt={image.name}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+          </ReactCrop>
+        ) : (
           <img
             ref={imgRef}
             src={image.previewSrc || image.src}
             alt={image.name}
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
-        </ReactCrop>
+        )}
         <CloseButton onClick={onClear} position="top-right" />
       </div>
     </div>

@@ -17,6 +17,7 @@ const ExifEditor = () => {
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
   const [crop, setCrop] = useState();
   const [cropInfo, setCropInfo] = useState(null);
+  const [showCrop, setShowCrop] = useState(false);
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
 
@@ -133,7 +134,6 @@ const ExifEditor = () => {
 
   return (
     <div>
-      {' '}
       {process.env.NODE_ENV === 'development' && !image && (
         <div style={{ margin: '0 auto', maxWidth: '800px', textAlign: 'right' }}>
           <Button type="info" onClick={loadSampleImage}>
@@ -147,15 +147,15 @@ const ExifEditor = () => {
         onFileSelect={handleFileSelect}
         hasImage={!!image}
       >
-        <ImagePreviewPanel
-          image={image}
-          onClear={handleClear}
-          crop={crop}
-          onCropChange={handleCropChange}
-        />
-        {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
-          <>
-            {' '}
+        <div className="editor-horizontal-row">
+          <ImagePreviewPanel
+            image={image}
+            onClear={handleClear}
+            crop={crop}
+            onCropChange={handleCropChange}
+            showCrop={showCrop}
+          />
+          {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
             <OptionPanel
               textColor={textColor}
               onTextColorChange={setTextColor}
@@ -165,14 +165,18 @@ const ExifEditor = () => {
               onBorderSizeChange={setBorderSize}
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
-            />{' '}
-            <EmbeddedImagePreview
-              embeddedImage={embeddedImage}
-              onDownload={handleDownload}
-              isDownloadProcessing={isDownloadProcessing}
-              downloadProgress={downloadProgress}
+              showCrop={showCrop}
+              onShowCropChange={setShowCrop}
             />
-          </>
+          )}
+        </div>
+        {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
+          <EmbeddedImagePreview
+            embeddedImage={embeddedImage}
+            onDownload={handleDownload}
+            isDownloadProcessing={isDownloadProcessing}
+            downloadProgress={downloadProgress}
+          />
         )}
         {/* 非表示のCanvasエレメント */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
