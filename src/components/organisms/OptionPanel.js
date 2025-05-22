@@ -3,7 +3,13 @@ import OptionGroup from '../molecules/OptionGroup';
 import ColorPicker from '../atoms/ColorPicker';
 import Select from '../atoms/Select';
 import Button from '../atoms/Button';
-import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS, ASPECT_RATIO_OPTIONS } from '../../utils/constants';
+import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
+
+const ASPECT_RATIO_OPTIONS = [
+  { value: 1, label: '1:1' },
+  { value: 21 / 9, label: '21:9' },
+  { value: 16 / 9, label: '16:9' },
+];
 
 /**
  * 埋め込みオプションパネルコンポーネント

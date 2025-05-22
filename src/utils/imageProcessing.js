@@ -116,166 +116,113 @@ export const embedTextInImage = ({
   canvas,
 }) => {
   return new Promise((resolve, reject) => {
-    try {
-      validateEmbedParams({ image, exifData, canvas });
-      const selectedTagKeys = extractSelectedTagKeys(selectedTags);
-      if (!selectedTagKeys.length) {
-        reject('表示するExif情報が選択されていません');
-        return;
-      }
-      const img = new Image();
-      img.onload = async () => {
-        try {
-          const ctx = canvas.getContext('2d', { willReadFrequently: true });
-          const cameraInfoText = getCameraInfoText(exifData, selectedTagKeys);
-          const detailsInfoText = getDetailsInfoText(exifData, selectedTagKeys);
-          const drawParams = calculateDrawParams(img, cropInfo, borderSize);
-          const dataURL = await drawImageWithExif({
-            ctx,
-            img,
-            drawParams,
-            cameraInfoText,
-            detailsInfoText,
-            textColor,
-            backgroundColor,
-            canvas,
-          });
-          resolve(dataURL);
-        } catch (error) {
-          console.error('画像処理エラー:', error);
-          reject(`画像処理に失敗しました: ${error.message}`);
-        }
-      };
-      img.onerror = () => reject('画像の読み込みに失敗しました');
-      img.src = image.src;
-    } catch (error) {
-      reject(error.message);
+    if (!image || !exifData || !canvas) {
+      reject('必要なパラメータがありません');
+      return;
     }
+
+    // 選択されたタグをフィルタリング
+    const selectedTagKeys = Object.entries(selectedTags)
+      .filter(([, isSelected]) => isSelected)
+      .map(([key]) => key);
+
+    if (!selectedTagKeys.length) {
+      reject('表示するExif情報が選択されていません');
+      return;
+    }
+
+    const img = new Image();
+    img.onload = async () => {
+      try {
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const cameraInfoText = getCameraInfoText(exifData, selectedTagKeys);
+        const detailsInfoText = getDetailsInfoText(exifData, selectedTagKeys);
+
+        // クロップ情報の処理
+        const { cropWidth, cropHeight, offsetX, offsetY } = processCropInfo(img, cropInfo);
+
+        // 枠線とフォントサイズの計算
+        const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;
+        const borderWidth = Math.max(10, Math.floor(cropWidth / 100) * borderMultiplier);
+        const baseFontSize = Math.max(12, Math.floor(cropWidth / 50));
+        const largeFontSize = Math.floor(baseFontSize * 1.0);
+        const mediumFontSize = Math.floor(baseFontSize * 0.8);
+        const lineHeight = baseFontSize * 1.5;
+
+        // テキストエリアの高さ計算
+        const totalLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
+        const padding = Math.max(20, Math.min(30, borderWidth * 0.5));
+        const requiredTextHeight = lineHeight * (totalLines + 0.7) + padding;
+        const minExifAreaHeight = Math.max(120, borderWidth * 1.5);
+        const exifAreaHeight = Math.max(minExifAreaHeight, requiredTextHeight);
+
+        // キャンバスサイズの設定
+        const totalWidth = cropWidth + borderWidth * 2;
+        const totalHeight = cropHeight + borderWidth * 2 + exifAreaHeight;
+        canvas.width = totalWidth;
+        canvas.height = totalHeight;
+
+        // 背景を描画
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+        // 画像を描画
+        ctx.drawImage(
+          img,
+          offsetX,
+          offsetY,
+          cropWidth,
+          cropHeight,
+          borderWidth,
+          borderWidth,
+          cropWidth,
+          cropHeight
+        );
+
+        // Exif情報エリアの背景を描画
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, borderWidth + cropHeight, totalWidth, exifAreaHeight);
+
+        // テキストの配置を計算
+        const actualTextHeight = lineHeight * totalLines;
+        const verticalCenterOffset = Math.max(0, (exifAreaHeight - actualTextHeight) / 2);
+        let startY = borderWidth + cropHeight + verticalCenterOffset + lineHeight * 0.8;
+
+        // テキストシャドウをリセット
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowBlur = 0;
+
+        // カメラ情報を描画
+        if (cameraInfoText) {
+          ctx.font = `bold ${largeFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`;
+          ctx.fillStyle = textColor;
+          ctx.textAlign = 'center';
+          ctx.fillText(cameraInfoText, totalWidth / 2, startY);
+          startY += lineHeight * 1.2;
+        }
+
+        // 詳細情報を描画
+        if (detailsInfoText) {
+          ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`;
+          ctx.fillStyle = textColor;
+          ctx.textAlign = 'center';
+          ctx.fillText(detailsInfoText, totalWidth / 2, startY);
+        }
+
+        // データURLを生成して返す
+        const dataURL = await generateDataURL(ctx, canvas);
+        resolve(dataURL);
+      } catch (error) {
+        console.error('画像処理エラー:', error);
+        reject(`画像処理に失敗しました: ${error.message}`);
+      }
+    };
+
+    img.onerror = () => reject('画像の読み込みに失敗しました');
+    img.src = image.src;
   });
 };
-
-// パラメータバリデーション
-function validateEmbedParams({ image, exifData, canvas }) {
-  if (!image || !exifData || !canvas) {
-    throw new Error('必要なパラメータがありません');
-  }
-}
-
-// 選択タグの抽出
-function extractSelectedTagKeys(selectedTags) {
-  return Object.entries(selectedTags)
-    .filter(([, isSelected]) => isSelected)
-    .map(([key]) => key);
-}
-
-// 描画用パラメータの計算
-function calculateDrawParams(img, cropInfo, borderSize) {
-  const { cropWidth, cropHeight, offsetX, offsetY } = processCropInfo(img, cropInfo);
-  const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;
-  const borderWidth = Math.max(10, Math.floor(cropWidth / 100) * borderMultiplier);
-  const baseFontSize = Math.max(12, Math.floor(cropWidth / 50));
-  const largeFontSize = Math.floor(baseFontSize * 1.0);
-  const mediumFontSize = Math.floor(baseFontSize * 0.8);
-  const lineHeight = baseFontSize * 1.5;
-  return {
-    cropWidth,
-    cropHeight,
-    offsetX,
-    offsetY,
-    borderWidth,
-    largeFontSize,
-    mediumFontSize,
-    lineHeight,
-    baseFontSize,
-  };
-}
-
-// キャンバス描画処理
-async function drawImageWithExif({
-  ctx,
-  img,
-  drawParams,
-  cameraInfoText,
-  detailsInfoText,
-  textColor,
-  backgroundColor,
-  canvas,
-}) {
-  const {
-    cropWidth,
-    cropHeight,
-    offsetX,
-    offsetY,
-    borderWidth,
-    largeFontSize,
-    mediumFontSize,
-    lineHeight,
-  } = drawParams;
-
-  // テキストエリアの高さ計算
-  const totalLines = (cameraInfoText ? 1 : 0) + (detailsInfoText ? 1 : 0);
-  const padding = Math.max(20, Math.min(30, borderWidth * 0.5));
-  const requiredTextHeight = lineHeight * (totalLines + 0.7) + padding;
-  const minExifAreaHeight = Math.max(120, borderWidth * 1.5);
-  const exifAreaHeight = Math.max(minExifAreaHeight, requiredTextHeight);
-
-  // キャンバスサイズの設定
-  const totalWidth = cropWidth + borderWidth * 2;
-  const totalHeight = cropHeight + borderWidth * 2 + exifAreaHeight;
-  canvas.width = totalWidth;
-  canvas.height = totalHeight;
-
-  // 背景を描画
-  ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, 0, totalWidth, totalHeight);
-
-  // 画像を描画
-  ctx.drawImage(
-    img,
-    offsetX,
-    offsetY,
-    cropWidth,
-    cropHeight,
-    borderWidth,
-    borderWidth,
-    cropWidth,
-    cropHeight
-  );
-
-  // Exif情報エリアの背景を描画
-  ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, borderWidth + cropHeight, totalWidth, exifAreaHeight);
-
-  // テキストの配置を計算
-  const actualTextHeight = lineHeight * totalLines;
-  const verticalCenterOffset = Math.max(0, (exifAreaHeight - actualTextHeight) / 2);
-  let startY = borderWidth + cropHeight + verticalCenterOffset + lineHeight * 0.8;
-
-  // テキストシャドウをリセット
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
-  ctx.shadowBlur = 0;
-
-  // カメラ情報を描画
-  if (cameraInfoText) {
-    ctx.font = `bold ${largeFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`;
-    ctx.fillStyle = textColor;
-    ctx.textAlign = 'center';
-    ctx.fillText(cameraInfoText, totalWidth / 2, startY);
-    startY += lineHeight * 1.2;
-  }
-
-  // 詳細情報を描画
-  if (detailsInfoText) {
-    ctx.font = `${mediumFontSize}px "Roboto", "Segoe UI", -apple-system, sans-serif`;
-    ctx.fillStyle = textColor;
-    ctx.textAlign = 'center';
-    ctx.fillText(detailsInfoText, totalWidth / 2, startY);
-  }
-
-  // データURLを生成して返す
-  return await generateDataURL(ctx, canvas);
-}
 
 // 1行目のカメラ情報テキスト生成
 function getCameraInfoText(exifData, selectedTagKeys) {
