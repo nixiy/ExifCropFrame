@@ -178,14 +178,14 @@ const ExifEditor = () => {
             テスト画像読込
           </Button>
         </div>
-      )}
+      )}{' '}
       <DropZone
         isDragging={isDragging}
         onDrop={handleDragChange}
         onFileSelect={handleFileSelect}
         hasImage={!!image}
       >
-        <div className="editor-horizontal-row">
+        <div className="editor-vertical-row editor-horizontal-row">
           <ImagePreviewPanel
             image={image}
             onClear={handleClear}

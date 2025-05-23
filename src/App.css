@@ -851,40 +851,48 @@ input[type='color']::-webkit-color-swatch {
 }
 
 /* エディターの水平レイアウト */
-.editor-horizontal-row {
+.editor-vertical-row {
   display: flex;
+  flex-direction: column;
   gap: 24px;
-  align-items: flex-start;
+  align-items: center;
   margin-top: 24px;
   background: transparent;
   padding: 0;
 }
 
-.editor-horizontal-row > .image-preview {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 60%;
+.editor-vertical-row > .image-preview,
+.editor-vertical-row > .embed-options {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
 }
 
-.editor-horizontal-row > .embed-options {
-  flex: 0 0 300px;
+.editor-vertical-row > .image-preview {
+  min-width: 0;
+}
+
+.editor-vertical-row > .embed-options {
   min-width: 220px;
-  max-width: 340px;
   box-sizing: border-box;
 }
 
-@media (max-width: 900px) {
-  .editor-horizontal-row {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  .editor-horizontal-row > .image-preview,
-  .editor-horizontal-row > .embed-options {
-    max-width: 100%;
-    width: 100%;
-    margin: 0 auto;
-  }
+/* 以前のスタイルを残して、名前を変えて互換性を維持 */
+.editor-horizontal-row {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  margin-top: 24px;
+  background: transparent;
+  padding: 0;
+}
+
+.editor-horizontal-row > .image-preview,
+.editor-horizontal-row > .embed-options {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* アニメーションとトランジション */
