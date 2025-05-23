@@ -1,34 +1,5 @@
 /* モダンUIスタイル - ExifCropFrame アプリケーション */
 
-/* ReactCrop修正用スタイル */
-.ReactCrop__child-wrapper {
-  height: auto !important;
-  max-height: 100% !important;
-  overflow: hidden;
-}
-
-.ReactCrop {
-  position: relative;
-  max-height: 500px;
-  display: block;
-  cursor: crosshair;
-  overflow: hidden;
-  line-height: 0;
-}
-
-.react-crop-wrapper {
-  line-height: 0;
-  display: block;
-}
-
-/* ReactCropの画像表示改善 */
-.ReactCrop__image {
-  display: block;
-  max-width: 100%;
-  touch-action: none;
-  transform-origin: 0 0;
-}
-
 /* 余分な余白を削除 */
 .image-preview {
   line-height: 0;

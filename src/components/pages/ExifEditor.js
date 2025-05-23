@@ -42,7 +42,7 @@ const ExifEditor = () => {
     resetImage,
   } = useImageProcessor(); /**
    * 初期クロップを設定する関数
-   * 注: 実際のクロップ計算は ImagePreviewPanel コンポーネントに委任
+   * 注: 実際のクロップ計算は CropperImagePanel コンポーネントに委任
    * @param {number} aspect - アスペクト比
    * @returns {Object} - 初期クロップ設定
    */
@@ -50,9 +50,7 @@ const ExifEditor = () => {
     // アスペクト比がナンセンスな値の場合のフォールバック
     if (!aspect || aspect <= 0 || !Number.isFinite(aspect)) {
       aspect = 21 / 9; // デフォルト値
-    }
-
-    // 初期クロップはImagePreviewPanelで計算されるため、
+    } // 初期クロップはCropperImagePanelで計算されるため、
     // ここでは最低限の情報だけ設定する
     return {
       unit: '%',
@@ -139,10 +137,8 @@ const ExifEditor = () => {
     selectedExifTags,
   ]); // 画像変更時に初期化
   useEffect(() => {
-    if (!image) return; // 画像がなければ何もしない
-
-    // 基本的な初期クロップ設定
-    // 実際のサイズと位置の計算はImagePreviewPanelに委任
+    if (!image) return; // 画像がなければ何もしない    // 基本的な初期クロップ設定
+    // 実際のサイズと位置の計算はCropperImagePanelに委任
   }, [image, aspect]); // 画像変更時のみ実行
 
   /**
