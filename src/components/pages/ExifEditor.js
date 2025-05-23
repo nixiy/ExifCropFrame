@@ -16,7 +16,6 @@ const ExifEditor = () => {
   // 状態管理
   const [isDragging, setIsDragging] = useState(false);
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
-  const [crop, setCrop] = useState();
   const [cropInfo, setCropInfo] = useState(null);
   const [showCrop, setShowCrop] = useState(false);
   const [aspect, setAspect] = useState(21 / 9); // デフォルト21:9
@@ -73,7 +72,6 @@ const ExifEditor = () => {
 
         // CropperImagePanelで自動的に適切な初期サイズが設定されるため、
         // cropをリセットする（CropperImagePanelが内部で処理）
-        setCrop(null);
         setCropInfo(null);
 
         // EXIF情報の取得
@@ -145,7 +143,6 @@ const ExifEditor = () => {
 
     // 基本的な初期クロップ設定
     // 実際のサイズと位置の計算はImagePreviewPanelに委任
-    setCrop({ unit: '%', aspect });
   }, [image, aspect]); // 画像変更時のみ実行
 
   /**
@@ -161,7 +158,6 @@ const ExifEditor = () => {
    * クロップ変更時のハンドラ
    */
   const handleCropChange = useCallback((newCrop, imgEl, pixelCrop) => {
-    setCrop(newCrop);
     if (imgEl) {
       setCropInfo({ crop: newCrop, imageRef: imgEl, pixelCrop });
     }
@@ -196,7 +192,7 @@ const ExifEditor = () => {
             テスト画像読込
           </Button>
         </div>
-      )}{' '}
+      )}
       <DropZone
         isDragging={isDragging}
         onDrop={handleDragChange}
@@ -204,7 +200,6 @@ const ExifEditor = () => {
         hasImage={!!image}
       >
         <div className="editor-vertical-row editor-horizontal-row">
-          {' '}
           <CropperImagePanel
             image={image}
             onClear={handleClear}

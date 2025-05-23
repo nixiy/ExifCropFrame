@@ -138,10 +138,6 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
   const clampCropToDisplay = crop => {
     // アスペクト比固定時の特別な処理
     if (aspect && crop.width && crop.height) {
-      // 現在のアスペクト比を計算
-      const currentAspect = crop.width / crop.height;
-      const expectedAspect = aspect;
-
       // 現在のクロップ値を保存
       let { x, y, width, height } = crop;
 

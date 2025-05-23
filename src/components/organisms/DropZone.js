@@ -51,7 +51,6 @@ const DropZone = ({ isDragging, onDrop, onFileSelect, hasImage, children }) => {
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      {' '}
       {!hasImage ? (
         <>
           <div className="drop-icon">

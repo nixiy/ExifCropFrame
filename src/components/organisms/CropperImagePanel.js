@@ -21,8 +21,6 @@ const CropperImagePanel = ({ image, onClear, onCropChange, showCrop = true, aspe
     width: 0,
     height: 0,
   });
-  // 現在のクロップデータを保存
-  const [currentCropData, setCurrentCropData] = useState(null);
 
   /**
    * クロッパーインスタンスを取得
@@ -48,15 +46,12 @@ const CropperImagePanel = ({ image, onClear, onCropChange, showCrop = true, aspe
       });
 
       // コンテナとキャンバスのデータを取得
-      const containerData = cropper.getContainerData();
       const canvasData = cropper.getCanvasData();
 
       // 最初にアスペクト比を設定
       cropper.setAspectRatio(aspect);
 
       // 画像とキャンバスのサイズを取得
-      const imageWidth = imageData.naturalWidth;
-      const imageHeight = imageData.naturalHeight;
       const canvasWidth = canvasData.width;
       const canvasHeight = canvasData.height;
 
@@ -102,7 +97,6 @@ const CropperImagePanel = ({ image, onClear, onCropChange, showCrop = true, aspe
       // 少し遅延させて確実に反映されるようにする
       setTimeout(() => {
         const cropData = cropper.getData(true);
-        setCurrentCropData(cropData);
 
         // ピクセル単位のクロップ情報
         const pixelCrop = {
@@ -143,7 +137,6 @@ const CropperImagePanel = ({ image, onClear, onCropChange, showCrop = true, aspe
     const cropper = getCropper();
     if (cropper && onCropChange) {
       const cropData = cropper.getData(true);
-      setCurrentCropData(cropData);
 
       const pixelCrop = {
         x: Math.round(cropData.x),
