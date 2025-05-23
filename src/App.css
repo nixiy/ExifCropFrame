@@ -257,6 +257,29 @@
   }
 }
 
+/* カラーピッカー関連のレスポンシブ改善 */
+.options-color-row {
+  flex-wrap: wrap; /* 色選択肢の行は折り返し可能に */
+}
+
+.color-option-group {
+  min-width: 200px; /* 最小幅を設定 */
+  flex: 1; /* 利用可能なスペースを均等に分配 */
+}
+
+/* スマートフォン向け調整 */
+@media (max-width: 768px) {
+  .options-color-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .color-option-group {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 /* チェックボックスグループ */
 .checkbox-group label {
   display: flex;
@@ -460,6 +483,7 @@
   gap: 12px;
   width: 100%;
   position: relative;
+  flex-wrap: wrap; /* スマホレイアウトで折り返せるように */
 }
 
 .color-picker-main {
@@ -467,6 +491,8 @@
   align-items: center;
   gap: 10px;
   flex: 0 0 auto;
+  position: relative;
+  z-index: 5; /* z-indexを設定して他の要素より前面に */
 }
 
 .color-swatch-wrapper {
@@ -528,9 +554,11 @@ input[type='color']::-webkit-color-swatch {
 .color-preset-select {
   width: auto;
   min-width: 100px;
+  max-width: 100%;
   flex: 1 1 auto;
   appearance: none;
   -webkit-appearance: none;
+  -moz-appearance: none;
   padding: 8px 12px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -544,6 +572,8 @@ input[type='color']::-webkit-color-swatch {
   background-size: 16px;
   padding-right: 36px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 20; /* カラーピッカーパネルよりも高いz-indexを設定 */
 }
 
 .color-preset-select:hover {
@@ -562,11 +592,12 @@ input[type='color']::-webkit-color-swatch {
   top: 100%;
   left: 0;
   min-width: 240px;
+  max-width: calc(100vw - 40px); /* 画面幅からマージンを引いた最大サイズ */
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   padding: 10px;
-  z-index: 10;
+  z-index: 19; /* 選択肢と干渉しないよう、ほぼ同じz-indexを設定 */
   margin-top: 10px;
   border: 1px solid #e0e0e0;
   animation: fadeIn 0.2s ease-out forwards;

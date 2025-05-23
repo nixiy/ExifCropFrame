@@ -46,21 +46,22 @@ const OptionPanel = ({
   return (
     <div className="embed-options simplified">
       <div className="options-compact">
-        <div className="options-row">
-          <OptionGroup label="テキスト色">
+        {' '}
+        <div className="options-row options-color-row">
+          <OptionGroup label="テキスト色" className="color-option-group">
             <ColorPicker
               value={textColor}
               onChange={e => onTextColorChange(e.target.value)}
               presets={DEFAULT_COLORS.PRESET_TEXT_COLORS}
             />
           </OptionGroup>
-          <OptionGroup label="背景色">
+          <OptionGroup label="背景色" className="color-option-group">
             <ColorPicker
               value={backgroundColor}
               onChange={e => onBackgroundColorChange(e.target.value)}
               presets={DEFAULT_COLORS.PRESET_BACKGROUND_COLORS}
             />
-          </OptionGroup>{' '}
+          </OptionGroup>
         </div>
         <div className="options-row segmented-row">
           <OptionGroup label="枠サイズ" className="full-width">
@@ -80,7 +81,6 @@ const OptionPanel = ({
             />
           </OptionGroup>
         </div>
-
         <div className="options-row">
           <div className="checkbox-group">
             <label>
