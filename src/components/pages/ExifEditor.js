@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import DropZone from '../organisms/DropZone';
-import ImagePreviewPanel from '../organisms/ImagePreviewPanel';
+import CropperImagePanel from '../organisms/CropperImagePanel';
 import OptionPanel from '../organisms/OptionPanel';
 import EmbeddedImagePreview from '../organisms/EmbeddedImagePreview';
 import Button from '../atoms/Button';
@@ -16,7 +16,6 @@ const ExifEditor = () => {
   // 状態管理
   const [isDragging, setIsDragging] = useState(false);
   const [showEmbedOptions, setShowEmbedOptions] = useState(false);
-  const [crop, setCrop] = useState();
   const [cropInfo, setCropInfo] = useState(null);
   const [showCrop, setShowCrop] = useState(false);
   const [aspect, setAspect] = useState(21 / 9); // デフォルト21:9
@@ -53,14 +52,16 @@ const ExifEditor = () => {
         // 画像情報の取得
         const imageInfo = await processImageFile(file);
         setImage(imageInfo);
-        // 画像の最大枠でcrop初期化
-        setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
+
+        // CropperImagePanelで自動的に適切な初期サイズが設定されるため、
+        // cropをリセットする（CropperImagePanelが内部で処理）
+        setCropInfo(null);
 
         // EXIF情報の取得
-        await fetchExifData(file);
-
-        // オプション画面を即時表示
+        await fetchExifData(file); // オプション画面を即時表示
         setShowEmbedOptions(true);
+
+        setShowCrop(false);
       } catch (error) {
         console.error('ファイル処理中にエラーが発生しました:', error);
       }
@@ -73,11 +74,9 @@ const ExifEditor = () => {
    */
   const loadSampleImage = useCallback(async () => {
     try {
-      // サンプル画像のパス (publicフォルダ内の画像を直接参照)
       const sampleImgPath = '/images/sample-image.jpg';
       const response = await fetch(sampleImgPath);
       const blob = await response.blob();
-      // Blobからファイルオブジェクトを作成
       const file = new File([blob], 'sample-image.jpg', { type: blob.type });
       handleFileSelect(file);
     } catch (error) {
@@ -90,8 +89,10 @@ const ExifEditor = () => {
     if (process.env.NODE_ENV === 'development' && !hasSampleLoaded && !image) {
       loadSampleImage();
       setHasSampleLoaded(true);
+      // クロップ表示を明示的に無効化
+      setShowCrop(false);
     }
-  }, []); // 空の依存配列で初回のみ実行
+  }, []);
 
   // 画像とEXIFデータが揃ったら自動的に画像生成を実行
   useEffect(() => {
@@ -104,7 +105,6 @@ const ExifEditor = () => {
       !embeddedImage &&
       !isImageProcessing
     ) {
-      // 待機なしで即時実行
       processImage(exifData, selectedExifTags);
     }
   }, [
@@ -117,19 +117,6 @@ const ExifEditor = () => {
     processImage,
     selectedExifTags,
   ]);
-
-  // アスペクト比変更時にcropも即座に合わせる
-  useEffect(() => {
-    if (!crop) return;
-    // 幅を基準に高さを再計算
-    const newHeight = crop.width / aspect;
-    // height が実際に変更された場合のみ setCrop を呼び出す
-    // また、newHeightが有限数であること、および浮動小数点誤差を考慮する
-    if (Number.isFinite(newHeight) && Math.abs((crop.height || 0) - newHeight) > 1e-5) {
-      setCrop(prevCrop => ({ ...prevCrop, aspect, height: newHeight }));
-    }
-  }, [aspect, crop]);
-
   /**
    * リセット処理
    */
@@ -143,7 +130,6 @@ const ExifEditor = () => {
    * クロップ変更時のハンドラ
    */
   const handleCropChange = useCallback((newCrop, imgEl, pixelCrop) => {
-    setCrop(newCrop);
     if (imgEl) {
       setCropInfo({ crop: newCrop, imageRef: imgEl, pixelCrop });
     }
@@ -178,7 +164,7 @@ const ExifEditor = () => {
             テスト画像読込
           </Button>
         </div>
-      )}{' '}
+      )}
       <DropZone
         isDragging={isDragging}
         onDrop={handleDragChange}
@@ -186,10 +172,9 @@ const ExifEditor = () => {
         hasImage={!!image}
       >
         <div className="editor-vertical-row editor-horizontal-row">
-          <ImagePreviewPanel
+          <CropperImagePanel
             image={image}
             onClear={handleClear}
-            crop={crop}
             onCropChange={handleCropChange}
             showCrop={showCrop}
             aspect={aspect}

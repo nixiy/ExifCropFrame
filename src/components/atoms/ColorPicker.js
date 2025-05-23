@@ -62,7 +62,7 @@ const ColorPicker = ({ value, onChange, presets = [] }) => {
           }}
         >
           <div className="color-swatch" style={{ backgroundColor: value }}></div>
-        </div>{' '}
+        </div>
         <input
           type="color"
           value={value}
@@ -93,7 +93,7 @@ const ColorPicker = ({ value, onChange, presets = [] }) => {
             </option>
           ))}
         </select>
-      )}{' '}
+      )}
       {isOpen && (
         <div className="color-presets-panel" onClick={e => e.stopPropagation()}>
           <div className="color-presets-grid">

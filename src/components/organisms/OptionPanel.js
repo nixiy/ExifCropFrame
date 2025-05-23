@@ -1,7 +1,6 @@
 import React from 'react';
 import OptionGroup from '../molecules/OptionGroup';
 import ColorPicker from '../atoms/ColorPicker';
-import Select from '../atoms/Select';
 import SegmentedControl from '../atoms/SegmentedControl';
 import Button from '../atoms/Button';
 import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
@@ -46,7 +45,6 @@ const OptionPanel = ({
   return (
     <div className="embed-options simplified">
       <div className="options-compact">
-        {' '}
         <div className="options-row options-color-row">
           <OptionGroup label="テキスト色" className="color-option-group">
             <ColorPicker
