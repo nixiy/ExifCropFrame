@@ -40,23 +40,8 @@ const ExifEditor = () => {
     processImage,
     downloadImage,
     resetImage,
-  } = useImageProcessor(); /**
-   * 初期クロップを設定する関数
-   * 注: 実際のクロップ計算は CropperImagePanel コンポーネントに委任
-   * @param {number} aspect - アスペクト比
-   * @returns {Object} - 初期クロップ設定
-   */
-  const calculateInitialCrop = useCallback(aspect => {
-    // アスペクト比がナンセンスな値の場合のフォールバック
-    if (!aspect || aspect <= 0 || !Number.isFinite(aspect)) {
-      aspect = 21 / 9; // デフォルト値
-    } // 初期クロップはCropperImagePanelで計算されるため、
-    // ここでは最低限の情報だけ設定する
-    return {
-      unit: '%',
-      aspect,
-    };
-  }, []);
+  } = useImageProcessor();
+
   /**
    * ファイル選択時のハンドラー
    * @param {File} file - 選択されたファイル
@@ -73,13 +58,10 @@ const ExifEditor = () => {
         setCropInfo(null);
 
         // EXIF情報の取得
-        await fetchExifData(file);
-
-        // オプション画面を即時表示
+        await fetchExifData(file); // オプション画面を即時表示
         setShowEmbedOptions(true);
 
-        // クロップ表示を有効化
-        setShowCrop(true);
+        setShowCrop(false);
       } catch (error) {
         console.error('ファイル処理中にエラーが発生しました:', error);
       }
@@ -92,11 +74,9 @@ const ExifEditor = () => {
    */
   const loadSampleImage = useCallback(async () => {
     try {
-      // サンプル画像のパス (publicフォルダ内の画像を直接参照)
       const sampleImgPath = '/images/sample-image.jpg';
       const response = await fetch(sampleImgPath);
       const blob = await response.blob();
-      // Blobからファイルオブジェクトを作成
       const file = new File([blob], 'sample-image.jpg', { type: blob.type });
       handleFileSelect(file);
     } catch (error) {
@@ -109,8 +89,10 @@ const ExifEditor = () => {
     if (process.env.NODE_ENV === 'development' && !hasSampleLoaded && !image) {
       loadSampleImage();
       setHasSampleLoaded(true);
+      // クロップ表示を明示的に無効化
+      setShowCrop(false);
     }
-  }, []); // 空の依存配列で初回のみ実行
+  }, []);
 
   // 画像とEXIFデータが揃ったら自動的に画像生成を実行
   useEffect(() => {
@@ -123,7 +105,6 @@ const ExifEditor = () => {
       !embeddedImage &&
       !isImageProcessing
     ) {
-      // 待機なしで即時実行
       processImage(exifData, selectedExifTags);
     }
   }, [
@@ -135,12 +116,7 @@ const ExifEditor = () => {
     canvasRef,
     processImage,
     selectedExifTags,
-  ]); // 画像変更時に初期化
-  useEffect(() => {
-    if (!image) return; // 画像がなければ何もしない    // 基本的な初期クロップ設定
-    // 実際のサイズと位置の計算はCropperImagePanelに委任
-  }, [image, aspect]); // 画像変更時のみ実行
-
+  ]);
   /**
    * リセット処理
    */
