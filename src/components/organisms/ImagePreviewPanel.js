@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import ReactCrop from 'react-image-crop';
+import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import CloseButton from '../atoms/CloseButton';
 
@@ -23,12 +23,90 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
   // crop propが変わったときのみ反映
   useEffect(() => {
     setInternalCrop(crop);
-  }, [crop]);
+  }, [crop]); // React Image Cropのヘルパー関数を使用して適切なクロップを計算
+  const centerAspectCrop = (mediaWidth, mediaHeight, aspect) => {
+    // 初期クロップのデフォルトサイズ（%単位）
+    const width = 90; // 画像幅の90%を使用
 
-  // 画像読み込み時に表示サイズを取得
+    return centerCrop(
+      makeAspectCrop(
+        {
+          unit: '%',
+          width,
+        },
+        aspect,
+        mediaWidth,
+        mediaHeight
+      ),
+      mediaWidth,
+      mediaHeight
+    );
+  };
+
+  // 左右maxのクロップを計算（横長の場合は左右最大、縦長の場合は上下最大）
+  const maxWidthAspectCrop = (mediaWidth, mediaHeight, aspect) => {
+    let crop;
+
+    if (aspect >= 1) {
+      // 横長のアスペクト比
+      // 左右最大
+      crop = makeAspectCrop(
+        {
+          unit: '%',
+          width: 100,
+        },
+        aspect,
+        mediaWidth,
+        mediaHeight
+      );
+
+      // 上下中央
+      crop.y = (100 - crop.height) / 2;
+    } else {
+      // 縦長のアスペクト比
+      // 上下最大
+      crop = makeAspectCrop(
+        {
+          unit: '%',
+          height: 100,
+        },
+        aspect,
+        mediaWidth,
+        mediaHeight
+      );
+
+      // 左右中央
+      crop.x = (100 - crop.width) / 2;
+    }
+
+    return crop;
+  };
+
+  // 画像読み込み時に表示サイズを取得し、初期クロップ領域を調整
   const handleImgLoad = e => {
     const el = e.target;
-    setImgDisplaySize({ width: el.width, height: el.height });
+    const newSize = { width: el.width, height: el.height };
+    setImgDisplaySize(newSize);
+
+    // 初期クロップ領域の調整（アスペクト比を正確に保つ）
+    if (aspect) {
+      // ライブラリのヘルパー関数を使用して左右maxのクロップを計算
+      const newCrop = maxWidthAspectCrop(el.width, el.height, aspect);
+
+      setInternalCrop(newCrop);
+      if (onCropChange) {
+        // ピクセル単位のクロップを計算
+        const pixelCrop = {
+          x: Math.round((newCrop.x / 100) * el.width),
+          y: Math.round((newCrop.y / 100) * el.height),
+          width: Math.round((newCrop.width / 100) * el.width),
+          height: Math.round((newCrop.height / 100) * el.height),
+          unit: 'px',
+        };
+
+        onCropChange(newCrop, el, pixelCrop);
+      }
+    }
   };
 
   // ウィンドウリサイズ時にも画像表示サイズを再取得
@@ -56,18 +134,52 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
     if (x + width > displayWidth) width = displayWidth - x;
     if (y + height > displayHeight) height = displayHeight - y;
     return { ...crop, x, y, width, height };
-  };
-
-  // クロップ値を画像枠内に収める補正関数（UI最大枠用）
+  }; // クロップ値を画像枠内に収める補正関数（UI最大枠用）
   const clampCropToDisplay = crop => {
+    // アスペクト比固定時の特別な処理
+    if (aspect && crop.width && crop.height) {
+      // 現在のアスペクト比を計算
+      const currentAspect = crop.width / crop.height;
+      const expectedAspect = aspect;
+
+      // 現在のクロップ値を保存
+      let { x, y, width, height } = crop;
+
+      // まず位置の補正: 画像内に完全に収める
+      const maxX = Math.max(0, imgDisplaySize.width - width);
+      const maxY = Math.max(0, imgDisplaySize.height - height);
+      x = Math.max(0, Math.min(x, maxX));
+      y = Math.max(0, Math.min(y, maxY));
+
+      // 画像の端に当たった場合はリサイズせず、位置だけを調整
+      // 画像外にはみ出さないようにするが、サイズは維持する
+      return { ...crop, x, y };
+    }
+
+    // アスペクト比固定でない場合は通常の補正
     let x = Math.max(0, crop.x ?? 0);
     let y = Math.max(0, crop.y ?? 0);
     let width = crop.width ?? 1;
     let height = crop.height ?? 1;
-    if (x + width > imgDisplaySize.width) width = imgDisplaySize.width - x;
-    if (y + height > imgDisplaySize.height) height = imgDisplaySize.height - y;
-    width = Math.max(1, width);
-    height = Math.max(1, height);
+
+    // 画像の範囲を超えないように制限
+    const maxWidth = imgDisplaySize.width;
+    const maxHeight = imgDisplaySize.height;
+
+    // 幅と高さの上限を設定
+    width = Math.min(width, maxWidth);
+    height = Math.min(height, maxHeight);
+
+    // 位置が画像の外に出ないように制限
+    if (x + width > maxWidth) x = maxWidth - width;
+    if (y + height > maxHeight) y = maxHeight - height;
+    x = Math.max(0, x);
+    y = Math.max(0, y);
+
+    // 最小値の保証
+    width = Math.max(10, width);
+    height = Math.max(10, height);
+
     return { ...crop, x, y, width, height };
   };
 
@@ -94,20 +206,43 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
       if (onCropChange) onCropChange(c, imgRef.current, null);
     }
   };
+  // アスペクト比が変更された時のeffect
+  useEffect(() => {
+    if (!imgRef.current || !aspect) return;
+
+    // 画像がロードされている場合、アスペクト比変更に応じて左右maxのクロップ領域を再計算
+    const el = imgRef.current;
+    const newCrop = maxWidthAspectCrop(el.width, el.height, aspect);
+
+    setInternalCrop(newCrop);
+    if (onCropChange) {
+      // ピクセル単位のクロップを計算
+      const pixelCrop = {
+        x: Math.round((newCrop.x / 100) * el.width),
+        y: Math.round((newCrop.y / 100) * el.height),
+        width: Math.round((newCrop.width / 100) * el.width),
+        height: Math.round((newCrop.height / 100) * el.height),
+        unit: 'px',
+      };
+
+      onCropChange(newCrop, el, pixelCrop);
+    }
+  }, [aspect, maxWidthAspectCrop, onCropChange]);
 
   // ReactCropに渡す前にundefinedを補正
-  const safeCrop = {
-    ...internalCrop,
-    x: internalCrop.x ?? 0,
-    y: internalCrop.y ?? 0,
-    width: internalCrop.width ?? 1,
-    height: internalCrop.height ?? 1,
-  };
-
+  const safeCrop = internalCrop
+    ? {
+        ...internalCrop,
+        x: internalCrop.x ?? 0,
+        y: internalCrop.y ?? 0,
+        width: internalCrop.width ?? 1,
+        height: internalCrop.height ?? 1,
+      }
+    : undefined;
   if (!image) return null;
   return (
     <div className="image-preview">
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', lineHeight: 0, fontSize: 0, overflow: 'hidden' }}>
         {showCrop ? (
           <ReactCrop
             crop={safeCrop}
@@ -127,7 +262,16 @@ const ImagePreviewPanel = ({ image, onClear, crop, onCropChange, showCrop = true
             }}
             onComplete={handleCropComplete}
             aspect={aspect}
-            style={{ maxWidth: '100%', maxHeight: 500 }}
+            style={{ maxWidth: '100%', maxHeight: 500, display: 'block' }}
+            minWidth={10} // 最小幅を設定
+            minHeight={10} // 最小高さを設定
+            keepSelection={true} // 選択範囲を保持
+            ruleOfThirds={true} // 三分割線を表示
+            circularCrop={false} // 円形クロップを無効化
+            locked={false} // ロックしない（移動可能）
+            disabled={false} // 操作を許可
+            renderSelectionAddon={() => null} // 追加UIなし
+            className="react-crop-wrapper" // カスタムクラス名を追加
           >
             <img
               ref={imgRef}

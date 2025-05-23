@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import DropZone from '../organisms/DropZone';
-import ImagePreviewPanel from '../organisms/ImagePreviewPanel';
+import CropperImagePanel from '../organisms/CropperImagePanel';
 import OptionPanel from '../organisms/OptionPanel';
 import EmbeddedImagePreview from '../organisms/EmbeddedImagePreview';
 import Button from '../atoms/Button';
@@ -41,8 +41,25 @@ const ExifEditor = () => {
     processImage,
     downloadImage,
     resetImage,
-  } = useImageProcessor();
+  } = useImageProcessor(); /**
+   * 初期クロップを設定する関数
+   * 注: 実際のクロップ計算は ImagePreviewPanel コンポーネントに委任
+   * @param {number} aspect - アスペクト比
+   * @returns {Object} - 初期クロップ設定
+   */
+  const calculateInitialCrop = useCallback(aspect => {
+    // アスペクト比がナンセンスな値の場合のフォールバック
+    if (!aspect || aspect <= 0 || !Number.isFinite(aspect)) {
+      aspect = 21 / 9; // デフォルト値
+    }
 
+    // 初期クロップはImagePreviewPanelで計算されるため、
+    // ここでは最低限の情報だけ設定する
+    return {
+      unit: '%',
+      aspect,
+    };
+  }, []);
   /**
    * ファイル選択時のハンドラー
    * @param {File} file - 選択されたファイル
@@ -53,14 +70,20 @@ const ExifEditor = () => {
         // 画像情報の取得
         const imageInfo = await processImageFile(file);
         setImage(imageInfo);
-        // 画像の最大枠でcrop初期化
-        setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
+
+        // CropperImagePanelで自動的に適切な初期サイズが設定されるため、
+        // cropをリセットする（CropperImagePanelが内部で処理）
+        setCrop(null);
+        setCropInfo(null);
 
         // EXIF情報の取得
         await fetchExifData(file);
 
         // オプション画面を即時表示
         setShowEmbedOptions(true);
+
+        // クロップ表示を有効化
+        setShowCrop(true);
       } catch (error) {
         console.error('ファイル処理中にエラーが発生しました:', error);
       }
@@ -116,19 +139,14 @@ const ExifEditor = () => {
     canvasRef,
     processImage,
     selectedExifTags,
-  ]);
-
-  // アスペクト比変更時にcropも即座に合わせる
+  ]); // 画像変更時に初期化
   useEffect(() => {
-    if (!crop) return;
-    // 幅を基準に高さを再計算
-    const newHeight = crop.width / aspect;
-    // height が実際に変更された場合のみ setCrop を呼び出す
-    // また、newHeightが有限数であること、および浮動小数点誤差を考慮する
-    if (Number.isFinite(newHeight) && Math.abs((crop.height || 0) - newHeight) > 1e-5) {
-      setCrop(prevCrop => ({ ...prevCrop, aspect, height: newHeight }));
-    }
-  }, [aspect, crop]);
+    if (!image) return; // 画像がなければ何もしない
+
+    // 基本的な初期クロップ設定
+    // 実際のサイズと位置の計算はImagePreviewPanelに委任
+    setCrop({ unit: '%', aspect });
+  }, [image, aspect]); // 画像変更時のみ実行
 
   /**
    * リセット処理
@@ -186,10 +204,10 @@ const ExifEditor = () => {
         hasImage={!!image}
       >
         <div className="editor-vertical-row editor-horizontal-row">
-          <ImagePreviewPanel
+          {' '}
+          <CropperImagePanel
             image={image}
             onClear={handleClear}
-            crop={crop}
             onCropChange={handleCropChange}
             showCrop={showCrop}
             aspect={aspect}
