@@ -1,11 +1,9 @@
-{
-  "name": "exif-crop-frame",
+{  "name": "exif-crop-frame",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://nixiy.github.io/ExifCropFrame",
-  "scripts": {
+  "homepage": "https://nixiy.github.io/ExifCropFrame/","scripts": {
     "start": "webpack-dev-server --mode development --open",
-    "build": "webpack --mode production",
+    "build": "cross-env NODE_ENV=production webpack --mode production",
     "format": "prettier --write \"src/**/*.{js,jsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,json}\"",
     "predeploy": "npm run build",
@@ -30,6 +28,7 @@
   },
   "devDependencies": {
     "copy-webpack-plugin": "^13.0.0",
+    "cross-env": "^7.0.3",
     "gh-pages": "^6.3.0",
     "prettier": "^3.5.3"
   }
