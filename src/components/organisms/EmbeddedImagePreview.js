@@ -21,7 +21,7 @@ const EmbeddedImagePreview = ({
     <div className="embedded-image-preview">
       <div style={{ position: 'relative' }}>
         <img src={embeddedImage} alt="Exif情報付き画像" />
-        <DownloadButton onClick={onDownload} position="top-right" />
+        <DownloadButton onClick={onDownload} />
         {/* ダウンロード画像生成中の進捗表示 */}
         {isDownloadProcessing && (
           <div

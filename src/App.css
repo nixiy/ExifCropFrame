@@ -751,33 +751,75 @@ input[type='color']::-webkit-color-swatch {
   transform: scale(1.05);
 }
 
-/* ダウンロードボタンのスタイル */
-.download-btn {
+/* モダンでインタラクティブなフローティングボタン */
+.floating-download-btn {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background-color: rgba(0, 0, 0, 0.6);
+  bottom: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4285f4 0%, #3367d6 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  overflow: hidden;
+  padding: 0;
 }
 
-.download-btn:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-  transform: translateY(-1px);
+.floating-download-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
 }
 
-.download-btn svg {
-  width: 16px;
-  height: 16px;
+.floating-download-btn:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+
+.floating-download-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* クリック時の波紋エフェクト */
+.download-ripple {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: scale(0);
+  pointer-events: none;
+}
+
+.download-ripple.animate {
+  animation: ripple 0.8s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .floating-download-btn {
+    width: 42px;
+    height: 42px;
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .floating-download-btn svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 /* GitHub ボタン */
