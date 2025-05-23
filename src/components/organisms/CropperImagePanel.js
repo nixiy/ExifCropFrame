@@ -230,7 +230,7 @@ const CropperImagePanel = ({ image, onClear, onCropChange, showCrop = true, aspe
   }, [aspect]);
   if (!image) return null;
   return (
-    <div className="image-preview" style={{ lineHeight: 0, fontSize: 0 }}>
+    <div className="image-preview" style={{ lineHeight: 0, fontSize: 0, width: '100%' }}>
       <div
         style={{
           position: 'relative',
@@ -238,13 +238,14 @@ const CropperImagePanel = ({ image, onClear, onCropChange, showCrop = true, aspe
           fontSize: 0,
           overflow: 'hidden',
           display: 'block',
+          width: '100%',
         }}
       >
         {showCrop ? (
           <div
             style={{
               maxWidth: '100%',
-              maxHeight: 500,
+              width: '100%',
               lineHeight: 0,
               fontSize: 0,
               display: 'block',
@@ -253,7 +254,7 @@ const CropperImagePanel = ({ image, onClear, onCropChange, showCrop = true, aspe
             <Cropper
               ref={cropperRef}
               src={image.previewSrc || image.src}
-              style={{ height: 500, width: '100%', display: 'block', lineHeight: 0 }}
+              style={{ width: '100%', display: 'block', lineHeight: 0 }}
               aspectRatio={aspect}
               guides={true}
               autoCropArea={1}
