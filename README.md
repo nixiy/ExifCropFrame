@@ -35,11 +35,9 @@ ExifCropFrameは、写真のExif情報をテキストとして画像に埋め込
 ## 対応しているExif情報
 
 - カメラメーカー・モデル
-- 撮影日時
 - 露出設定（シャッタースピード、F値、ISO）
 - レンズ情報
 - 焦点距離
-- GPS情報（位置情報が含まれている場合）
 - その他のカメラ設定
 
 ## 開発者向け情報
@@ -65,7 +63,7 @@ npm install
 ```bash
 npm start
 ```
-アプリは http://localhost:8080 で利用可能になります。
+アプリは http://localhost:3000 で利用可能になります。
 
 ### ビルド
 
@@ -128,11 +126,9 @@ ExifCropFrame is a React application that embeds Exif information as text onto p
 ## Supported Exif Information
 
 - Camera make/model
-- Date and time
 - Exposure settings (shutter speed, f-number, ISO)
 - Lens information
 - Focal length
-- GPS information (if included)
 - Other camera settings
 
 ## Developer Information
@@ -158,7 +154,7 @@ npm install
 ```bash
 npm start
 ```
-The app will be available at http://localhost:8080.
+The app will be available at http://localhost:3000.
 
 ### Build
 
