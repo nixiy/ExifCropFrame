@@ -135,6 +135,20 @@
   border: 1px solid rgba(66, 133, 244, 0.1);
 }
 
+/* シンプル化された設定パネルのスタイル */
+.embed-options.simplified {
+  padding: 16px;
+  margin: 10px auto;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
+  max-width: 600px;
+}
+
+.options-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .embed-options h3 {
   margin-top: 0;
   margin-bottom: 20px;
@@ -200,6 +214,15 @@
   font-size: 0.95em;
 }
 
+.option-group.full-width {
+  max-width: 100%;
+  width: 100%;
+}
+
+.option-group.no-label {
+  margin-bottom: 8px;
+}
+
 .option-group label {
   display: inline-block;
   margin-right: 10px;
@@ -217,7 +240,8 @@
     flex-direction: column;
     gap: 12px;
   }
-  .option-group {
+  .option-group,
+  .option-group.full-width {
     min-width: 0;
     width: 100%;
     max-width: 100%;
@@ -312,6 +336,11 @@
   padding-right: 36px;
 }
 
+.custom-select select option[disabled] {
+  color: #888;
+  font-style: italic;
+}
+
 .custom-select select:hover {
   border-color: #bbbbbb;
   background-color: #ffffff;
@@ -321,6 +350,93 @@
   outline: none;
   border-color: #4285f4;
   box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.25);
+}
+
+/* セグメンテッドコントロールのスタイル */
+.segmented-control {
+  display: flex;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 3px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.segment {
+  flex: 1 1 0;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  color: #555;
+  border-radius: 5px;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* フルワイド要素のスタイル */
+.full-width {
+  width: 100%;
+  flex: 1 0 100%;
+}
+
+/* セグメント行のスタイル */
+.segmented-row {
+  width: 100%;
+  display: flex;
+  justify-content: stretch;
+}
+
+.segmented-row .option-group {
+  width: 100%;
+  flex: 1;
+}
+
+.segment.active {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  color: #4285f4;
+}
+
+.segment:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* モバイル用のセグメンテッドコントロール調整 */
+@media (max-width: 600px) {
+  .segmented-control {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .segment {
+    flex: 1 1 0;
+    min-width: 70px;
+    padding: 6px 8px;
+    font-size: 13px;
+    margin: 2px;
+  }
+
+  .full-width {
+    width: 100%;
+    flex: 1 0 100%;
+  }
+
+  .segmented-row {
+    width: 100%;
+    display: flex;
+    justify-content: stretch;
+  }
+
+  .segmented-row .option-group {
+    width: 100%;
+    flex: 1;
+  }
 }
 
 .option-group select:hover,

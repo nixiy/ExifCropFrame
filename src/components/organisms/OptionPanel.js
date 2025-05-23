@@ -2,13 +2,14 @@ import React from 'react';
 import OptionGroup from '../molecules/OptionGroup';
 import ColorPicker from '../atoms/ColorPicker';
 import Select from '../atoms/Select';
+import SegmentedControl from '../atoms/SegmentedControl';
 import Button from '../atoms/Button';
 import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
 
 const ASPECT_RATIO_OPTIONS = [
   { value: 1, label: '1:1' },
-  { value: 21 / 9, label: '21:9' },
   { value: 16 / 9, label: '16:9' },
+  { value: 21 / 9, label: '21:9' },
 ];
 
 /**
@@ -43,13 +44,9 @@ const OptionPanel = ({
   onAspectChange,
 }) => {
   return (
-    <div className="embed-options">
-      <h3>画像設定</h3>
-
-      <div className="options-section">
-        <h4 className="options-section-title">カラー設定</h4>
+    <div className="embed-options simplified">
+      <div className="options-compact">
         <div className="options-row">
-          {' '}
           <OptionGroup label="テキスト色">
             <ColorPicker
               value={textColor}
@@ -63,22 +60,20 @@ const OptionPanel = ({
               onChange={e => onBackgroundColorChange(e.target.value)}
               presets={DEFAULT_COLORS.PRESET_BACKGROUND_COLORS}
             />
-          </OptionGroup>
+          </OptionGroup>{' '}
         </div>
-      </div>
-
-      <div className="options-section">
-        <h4 className="options-section-title">レイアウト設定</h4>
-        <div className="options-row">
-          <OptionGroup label="枠サイズ">
-            <Select
+        <div className="options-row segmented-row">
+          <OptionGroup label="枠サイズ" className="full-width">
+            <SegmentedControl
               options={BORDER_SIZE_OPTIONS}
               value={borderSize}
               onChange={e => onBorderSizeChange(Number(e.target.value))}
             />
           </OptionGroup>
-          <OptionGroup label="アスペクト比">
-            <Select
+        </div>
+        <div className="options-row segmented-row">
+          <OptionGroup label="アスペクト比" className="full-width">
+            <SegmentedControl
               options={ASPECT_RATIO_OPTIONS}
               value={aspect}
               onChange={e => onAspectChange(Number(e.target.value))}
