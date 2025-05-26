@@ -28,9 +28,8 @@ export const BORDER_SIZE_OPTIONS = [
  * デフォルト色の設定
  */
 export const DEFAULT_COLORS = {
-  TEXT: '#808080', // 灰色のカラーコード
-  BACKGROUND: '#ffffff', // 白
-  // プリセット色の追加オプション
+  TEXT: '#808080',
+  BACKGROUND: '#ffffff',
   PRESET_TEXT_COLORS: [
     { value: '#000000', label: '黒' },
     { value: '#FFFFFF', label: '白' },
@@ -46,3 +45,29 @@ export const DEFAULT_COLORS = {
     { value: '#F0FFFF', label: '薄水色' },
   ],
 };
+
+/**
+ * アスペクト比のオプション
+ */
+export const PORTRAIT_ASPECT_RATIOS = [
+  { value: 9 / 21, label: '9:21' },
+  { value: 9 / 16, label: '9:16' },
+  { value: 3 / 4, label: '3:4' },
+  { value: 2 / 3, label: '2:3' },
+  { value: 1, label: '1:1' },
+];
+
+// 横向きのアスペクト比
+export const LANDSCAPE_ASPECT_RATIOS = [
+  { value: 1, label: '1:1' },
+  { value: 3 / 2, label: '3:2' },
+  { value: 4 / 3, label: '4:3' },
+  { value: 16 / 9, label: '16:9' },
+  { value: 21 / 9, label: '21:9' },
+];
+
+// アスペクト比の向き
+export const ORIENTATION_OPTIONS = [
+  { value: 'landscape', label: '横' },
+  { value: 'portrait', label: '縦' },
+];
