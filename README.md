@@ -15,6 +15,7 @@ ExifCropFrameは、写真のExif情報をテキストとして画像に埋め込
 
 - 画像のドラッグ＆ドロップまたはファイル選択による簡単な読み込み
 - Exif情報の自動抽出と視覚的な表示
+- フレーム追加の有無を選択可能（クロップのみの使用も可能）
 - カスタマイズ可能なテキスト色と背景色
 - 様々なアスペクト比での画像クロップ（21:9, 16:9, 1:1など）
 - 美しいモダンなUIデザイン
@@ -27,6 +28,7 @@ ExifCropFrameは、写真のExif情報をテキストとして画像に埋め込
 3. 必要に応じてExif情報の表示をカスタマイズ:
    - テキスト色とバックグラウンド色を調整
    - 枠サイズを選択
+   - フレーム追加のオン/オフを切り替え（クロップのみの使用も可能）
    - アスペクト比を設定
    - 必要に応じてクロップ領域を調整
 4. 「画像を生成」ボタンをクリック
@@ -106,6 +108,7 @@ ExifCropFrame is a React application that embeds Exif information as text onto p
 
 - Easy image loading via drag & drop or file selection
 - Automatic Exif data extraction and visual display
+- Optional frame addition (can be used as a cropping-only tool)
 - Customizable text color and background color
 - Image cropping with various aspect ratios (21:9, 16:9, 1:1, etc.)
 - Beautiful modern UI design
@@ -118,6 +121,7 @@ ExifCropFrame is a React application that embeds Exif information as text onto p
 3. Customize Exif information display as needed:
    - Adjust text color and background color
    - Select border size
+   - Toggle frame addition on/off (can be used as a cropping-only tool)
    - Set aspect ratio
    - Adjust crop area if needed
 4. Click "Generate Image"
