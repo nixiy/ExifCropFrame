@@ -1,17 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import OptionGroup from '../molecules/OptionGroup';
 import ColorPicker from '../atoms/ColorPicker';
 import SegmentedControl from '../atoms/SegmentedControl';
 import Button from '../atoms/Button';
-import { BORDER_SIZE_OPTIONS, DEFAULT_COLORS } from '../../utils/constants';
-
-const ASPECT_RATIO_OPTIONS = [
-  { value: 1, label: '1:1' },
-  { value: 3 / 2, label: '3:2' },
-  { value: 4 / 3, label: '4:3' },
-  { value: 16 / 9, label: '16:9' },
-  { value: 21 / 9, label: '21:9' },
-];
+import {
+  BORDER_SIZE_OPTIONS,
+  DEFAULT_COLORS,
+  PORTRAIT_ASPECT_RATIOS,
+  LANDSCAPE_ASPECT_RATIOS,
+  ORIENTATION_OPTIONS,
+} from '../../utils/constants';
 
 /**
  * 埋め込みオプションパネルコンポーネント
@@ -44,6 +42,26 @@ const OptionPanel = ({
   aspect,
   onAspectChange,
 }) => {
+  // 縦向き/横向き切り替えのstate
+  const [orientation, setOrientation] = useState('landscape');
+
+  // 現在の向きに基づいたアスペクト比オプションを取得
+  const currentAspectRatioOptions =
+    orientation === 'landscape' ? LANDSCAPE_ASPECT_RATIOS : PORTRAIT_ASPECT_RATIOS;
+
+  // 向き変更時に適切なアスペクト比を選択する
+  useEffect(() => {
+    // 前の向きでの選択が新しい向きにも存在する場合はそれを維持
+    const aspectExists = currentAspectRatioOptions.some(option => option.value === aspect);
+    if (!aspectExists) {
+      // 存在しない場合は新しい向きの最初の値を選択（または1:1 など共通の値があればそれを選択）
+      const defaultAspect =
+        currentAspectRatioOptions.find(option => option.value === 1) ||
+        currentAspectRatioOptions[0];
+      onAspectChange(defaultAspect.value);
+    }
+  }, [orientation, aspect, onAspectChange, currentAspectRatioOptions]);
+
   return (
     <div className="embed-options simplified">
       <div className="options-compact">
@@ -71,13 +89,24 @@ const OptionPanel = ({
               onChange={e => onBorderSizeChange(Number(e.target.value))}
             />
           </OptionGroup>
+        </div>{' '}
+        <div className="options-row segmented-row">
+          <OptionGroup label="アスペクト比の向き" className="full-width">
+            <SegmentedControl
+              options={ORIENTATION_OPTIONS}
+              value={orientation}
+              onChange={e => setOrientation(e.target.value)}
+            />
+          </OptionGroup>
         </div>
         <div className="options-row segmented-row">
+          {' '}
           <OptionGroup label="アスペクト比" className="full-width">
             <SegmentedControl
-              options={ASPECT_RATIO_OPTIONS}
+              options={currentAspectRatioOptions}
               value={aspect}
               onChange={e => onAspectChange(Number(e.target.value))}
+              showIcons={true}
             />
           </OptionGroup>
         </div>
