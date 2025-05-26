@@ -6,6 +6,7 @@ import EmbeddedImagePreview from '../organisms/EmbeddedImagePreview';
 import Button from '../atoms/Button';
 import { useExif } from '../../contexts/ExifContext';
 import { useImageProcessor } from '../../hooks/useImageProcessor';
+import useGoogleAnalytics from '../../hooks/useGoogleAnalytics';
 import { processImageFile } from '../../utils/imageProcessing';
 
 /**
@@ -23,6 +24,7 @@ const ExifEditor = () => {
 
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
+  const { sendEvent } = useGoogleAnalytics();
   const {
     image,
     setImage,
@@ -43,7 +45,6 @@ const ExifEditor = () => {
     downloadImage,
     resetImage,
   } = useImageProcessor();
-
   /**
    * ファイル選択時のハンドラー
    * @param {File} file - 選択されたファイル
@@ -54,6 +55,13 @@ const ExifEditor = () => {
         // 画像情報の取得
         const imageInfo = await processImageFile(file);
         setImage(imageInfo);
+
+        // Google Analyticsにイベント送信
+        sendEvent('select_image', {
+          file_type: file.type,
+          file_size: file.size,
+          is_sample: false,
+        });
 
         // CropperImagePanelで自動的に適切な初期サイズが設定されるため、
         // cropをリセットする（CropperImagePanelが内部で処理）
@@ -66,11 +74,15 @@ const ExifEditor = () => {
         setShowCrop(false);
       } catch (error) {
         console.error('ファイル処理中にエラーが発生しました:', error);
+
+        // エラー発生時もイベント送信
+        sendEvent('file_processing_error', {
+          error_message: error.message,
+        });
       }
     },
-    [fetchExifData, setImage]
+    [fetchExifData, setImage, sendEvent]
   );
-
   /**
    * 開発環境用のサンプル画像読み込み
    */
@@ -80,11 +92,22 @@ const ExifEditor = () => {
       const response = await fetch(sampleImgPath);
       const blob = await response.blob();
       const file = new File([blob], 'sample-image.jpg', { type: blob.type });
+
+      // サンプル画像読み込み時のイベント送信
+      sendEvent('load_sample_image', {
+        environment: process.env.NODE_ENV,
+      });
+
       handleFileSelect(file);
     } catch (error) {
       console.error('サンプル画像のロード中にエラーが発生しました:', error);
+
+      // エラー発生時もイベント送信
+      sendEvent('sample_image_error', {
+        error_message: error.message,
+      });
     }
-  }, [handleFileSelect]);
+  }, [handleFileSelect, sendEvent]);
   // 開発環境でのテスト用に自動的にサンプル画像をロード
   useEffect(() => {
     // 開発環境のみで実行し、まだサンプル画像を読み込んでいない場合のみ実行
@@ -136,20 +159,32 @@ const ExifEditor = () => {
       setCropInfo({ crop: newCrop, imageRef: imgEl, pixelCrop });
     }
   }, []);
-
   /**
    * 画像生成処理
    */
   const handleGenerateImage = useCallback(() => {
     processImage(exifData, selectedExifTags, cropInfo);
-  }, [processImage, exifData, selectedExifTags, cropInfo]);
 
+    // 画像生成イベントを送信
+    sendEvent('generate_image', {
+      has_exif: !!exifData && Object.keys(exifData).length > 0,
+      has_crop: !!cropInfo,
+      selected_tags_count: selectedExifTags ? selectedExifTags.length : 0,
+    });
+  }, [processImage, exifData, selectedExifTags, cropInfo, sendEvent]);
   /**
    * ダウンロード時の処理（元画像で再生成）
    */
   const handleDownload = useCallback(() => {
     downloadImage(exifData, selectedExifTags, cropInfo);
-  }, [downloadImage, exifData, selectedExifTags, cropInfo]);
+
+    // ダウンロードイベントを送信
+    sendEvent('download_image', {
+      has_exif: !!exifData && Object.keys(exifData).length > 0,
+      has_crop: !!cropInfo,
+      selected_tags_count: selectedExifTags ? selectedExifTags.length : 0,
+    });
+  }, [downloadImage, exifData, selectedExifTags, cropInfo, sendEvent]);
 
   /**
    * ドラッグ状態の変更ハンドラ
