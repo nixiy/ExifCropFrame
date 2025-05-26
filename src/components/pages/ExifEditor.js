@@ -37,6 +37,8 @@ const ExifEditor = () => {
     setBackgroundColor,
     borderSize,
     setBorderSize,
+    addFrame,
+    setAddFrame,
     processImage,
     downloadImage,
     resetImage,
@@ -189,6 +191,8 @@ const ExifEditor = () => {
               onBorderSizeChange={setBorderSize}
               onGenerateImage={handleGenerateImage}
               isProcessing={isImageProcessing}
+              addFrame={addFrame}
+              onAddFrameChange={setAddFrame}
               showCrop={showCrop}
               onShowCropChange={setShowCrop}
               aspect={aspect}

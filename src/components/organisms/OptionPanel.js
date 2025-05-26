@@ -26,6 +26,8 @@ import {
  * @param {Function} props.onShowCropChange - クロップ領域表示変更ハンドラ
  * @param {number} props.aspect - アスペクト比
  * @param {Function} props.onAspectChange - アスペクト比変更ハンドラ
+ * @param {boolean} props.addFrame - フレームを追加するかどうかのフラグ
+ * @param {Function} props.onAddFrameChange - フレーム追加オプション変更ハンドラ
  * @returns {JSX.Element} - オプションパネルコンポーネント
  */
 const OptionPanel = ({
@@ -41,6 +43,8 @@ const OptionPanel = ({
   onShowCropChange,
   aspect,
   onAspectChange,
+  addFrame,
+  onAddFrameChange,
 }) => {
   // 縦向き/横向き切り替えのstate
   const [orientation, setOrientation] = useState('landscape');
@@ -109,7 +113,7 @@ const OptionPanel = ({
               showIcons={true}
             />
           </OptionGroup>
-        </div>
+        </div>{' '}
         <div className="options-row">
           <div className="checkbox-group">
             <label>
@@ -119,6 +123,18 @@ const OptionPanel = ({
                 onChange={e => onShowCropChange(e.target.checked)}
               />
               クロップ領域を表示
+            </label>
+          </div>
+        </div>
+        <div className="options-row">
+          <div className="checkbox-group">
+            <label>
+              <input
+                type="checkbox"
+                checked={addFrame}
+                onChange={e => onAddFrameChange(e.target.checked)}
+              />
+              フレームを追加
             </label>
           </div>
         </div>
