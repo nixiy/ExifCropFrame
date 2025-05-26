@@ -100,11 +100,13 @@ const OptionPanel = ({
           </OptionGroup>
         </div>
         <div className="options-row segmented-row">
+          {' '}
           <OptionGroup label="アスペクト比" className="full-width">
             <SegmentedControl
               options={currentAspectRatioOptions}
               value={aspect}
               onChange={e => onAspectChange(Number(e.target.value))}
+              showIcons={true}
             />
           </OptionGroup>
         </div>
