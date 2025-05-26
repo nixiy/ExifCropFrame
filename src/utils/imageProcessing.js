@@ -114,6 +114,7 @@ export const embedTextInImage = ({
   borderSize,
   cropInfo,
   canvas,
+  addFrame,
 }) => {
   return new Promise((resolve, reject) => {
     if (!image || !exifData || !canvas) {
@@ -130,16 +131,30 @@ export const embedTextInImage = ({
       reject('表示するExif情報が選択されていません');
       return;
     }
-
     const img = new Image();
     img.onload = async () => {
       try {
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        const cameraInfoText = getCameraInfoText(exifData, selectedTagKeys);
-        const detailsInfoText = getDetailsInfoText(exifData, selectedTagKeys);
-
         // クロップ情報の処理
         const { cropWidth, cropHeight, offsetX, offsetY } = processCropInfo(img, cropInfo);
+
+        if (!addFrame) {
+          // フレームなしの場合、単なるクロップ画像を返す
+          canvas.width = cropWidth;
+          canvas.height = cropHeight;
+
+          // クロップした画像を描画
+          ctx.drawImage(img, offsetX, offsetY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+          // データURLを生成して返す
+          const dataURL = await generateDataURL(ctx, canvas);
+          resolve(dataURL);
+          return;
+        }
+
+        // フレームありの場合（従来の処理）
+        const cameraInfoText = getCameraInfoText(exifData, selectedTagKeys);
+        const detailsInfoText = getDetailsInfoText(exifData, selectedTagKeys);
 
         // 枠線とフォントサイズの計算
         const borderMultiplier = [0.5, 1, 2, 3, 4][borderSize - 1] || 1;

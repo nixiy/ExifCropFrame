@@ -17,6 +17,7 @@ export const useImageProcessor = () => {
   const [textColor, setTextColor] = useState(DEFAULT_COLORS.TEXT);
   const [backgroundColor, setBackgroundColor] = useState(DEFAULT_COLORS.BACKGROUND);
   const [borderSize, setBorderSize] = useState(2);
+  const [addFrame, setAddFrame] = useState(true); // フレーム追加オプション（デフォルトは追加する）
 
   /**
    * 画像にEXIF情報を埋め込む（プレビュー用 or ダウンロード用を切り替え）
@@ -50,6 +51,7 @@ export const useImageProcessor = () => {
         borderSize,
         cropInfo,
         canvas: canvasRef.current,
+        addFrame,
       });
       setEmbeddedImage(dataURL);
       return dataURL;
@@ -167,6 +169,8 @@ export const useImageProcessor = () => {
     setBackgroundColor,
     borderSize,
     setBorderSize,
+    addFrame,
+    setAddFrame,
     processImage,
     downloadImage,
     resetImage,
