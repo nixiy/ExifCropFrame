@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import DropZone from '../organisms/DropZone';
 import CropperImagePanel from '../organisms/CropperImagePanel';
 import OptionPanel from '../organisms/OptionPanel';
@@ -20,7 +20,7 @@ const ExifEditor = () => {
   const [cropInfo, setCropInfo] = useState(null);
   const [showCrop, setShowCrop] = useState(false);
   const [aspect, setAspect] = useState(21 / 9); // デフォルト21:9
-  const [hasSampleLoaded, setHasSampleLoaded] = useState(false); // サンプル画像読み込み済みフラグ
+  const [hasSampleLoaded, setHasSampleLoaded] = useState(false);
 
   // カスタムフックの利用
   const { exifData, selectedExifTags, fetchExifData, resetExifData } = useExif();
@@ -29,7 +29,7 @@ const ExifEditor = () => {
     image,
     setImage,
     embeddedImage,
-    isProcessing: isImageProcessing,
+    isProcessing,
     isDownloadProcessing,
     downloadProgress,
     canvasRef,
@@ -45,44 +45,42 @@ const ExifEditor = () => {
     downloadImage,
     resetImage,
   } = useImageProcessor();
+
+  // EXIFデータが存在するか判定
+  const hasExifData = useMemo(() =>
+    exifData && Object.keys(exifData).length > 0,
+    [exifData]);
+
   /**
    * ファイル選択時のハンドラー
-   * @param {File} file - 選択されたファイル
    */
   const handleFileSelect = useCallback(
     async file => {
       try {
-        // 画像情報の取得
         const imageInfo = await processImageFile(file);
         setImage(imageInfo);
 
-        // Google Analyticsにイベント送信
         sendEvent('select_image', {
           file_type: file.type,
           file_size: file.size,
           is_sample: false,
         });
 
-        // CropperImagePanelで自動的に適切な初期サイズが設定されるため、
-        // cropをリセットする（CropperImagePanelが内部で処理）
+        // 状態をリセット
         setCropInfo(null);
+        setShowCrop(false);
 
         // EXIF情報の取得
-        await fetchExifData(file); // オプション画面を即時表示
+        await fetchExifData(file);
         setShowEmbedOptions(true);
-
-        setShowCrop(false);
       } catch (error) {
         console.error('ファイル処理中にエラーが発生しました:', error);
-
-        // エラー発生時もイベント送信
-        sendEvent('file_processing_error', {
-          error_message: error.message,
-        });
+        sendEvent('file_processing_error', { error_message: error.message });
       }
     },
     [fetchExifData, setImage, sendEvent]
   );
+
   /**
    * 開発環境用のサンプル画像読み込み
    */
@@ -93,55 +91,30 @@ const ExifEditor = () => {
       const blob = await response.blob();
       const file = new File([blob], 'sample-image.jpg', { type: blob.type });
 
-      // サンプル画像読み込み時のイベント送信
-      sendEvent('load_sample_image', {
-        environment: process.env.NODE_ENV,
-      });
-
+      sendEvent('load_sample_image', { environment: process.env.NODE_ENV });
       handleFileSelect(file);
     } catch (error) {
       console.error('サンプル画像のロード中にエラーが発生しました:', error);
-
-      // エラー発生時もイベント送信
-      sendEvent('sample_image_error', {
-        error_message: error.message,
-      });
+      sendEvent('sample_image_error', { error_message: error.message });
     }
   }, [handleFileSelect, sendEvent]);
-  // 開発環境でのテスト用に自動的にサンプル画像をロード
+
+  // 開発環境での自動サンプルロード
   useEffect(() => {
-    // 開発環境のみで実行し、まだサンプル画像を読み込んでいない場合のみ実行
     if (process.env.NODE_ENV === 'development' && !hasSampleLoaded && !image) {
       loadSampleImage();
       setHasSampleLoaded(true);
-      // クロップ表示を明示的に無効化
       setShowCrop(false);
     }
-  }, []);
+  }, [hasSampleLoaded, image, loadSampleImage]);
 
-  // 画像とEXIFデータが揃ったら自動的に画像生成を実行
+  // 画像とEXIFデータが揃ったら自動的にプレビュー生成
   useEffect(() => {
-    // 画像とEXIFデータが存在し、canvasが準備できている場合
-    if (
-      image &&
-      exifData &&
-      canvasRef.current &&
-      showEmbedOptions &&
-      !embeddedImage &&
-      !isImageProcessing
-    ) {
+    if (image && exifData && canvasRef.current && showEmbedOptions && !embeddedImage && !isProcessing) {
       processImage(exifData, selectedExifTags);
     }
-  }, [
-    image,
-    exifData,
-    showEmbedOptions,
-    embeddedImage,
-    isImageProcessing,
-    canvasRef,
-    processImage,
-    selectedExifTags,
-  ]);
+  }, [image, exifData, showEmbedOptions, embeddedImage, isProcessing, canvasRef, processImage, selectedExifTags]);
+
   /**
    * リセット処理
    */
@@ -149,6 +122,8 @@ const ExifEditor = () => {
     resetImage();
     resetExifData();
     setShowEmbedOptions(false);
+    setCropInfo(null);
+    setShowCrop(false);
   }, [resetImage, resetExifData]);
 
   /**
@@ -159,32 +134,30 @@ const ExifEditor = () => {
       setCropInfo({ crop: newCrop, imageRef: imgEl, pixelCrop });
     }
   }, []);
+
   /**
    * 画像生成処理
    */
   const handleGenerateImage = useCallback(() => {
     processImage(exifData, selectedExifTags, cropInfo);
-
-    // 画像生成イベントを送信
     sendEvent('generate_image', {
-      has_exif: !!exifData && Object.keys(exifData).length > 0,
+      has_exif: hasExifData,
       has_crop: !!cropInfo,
       selected_tags_count: selectedExifTags ? selectedExifTags.length : 0,
     });
-  }, [processImage, exifData, selectedExifTags, cropInfo, sendEvent]);
+  }, [processImage, exifData, selectedExifTags, cropInfo, sendEvent, hasExifData]);
+
   /**
-   * ダウンロード時の処理（元画像で再生成）
+   * ダウンロード時の処理
    */
   const handleDownload = useCallback(() => {
     downloadImage(exifData, selectedExifTags, cropInfo);
-
-    // ダウンロードイベントを送信
     sendEvent('download_image', {
-      has_exif: !!exifData && Object.keys(exifData).length > 0,
+      has_exif: hasExifData,
       has_crop: !!cropInfo,
       selected_tags_count: selectedExifTags ? selectedExifTags.length : 0,
     });
-  }, [downloadImage, exifData, selectedExifTags, cropInfo, sendEvent]);
+  }, [downloadImage, exifData, selectedExifTags, cropInfo, sendEvent, hasExifData]);
 
   /**
    * ドラッグ状態の変更ハンドラ
@@ -216,7 +189,7 @@ const ExifEditor = () => {
             showCrop={showCrop}
             aspect={aspect}
           />
-          {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
+          {showEmbedOptions && hasExifData && (
             <OptionPanel
               textColor={textColor}
               onTextColorChange={setTextColor}
@@ -225,7 +198,7 @@ const ExifEditor = () => {
               borderSize={borderSize}
               onBorderSizeChange={setBorderSize}
               onGenerateImage={handleGenerateImage}
-              isProcessing={isImageProcessing}
+              isProcessing={isProcessing}
               addFrame={addFrame}
               onAddFrameChange={setAddFrame}
               showCrop={showCrop}
@@ -235,7 +208,7 @@ const ExifEditor = () => {
             />
           )}
         </div>
-        {showEmbedOptions && exifData && Object.keys(exifData).length > 0 && (
+        {showEmbedOptions && hasExifData && (
           <EmbeddedImagePreview
             embeddedImage={embeddedImage}
             onDownload={handleDownload}
@@ -243,7 +216,6 @@ const ExifEditor = () => {
             downloadProgress={downloadProgress}
           />
         )}
-        {/* 非表示のCanvasエレメント */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
       </DropZone>
     </div>

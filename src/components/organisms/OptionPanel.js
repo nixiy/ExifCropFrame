@@ -3,6 +3,8 @@ import OptionGroup from '../molecules/OptionGroup';
 import ColorPicker from '../atoms/ColorPicker';
 import SegmentedControl from '../atoms/SegmentedControl';
 import Button from '../atoms/Button';
+import RotationSlider from '../atoms/RotationSlider';
+import { useExif } from '../../contexts/ExifContext';
 import {
   BORDER_SIZE_OPTIONS,
   DEFAULT_COLORS,
@@ -46,6 +48,7 @@ const OptionPanel = ({
   addFrame,
   onAddFrameChange,
 }) => {
+  const { rotation, setRotation } = useExif();
   // 縦向き/横向き切り替えのstate
   const [orientation, setOrientation] = useState('landscape');
 
@@ -94,6 +97,11 @@ const OptionPanel = ({
             />
           </OptionGroup>
         </div>{' '}
+        <div className="options-row segmented-row">
+          <OptionGroup label="回転" className="full-width">
+            <RotationSlider rotation={rotation} onRotationChange={setRotation} />
+          </OptionGroup>
+        </div>
         <div className="options-row segmented-row">
           <OptionGroup label="アスペクト比の向き" className="full-width">
             <SegmentedControl

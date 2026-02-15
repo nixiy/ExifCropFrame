@@ -15,6 +15,7 @@ export const ExifProvider = ({ children }) => {
   const [exifData, setExifData] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedExifTags, setSelectedExifTags] = useState({});
+  const [rotation, setRotation] = useState(0);
 
   /**
    * ファイルからEXIF情報を取得する
@@ -55,6 +56,8 @@ export const ExifProvider = ({ children }) => {
     selectedExifTags,
     fetchExifData,
     resetExifData,
+    rotation,
+    setRotation,
   };
 
   return <ExifContext.Provider value={value}>{children}</ExifContext.Provider>;
