@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react';
 import { embedTextInImage } from '../utils/imageProcessing';
 import { DEFAULT_COLORS } from '../utils/constants';
+import { useExif } from '../contexts/ExifContext';
 
 /**
  * 画像処理に関するカスタムフック
  * @returns {Object} - 画像処理に関する状態と関数
  */
 export const useImageProcessor = () => {
+  const { rotation } = useExif();
   const [image, setImage] = useState(null);
   const [embeddedImage, setEmbeddedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,6 +54,7 @@ export const useImageProcessor = () => {
         cropInfo,
         canvas: canvasRef.current,
         addFrame,
+        rotation,
       });
       setEmbeddedImage(dataURL);
       return dataURL;
