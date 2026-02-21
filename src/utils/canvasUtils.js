@@ -17,15 +17,11 @@ export function generateDataURL(ctx, canvas) {
         console.warn('キャンバスに画像データがありません');
       }
 
-      // 最初にPNG形式を試し、失敗したらJPEG形式を試す
       let dataURL;
       try {
-        dataURL = canvas.toDataURL('image/png');
-        if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
-          dataURL = canvas.toDataURL('image/jpeg', 0.95);
-        }
+        dataURL = canvas.toDataURL('image/jpeg', 0.85);
       } catch (e) {
-        dataURL = canvas.toDataURL('image/jpeg', 0.9);
+        throw new Error('JPEG形式での画像生成に失敗しました');
       }
 
       if (dataURL === 'data:,' || !dataURL.startsWith('data:image/')) {
