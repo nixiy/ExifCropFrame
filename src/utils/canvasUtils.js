@@ -19,7 +19,7 @@ export function generateDataURL(ctx, canvas) {
 
       let dataURL;
       try {
-        dataURL = canvas.toDataURL('image/jpeg', 0.85);
+        dataURL = canvas.toDataURL('image/jpeg', 0.6);
       } catch (e) {
         throw new Error('JPEG形式での画像生成に失敗しました');
       }
