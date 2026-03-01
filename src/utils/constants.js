@@ -53,6 +53,42 @@ export const DEFAULT_COLORS = {
  */
 export const PORTRAIT_ASPECT_RATIOS = [
   {
+    value: 1 / 5,
+    label: '1:5',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 1 5" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1" height="5" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    value: 1 / 4,
+    label: '1:4',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 1 4" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1" height="4" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    value: 1 / 3,
+    label: '1:3',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 1 3" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1" height="3" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    value: 1 / 2.5,
+    label: '1:2.5',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 2 5" xmlns="http://www.w3.org/2000/svg">
+        <rect width="2" height="5" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
     value: 9 / 21,
     label: '9:21',
     icon: (
@@ -143,6 +179,42 @@ export const LANDSCAPE_ASPECT_RATIOS = [
     icon: (
       <svg className="aspect-ratio-icon" viewBox="0 0 21 9" xmlns="http://www.w3.org/2000/svg">
         <rect width="21" height="9" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    value: 2.5,
+    label: '2.5:1',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 5 2" xmlns="http://www.w3.org/2000/svg">
+        <rect width="5" height="2" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    value: 3,
+    label: '3:1',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 3 1" xmlns="http://www.w3.org/2000/svg">
+        <rect width="3" height="1" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    value: 4,
+    label: '4:1',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 4 1" xmlns="http://www.w3.org/2000/svg">
+        <rect width="4" height="1" fill="none" stroke="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    value: 5,
+    label: '5:1',
+    icon: (
+      <svg className="aspect-ratio-icon" viewBox="0 0 5 1" xmlns="http://www.w3.org/2000/svg">
+        <rect width="5" height="1" fill="none" stroke="currentColor" />
       </svg>
     ),
   },
